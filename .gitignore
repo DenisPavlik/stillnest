@@ -53,3 +53,4 @@ tests/__screenshots__/
 test-results/
 playwright-report/
 blob-report/
+.playwright-mcp/
