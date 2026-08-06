@@ -1,0 +1,921 @@
+/* ==================================================================== *
+   FOREST NOCTURNE
+   Base is a green-black — spruce at dusk, not night-blue and not grey.
+   Fog lives in the mid-tones. Amber is the only true warmth on the page
+   and it is used exactly three times. Moss is the interactive colour.
+ * ==================================================================== */
+
+.page {
+  --spruce: #090e0a; /* base ground */
+  --peat: #0f1611; /* raised surface */
+  --rime: #1a241d; /* edges, dividers at full strength */
+  --haze: #7e9084; /* fog: secondary type */
+  --moss: #35513a; /* interactive fill */
+  --lichen: #93b382; /* interactive ink, live values */
+  --ember: #e9a85e; /* the one warmth */
+  --linen: #e6ece4; /* primary type */
+
+  --ink-2: rgba(230, 236, 228, 0.62);
+  --ink-3: rgba(230, 236, 228, 0.4);
+  --hair: rgba(147, 179, 130, 0.15); /* every hairline is moss-tinted */
+  --hair-soft: rgba(147, 179, 130, 0.08);
+
+  --gutter: clamp(20px, 4vw, 68px);
+  --max: 1360px;
+
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 100svh;
+  overflow-x: clip;
+  background: var(--spruce);
+  color: var(--linen);
+  font-family: var(--fn-sans), ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.page :focus-visible {
+  outline: 1px solid var(--lichen);
+  outline-offset: 4px;
+  border-radius: 1px;
+}
+
+/* film grain, fixed to the viewport like a lens rather than the scene */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.26;
+  mix-blend-mode: overlay;
+}
+
+/* ============================== THE HERO ============================== */
+
+.hero {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+/* ---- the media slot -------------------------------------------------- *
+   Everything inside obeys one rule: fill the slot, crop from the centre.
+   Drop an <img className={s.mediaEl}> or a <video className={s.mediaEl}>
+   in place of the generated scene and the layout does not move.
+ * ---------------------------------------------------------------------- */
+
+.media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--spruce);
+}
+
+.mediaEl {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.fogDrift {
+  transform-origin: 50% 50%;
+  animation: drift 78s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(-1.6%, 0, 0);
+  }
+  50% {
+    transform: translate3d(1.8%, -0.6%, 0);
+  }
+}
+
+/* legibility scrim — lives above the media, so it survives a real photo */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(6, 10, 7, 0.72) 0%, rgba(6, 10, 7, 0) 22%),
+    linear-gradient(
+      0deg,
+      rgba(6, 10, 7, 0.86) 0%,
+      rgba(6, 10, 7, 0.52) 26%,
+      rgba(6, 10, 7, 0) 58%
+    );
+}
+
+.frame {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(18px, 2.4vw, 30px) var(--gutter) clamp(28px, 4vw, 52px);
+}
+
+/* ---- nav: a thin line at the top, as in the owner's own attempt ---- */
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 4vw, 48px);
+  padding-bottom: clamp(14px, 1.6vw, 20px);
+  border-bottom: 1px solid rgba(230, 236, 228, 0.14);
+}
+
+.wordmark {
+  flex: none;
+  margin-right: auto;
+  color: var(--linen);
+  font-family: var(--fn-display), Georgia, serif;
+  font-size: clamp(1.5rem, 2.2vw, 1.95rem);
+  font-weight: 300;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+}
+
+.navLinks {
+  display: flex;
+  gap: clamp(20px, 2.6vw, 40px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navLink {
+  position: relative;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: color 220ms ease;
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -6px 0;
+  height: 1px;
+  background: var(--lichen);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.navLink:hover {
+  color: var(--linen);
+}
+
+.navLink:hover::after {
+  transform: scaleX(1);
+}
+
+.reserve {
+  flex: none;
+  padding: 0.6rem 1.15rem;
+  border: 1px solid rgba(147, 179, 130, 0.34);
+  border-radius: 2px;
+  background: var(--moss);
+  color: #eaf1e6;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition:
+    background-color 240ms ease,
+    border-color 240ms ease;
+}
+
+.reserve:hover {
+  background: #40603f;
+  border-color: rgba(147, 179, 130, 0.6);
+}
+
+.heroSpace {
+  flex: 1;
+  min-height: clamp(120px, 34vh, 400px);
+}
+
+/* ---- the type sits low and says almost nothing ---- */
+
+.heroFoot {
+  display: grid;
+  gap: clamp(16px, 2vw, 26px);
+  max-width: 46rem;
+}
+
+.tagline {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--fn-display), Georgia, serif;
+  font-size: clamp(3.1rem, 9.4vw, 8.4rem);
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.tagline span:last-child {
+  padding-left: 0.06em;
+}
+
+.heroLede {
+  max-width: 26rem;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: clamp(0.95rem, 1.1vw, 1.0625rem);
+  line-height: 1.55;
+}
+
+/* ---- THE REACH LINE — the signature ---- */
+
+.reachBlock {
+  width: min(100%, 44rem);
+  margin-top: clamp(4px, 1.4vw, 18px);
+}
+
+.reach {
+  display: grid;
+  gap: 0.55rem;
+  width: 100%;
+  margin: 0;
+  padding: 0 4px;
+}
+
+.reachValue {
+  color: var(--ember);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.reachRule {
+  position: relative;
+  display: block;
+  height: 1px;
+  margin-bottom: 0.55rem;
+  background: linear-gradient(
+    90deg,
+    rgba(233, 168, 94, 0.85) 0%,
+    rgba(147, 179, 130, 0.42) 20%,
+    rgba(147, 179, 130, 0.13) 52%,
+    rgba(147, 179, 130, 0.5) 100%
+  );
+}
+
+.reachMinor,
+.reachMajor {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: block;
+}
+
+/* one tick per kilometre — the scale is real, not decorative */
+.reachMinor {
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(147, 179, 130, 0.32) 0 1px,
+    transparent 1px var(--minor)
+  );
+}
+
+.reachMajor {
+  height: 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(147, 179, 130, 0.55) 0 1px,
+    transparent 1px var(--major)
+  );
+}
+
+.reachHere,
+.reachThere {
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.reachHere {
+  left: 0;
+  background: #f2c286;
+  box-shadow: 0 0 16px 5px rgba(233, 168, 94, 0.32);
+  transform: translate(-50%, -50%);
+}
+
+.reachThere {
+  right: 0;
+  border: 1px solid rgba(147, 179, 130, 0.7);
+  transform: translate(50%, -50%);
+}
+
+.reachEnds {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  color: var(--haze);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.reachEnds span:first-child {
+  color: rgba(147, 179, 130, 0.85);
+}
+
+.reachSmall {
+  padding: 0;
+}
+
+.reachSmall .reachValue {
+  font-size: 0.6875rem;
+  text-align: left;
+}
+
+.reachSmall .reachEnds {
+  font-size: 0.5625rem;
+}
+
+.heroWhere {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  margin: 0.9rem 0 0;
+  color: var(--ink-3);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.heroWhere span:first-child {
+  color: var(--lichen);
+}
+
+/* ========================= THE SOLITUDE INDEX ========================= */
+
+.index {
+  position: relative;
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(72px, 11vw, 168px) var(--gutter) clamp(56px, 8vw, 110px);
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 clamp(20px, 2.6vw, 34px);
+  color: var(--lichen);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.kicker::before {
+  content: "";
+  width: clamp(24px, 4vw, 52px);
+  height: 1px;
+  background: var(--lichen);
+  opacity: 0.6;
+}
+
+.indexHead {
+  max-width: 54rem;
+}
+
+.h2 {
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--fn-display), Georgia, serif;
+  font-size: clamp(1.9rem, 4.4vw, 3.5rem);
+  font-weight: 300;
+  line-height: 1.06;
+  letter-spacing: -0.014em;
+  text-wrap: balance;
+}
+
+.h2 em {
+  display: block;
+  color: var(--haze);
+  font-style: italic;
+}
+
+.lede {
+  max-width: 34rem;
+  margin: clamp(18px, 2.2vw, 28px) 0 0;
+  color: var(--ink-2);
+  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
+  line-height: 1.62;
+}
+
+/* ---- the panel: an instrument, in warm greens ---- */
+
+.panel {
+  margin-top: clamp(40px, 6vw, 86px);
+  border-top: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  background: linear-gradient(180deg, var(--peat) 0%, rgba(9, 14, 10, 0.4) 100%);
+}
+
+.panelHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding: clamp(20px, 2.6vw, 30px) clamp(18px, 2.4vw, 34px);
+  border-bottom: 1px solid var(--hair);
+}
+
+.panelName {
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--fn-display), Georgia, serif;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.panelWhere {
+  margin: 0.35rem 0 0;
+  color: var(--haze);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.panelMeta {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  color: var(--ink-3);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  text-align: right;
+}
+
+.metrics {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.metric {
+  display: grid;
+  grid-template-columns: minmax(96px, 0.7fr) minmax(120px, 0.8fr) minmax(220px, 1.3fr) minmax(0, 1.6fr);
+  align-items: center;
+  gap: clamp(14px, 2vw, 34px);
+  padding: clamp(20px, 2.4vw, 28px) clamp(18px, 2.4vw, 34px);
+  border-bottom: 1px solid var(--hair-soft);
+}
+
+.metric:last-child {
+  border-bottom: 0;
+}
+
+.mLabel {
+  margin: 0;
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.mValue {
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: clamp(1.75rem, 3vw, 2.6rem);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.mUnit {
+  margin-left: 0.4em;
+  color: var(--haze);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  vertical-align: 0.55em;
+}
+
+.mDevice {
+  min-width: 0;
+}
+
+.device {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  overflow: visible;
+}
+
+.deviceTick {
+  fill: var(--haze);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.mNote {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 0.8125rem;
+  line-height: 1.62;
+}
+
+.panelFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.5rem;
+  padding: clamp(18px, 2.2vw, 26px) clamp(18px, 2.4vw, 34px);
+  border-top: 1px solid var(--hair);
+  color: var(--haze);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.panelScore {
+  color: var(--lichen);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+.panelScore i {
+  color: var(--haze);
+  font-size: 0.75rem;
+  font-style: normal;
+}
+
+.panelFootNote {
+  margin-left: auto;
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+/* ============================== THE HOUSES ============================= */
+
+.houses {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(56px, 8vw, 120px) var(--gutter) clamp(72px, 10vw, 140px);
+}
+
+.housesHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(18px, 3vw, 48px);
+  padding-bottom: clamp(24px, 3vw, 40px);
+  border-bottom: 1px solid var(--hair);
+}
+
+.housesNote {
+  max-width: 24rem;
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  background: var(--hair-soft);
+  list-style: none;
+}
+
+.card {
+  background: var(--spruce);
+}
+
+.cardLink {
+  display: block;
+  height: 100%;
+  padding: clamp(18px, 1.8vw, 26px) clamp(16px, 1.6vw, 24px) clamp(24px, 2.4vw, 32px);
+  color: inherit;
+  text-decoration: none;
+}
+
+.cardMedia {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--peat);
+}
+
+.cardMedia::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(6, 10, 7, 0.5) 0%, rgba(6, 10, 7, 0) 46%);
+}
+
+.cardMedia .mediaEl {
+  transition:
+    transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    filter 600ms ease;
+}
+
+.cardLink:hover .mediaEl {
+  transform: scale(1.035);
+  filter: brightness(1.14) saturate(1.05);
+}
+
+.cardBiome {
+  position: absolute;
+  z-index: 2;
+  right: 10px;
+  bottom: 9px;
+  color: var(--haze);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cardBody {
+  padding-top: clamp(16px, 1.6vw, 22px);
+}
+
+.cardName {
+  display: inline-block;
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--fn-display), Georgia, serif;
+  font-size: clamp(1.5rem, 2vw, 1.85rem);
+  font-weight: 300;
+  letter-spacing: -0.008em;
+  background-image: linear-gradient(var(--lichen), var(--lichen));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.cardLink:hover .cardName {
+  background-size: 100% 1px;
+}
+
+.cardRegion {
+  margin: 0.4rem 0 0;
+  color: var(--haze);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cardCopy {
+  margin: clamp(12px, 1.4vw, 18px) 0 0;
+  color: var(--ink-3);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+}
+
+.cardStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 0.75rem;
+  margin: clamp(16px, 2vw, 24px) 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--hair-soft);
+}
+
+.cardStats dt {
+  color: var(--haze);
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cardStats dd {
+  margin: 0.3rem 0 0;
+  color: var(--linen);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+}
+
+.cardPrice {
+  margin: clamp(14px, 1.6vw, 20px) 0 0;
+  color: var(--ink-2);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.9375rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+}
+
+.cardPrice i {
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ================================ FOOTER ============================== */
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem 1.75rem;
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(24px, 3vw, 36px) var(--gutter) clamp(40px, 5vw, 64px);
+  border-top: 1px solid var(--hair);
+}
+
+.footMark {
+  color: var(--linen);
+  font-family: var(--fn-display), Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 300;
+}
+
+.footLine {
+  color: var(--haze);
+  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.footNote {
+  margin-left: auto;
+  color: var(--ink-3);
+  font-size: 0.75rem;
+}
+
+/* ============================== RESPONSIVE ============================= */
+
+@media (max-width: 1100px) {
+  .metric {
+    grid-template-columns: minmax(90px, 0.8fr) minmax(110px, 0.7fr) minmax(0, 1.4fr);
+    align-items: start;
+  }
+
+  .mNote {
+    grid-column: 1 / -1;
+    max-width: 40rem;
+  }
+
+  .mDevice {
+    align-self: center;
+  }
+}
+
+@media (max-width: 900px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .card:last-child .cardMedia {
+    aspect-ratio: 16 / 7;
+  }
+
+  .panelFootNote {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 680px) {
+  /* below this the links would crowd the wordmark — the nav keeps the two
+     things that matter and drops the rest */
+  .navLinks {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    min-height: 92svh;
+  }
+
+  .metric {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 16px;
+    padding-block: 24px;
+  }
+
+  .mLabel {
+    align-self: center;
+  }
+
+  .mValue {
+    text-align: right;
+  }
+
+  .mDevice,
+  .mNote {
+    grid-column: 1 / -1;
+  }
+
+  .panelMeta {
+    text-align: left;
+  }
+
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card:last-child .cardMedia {
+    aspect-ratio: 4 / 3;
+  }
+
+  .cardLink {
+    padding-inline: 0;
+  }
+
+  .footNote {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .reachEnds {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+
+  .cardStats {
+    gap: 0 0.5rem;
+  }
+}
+
+/* ============================ REDUCED MOTION =========================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before,
+  .page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -12,14 +12,24 @@ const DIRECTIONS = [
     note: "Near-black, monochrome, clinical. The Solitude Index as a readout.",
   },
   {
-    slug: "editorial-wilderness",
-    name: "Editorial Wilderness",
-    note: "Warm paper, editorial serif. Quiet through air, not darkness.",
-  },
-  {
     slug: "nocturne",
     name: "Nocturne",
     note: "Deep night, one warm window a long way off.",
+  },
+  {
+    slug: "forest-nocturne",
+    name: "Forest Nocturne",
+    note: "Spruce at dusk, a lit window, and the distance to the nearest other one.",
+  },
+  {
+    slug: "field-station",
+    name: "Field Station",
+    note: "A field notebook kept by someone who actually goes to these places.",
+  },
+  {
+    slug: "still-water",
+    name: "Still Water",
+    note: "One waterline. Everything stands on it and echoes below it.",
   },
 ];
 

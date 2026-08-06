@@ -15,8 +15,10 @@ import { expect, test } from "@playwright/test";
 const ROUTES = [
   { path: "/", name: "home" },
   { path: "/directions/cold-instrument", name: "direction-cold-instrument" },
-  { path: "/directions/editorial-wilderness", name: "direction-editorial-wilderness" },
   { path: "/directions/nocturne", name: "direction-nocturne" },
+  { path: "/directions/forest-nocturne", name: "direction-forest-nocturne" },
+  { path: "/directions/field-station", name: "direction-field-station" },
+  { path: "/directions/still-water", name: "direction-still-water" },
 ];
 
 for (const route of ROUTES) {

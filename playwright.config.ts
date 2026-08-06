@@ -1,6 +1,16 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 3000;
+/**
+ * Deliberately NOT port 3000, and deliberately NOT reusing an existing server.
+ *
+ * Port 3000 is whatever the developer happened to start last. Reusing it once meant a
+ * whole screenshot run silently captured a different project's app — and the specs
+ * still passed, because that app's auth middleware answered 200 on every route. Tests
+ * that pass against the wrong application are worse than no tests.
+ *
+ * So: a dedicated port, and always our own server.
+ */
+const PORT = Number(process.env.PLAYWRIGHT_PORT ?? 3311);
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
@@ -21,13 +31,18 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["iPhone 14"] } },
   ],
 
-  // Reuse a dev server if one is already running; otherwise start one.
+  /**
+   * Runs against a production build, not `next dev`, for two reasons: Next refuses to
+   * start a second dev server for the same directory (so a stale one breaks the run),
+   * and the built output is what users actually get. Pages here are prerendered static,
+   * so serving is instant — the build is the only cost.
+   */
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: "pnpm dev",
+        command: `pnpm build && pnpm start --port ${PORT}`,
         url: BASE_URL,
-        reuseExistingServer: true,
-        timeout: 120_000,
+        reuseExistingServer: false,
+        timeout: 300_000,
       },
 });
