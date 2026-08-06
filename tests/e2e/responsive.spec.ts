@@ -12,14 +12,9 @@
 
 import { expect, test } from "@playwright/test";
 
-const ROUTES = [
-  { path: "/", name: "home" },
-  { path: "/directions/cold-instrument", name: "direction-cold-instrument" },
-  { path: "/directions/nocturne", name: "direction-nocturne" },
-  { path: "/directions/forest-nocturne", name: "direction-forest-nocturne" },
-  { path: "/directions/field-station", name: "direction-field-station" },
-  { path: "/directions/still-water", name: "direction-still-water" },
-];
+/* Phase 0 is over — the exploration routes are gone and the chosen direction
+   IS the home page. Add each real route here as its phase lands. */
+const ROUTES = [{ path: "/", name: "home" }];
 
 for (const route of ROUTES) {
   test(`${route.name} renders and never scrolls sideways`, async ({ page }, testInfo) => {

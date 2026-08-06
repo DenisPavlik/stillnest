@@ -1,28 +1,13 @@
 /* ==================================================================== *
-   FOREST NOCTURNE
-   Base is a green-black — spruce at dusk, not night-blue and not grey.
-   Fog lives in the mid-tones. Amber is the only true warmth on the page
-   and it is used exactly three times. Moss is the interactive colour.
+   HOME — the Forest Nocturne direction, chosen in Phase 0.
+
+   Palette and type tokens now live in globals.css (:root) so the rest of
+   the app inherits them. This file owns layout and the generated scene
+   only — if you find yourself redefining a colour here, put it in
+   globals.css instead.
  * ==================================================================== */
 
 .page {
-  --spruce: #090e0a; /* base ground */
-  --peat: #0f1611; /* raised surface */
-  --rime: #1a241d; /* edges, dividers at full strength */
-  --haze: #7e9084; /* fog: secondary type */
-  --moss: #35513a; /* interactive fill */
-  --lichen: #93b382; /* interactive ink, live values */
-  --ember: #e9a85e; /* the one warmth */
-  --linen: #e6ece4; /* primary type */
-
-  --ink-2: rgba(230, 236, 228, 0.62);
-  --ink-3: rgba(230, 236, 228, 0.4);
-  --hair: rgba(147, 179, 130, 0.15); /* every hairline is moss-tinted */
-  --hair-soft: rgba(147, 179, 130, 0.08);
-
-  --gutter: clamp(20px, 4vw, 68px);
-  --max: 1360px;
-
   position: relative;
   isolation: isolate;
   width: 100%;
@@ -30,16 +15,7 @@
   overflow-x: clip;
   background: var(--spruce);
   color: var(--linen);
-  font-family: var(--fn-sans), ui-sans-serif, system-ui, sans-serif;
-  font-synthesis: none;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-.page :focus-visible {
-  outline: 1px solid var(--lichen);
-  outline-offset: 4px;
-  border-radius: 1px;
+  font-family: var(--font-sans);
 }
 
 /* film grain, fixed to the viewport like a lens rather than the scene */
@@ -145,7 +121,7 @@
   flex: none;
   margin-right: auto;
   color: var(--linen);
-  font-family: var(--fn-display), Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(1.5rem, 2.2vw, 1.95rem);
   font-weight: 300;
   letter-spacing: 0.005em;
@@ -226,7 +202,7 @@
   flex-direction: column;
   margin: 0;
   color: var(--linen);
-  font-family: var(--fn-display), Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(3.1rem, 9.4vw, 8.4rem);
   font-weight: 300;
   line-height: 0.9;
@@ -263,7 +239,7 @@
 
 .reachValue {
   color: var(--ember);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.8125rem;
   font-weight: 400;
   font-variant-numeric: tabular-nums;
@@ -341,7 +317,7 @@
   gap: 1rem;
   margin: 0;
   color: var(--haze);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.625rem;
   font-weight: 300;
   letter-spacing: 0.14em;
@@ -371,7 +347,7 @@
   gap: 0.35rem 1.25rem;
   margin: 0.9rem 0 0;
   color: var(--ink-3);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 300;
   letter-spacing: 0.1em;
@@ -398,7 +374,7 @@
   gap: 0.6rem;
   margin: 0 0 clamp(20px, 2.6vw, 34px);
   color: var(--lichen);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 400;
   letter-spacing: 0.2em;
@@ -420,7 +396,7 @@
 .h2 {
   margin: 0;
   color: var(--linen);
-  font-family: var(--fn-display), Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(1.9rem, 4.4vw, 3.5rem);
   font-weight: 300;
   line-height: 1.06;
@@ -464,7 +440,7 @@
 .panelName {
   margin: 0;
   color: var(--linen);
-  font-family: var(--fn-display), Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(1.4rem, 2.4vw, 2rem);
   font-weight: 300;
   letter-spacing: -0.01em;
@@ -473,7 +449,7 @@
 .panelWhere {
   margin: 0.35rem 0 0;
   color: var(--haze);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 300;
   letter-spacing: 0.1em;
@@ -485,7 +461,7 @@
   gap: 0.3rem;
   margin: 0;
   color: var(--ink-3);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 300;
   letter-spacing: 0.06em;
@@ -523,7 +499,7 @@
 .mValue {
   margin: 0;
   color: var(--linen);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: clamp(1.75rem, 3vw, 2.6rem);
   font-weight: 300;
   font-variant-numeric: tabular-nums lining-nums;
@@ -554,7 +530,7 @@
 
 .deviceTick {
   fill: var(--haze);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 8.5px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -582,7 +558,7 @@
 
 .panelScore {
   color: var(--lichen);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 1.5rem;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
@@ -682,7 +658,7 @@
   right: 10px;
   bottom: 9px;
   color: var(--haze);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.625rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -696,7 +672,7 @@
   display: inline-block;
   margin: 0;
   color: var(--linen);
-  font-family: var(--fn-display), Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(1.5rem, 2vw, 1.85rem);
   font-weight: 300;
   letter-spacing: -0.008em;
@@ -714,7 +690,7 @@
 .cardRegion {
   margin: 0.4rem 0 0;
   color: var(--haze);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 300;
   letter-spacing: 0.12em;
@@ -747,7 +723,7 @@
 .cardStats dd {
   margin: 0.3rem 0 0;
   color: var(--linen);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.8125rem;
   font-weight: 300;
   font-variant-numeric: tabular-nums;
@@ -756,7 +732,7 @@
 .cardPrice {
   margin: clamp(14px, 1.6vw, 20px) 0 0;
   color: var(--ink-2);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.9375rem;
   font-weight: 300;
   font-variant-numeric: tabular-nums;
@@ -786,14 +762,14 @@
 
 .footMark {
   color: var(--linen);
-  font-family: var(--fn-display), Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 300;
 }
 
 .footLine {
   color: var(--haze);
-  font-family: var(--fn-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 300;
   letter-spacing: 0.16em;

@@ -14,13 +14,11 @@
 import { expect, test } from "@playwright/test";
 
 test("the app under test is Stillnest", async ({ page }) => {
-  const response = await page.goto("/directions");
-  expect(response?.status(), "/directions should be served by this app").toBe(200);
+  const response = await page.goto("/");
+  expect(response?.status(), "the home page should be served by this app").toBe(200);
 
-  // A string that exists nowhere but in this repo.
-  await expect(
-    page.getByText("Stillnest · Phase 0 · visual directions"),
-  ).toBeVisible();
+  await expect(page).toHaveTitle(/Stillnest/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Nowhere.");
 });
 
 test("unknown routes 404 — proof this is our router, not a catch-all", async ({ page }) => {

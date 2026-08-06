@@ -1,26 +1,94 @@
 @import "tailwindcss";
 
+/* ==================================================================== *
+   STILLNEST — design tokens
+   Chosen 2026-08-06 from the Forest Nocturne direction (Phase 0).
+
+   The base is a green-black: spruce at dusk. Deliberately NOT night-blue
+   and NOT neutral grey — the product sells forest, calm and cover, and a
+   cold ground would read as clinical.
+
+   Amber is the only true warmth on the page, and it is rationed: it means
+   "lit" or "live" and nothing else. Moss is the interactive colour.
+   Every hairline is moss-tinted, so even the discipline is green.
+ * ==================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* --- ground ------------------------------------------------------- */
+  --spruce: #090e0a; /* page base */
+  --peat: #0f1611; /* raised surface — panels, cards */
+  --rime: #1a241d; /* edges and dividers at full strength */
+
+  /* --- ink ---------------------------------------------------------- */
+  --linen: #e6ece4; /* primary type */
+  --haze: #7e9084; /* fog — secondary type */
+  --ink-2: rgba(230, 236, 228, 0.62);
+  --ink-3: rgba(230, 236, 228, 0.4);
+
+  /* --- colour ------------------------------------------------------- */
+  --moss: #35513a; /* interactive fill — buttons */
+  --lichen: #93b382; /* interactive ink, live values */
+  --ember: #e9a85e; /* the one warmth: lit windows, live readings */
+
+  /* --- hairlines ---------------------------------------------------- */
+  --hair: rgba(147, 179, 130, 0.15);
+  --hair-soft: rgba(147, 179, 130, 0.08);
+
+  /* --- measure ------------------------------------------------------ */
+  --gutter: clamp(20px, 4vw, 68px);
+  --max: 1360px;
+
+  /* --- type roles ---------------------------------------------------- *
+     display = the voice (Cormorant Garamond, light high-contrast serif)
+     sans    = the workhorse, deliberately without personality
+     mono    = anything that was MEASURED rather than written
+   * ------------------------------------------------------------------ */
+  --font-display: var(--fn-display), ui-serif, Georgia, serif;
+  --font-sans: var(--fn-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--fn-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-spruce: var(--spruce);
+  --color-peat: var(--peat);
+  --color-rime: var(--rime);
+  --color-linen: var(--linen);
+  --color-haze: var(--haze);
+  --color-moss: var(--moss);
+  --color-lichen: var(--lichen);
+  --color-ember: var(--ember);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--spruce);
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--spruce);
+  color: var(--linen);
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 1px solid var(--lichen);
+  outline-offset: 4px;
+  border-radius: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

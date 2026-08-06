@@ -1,15 +1,30 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, DM_Mono, Instrument_Sans } from "next/font/google";
+
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+/* Three faces, three jobs, no overlap:
+   display speaks, sans carries, mono reports what was measured. */
+
+const display = Cormorant_Garamond({
   subsets: ["latin"],
+  weight: ["300", "400"],
+  style: ["normal", "italic"],
+  variable: "--fn-display",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const sans = Instrument_Sans({
   subsets: ["latin"],
+  variable: "--fn-sans",
+  display: "swap",
+});
+
+const mono = DM_Mono({
+  subsets: ["latin"],
+  weight: ["300", "400"],
+  variable: "--fn-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -22,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${display.variable} ${sans.variable} ${mono.variable} h-full`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
