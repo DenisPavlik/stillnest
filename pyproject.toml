@@ -1,0 +1,28 @@
+[project]
+name = "stillnest-api"
+version = "0.1.0"
+description = "Stillnest — semantic search and the availability/pricing engine"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.121.2",
+    "pydantic==2.12.4",
+]
+
+[dependency-groups]
+dev = [
+    "fastapi[standard]>=0.121",
+    "pytest>=8.3",
+    "ruff>=0.9",
+    "httpx>=0.28",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["api"]
+testpaths = ["api/tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["api"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
