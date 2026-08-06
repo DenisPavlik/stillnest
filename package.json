@@ -19,7 +19,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "check": "pnpm typecheck && pnpm lint && pnpm py:lint && pnpm py:test && pnpm test:unit"
+    "check": "pnpm typecheck && pnpm lint && pnpm py:lint && pnpm py:test && pnpm test:unit",
+    "db:seed": "node scripts/seed.ts",
+    "test:db": "vitest run --config vitest.integration.mts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
