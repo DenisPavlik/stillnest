@@ -1,0 +1,546 @@
+/* ==================================================================== *
+   ONE HOUSE — composition only.
+
+   Palette and type tokens are in globals.css; the instruments, the card,
+   the nav and the footer bring their own styles. What is here is the
+   arrangement: a hero, four section shells, the two-column body and the
+   booking panel.
+
+   If a colour wants defining here, it belongs in globals.css. If the
+   inside of a component wants styling here, it belongs in that
+   component's module.
+ * ==================================================================== */
+
+.page {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 100svh;
+  overflow-x: clip;
+  background: var(--spruce);
+  color: var(--linen);
+  font-family: var(--font-sans);
+}
+
+/* ============================== THE HERO ============================== */
+
+.hero {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: min(92svh, 880px);
+  overflow: hidden;
+}
+
+/* ---- the media slot: fill the box, crop from the centre ---- */
+
+.media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--spruce);
+}
+
+.mediaEl {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* above the media, so it survives a real photograph landing under it */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(6, 10, 7, 0.74) 0%, rgba(6, 10, 7, 0) 24%),
+    linear-gradient(
+      0deg,
+      rgba(6, 10, 7, 0.9) 0%,
+      rgba(6, 10, 7, 0.56) 30%,
+      rgba(6, 10, 7, 0) 62%
+    );
+}
+
+.frame {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(18px, 2.4vw, 30px) var(--gutter) clamp(32px, 4.4vw, 58px);
+}
+
+.heroSpace {
+  flex: 1;
+  min-height: clamp(100px, 26vh, 320px);
+}
+
+.heroFoot {
+  display: grid;
+  gap: clamp(12px, 1.4vw, 20px);
+  max-width: 44rem;
+}
+
+/* biome, then place: the two words that say what kind of nowhere this is */
+.eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.eyebrow span + span {
+  color: var(--ink-3);
+}
+
+.title {
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(2.9rem, 8vw, 6.6rem);
+  font-weight: 300;
+  line-height: 0.94;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.lede {
+  max-width: 30rem;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: clamp(0.95rem, 1.1vw, 1.0625rem);
+  line-height: 1.55;
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.5rem;
+  margin: clamp(4px, 1vw, 12px) 0 0;
+  padding-top: clamp(12px, 1.4vw, 18px);
+  border-top: 1px solid var(--hair);
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.heroMeta span:first-child {
+  color: var(--haze);
+}
+
+/* The picture is generated, and says so once, quietly. It only appears where
+   there is room for it beside the meta line — below that width the two would
+   sit on top of each other, and the honest note would become the illegible
+   one. */
+.mediaNote {
+  position: absolute;
+  z-index: 2;
+  right: var(--gutter);
+  bottom: clamp(14px, 1.8vw, 22px);
+  max-width: 30rem;
+  margin: 0;
+  color: rgba(230, 236, 228, 0.28);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+/* ============================ SECTION SHELL =========================== */
+
+.section {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(56px, 8vw, 128px) var(--gutter) 0;
+}
+
+.survey {
+  padding-top: clamp(64px, 9vw, 140px);
+}
+
+.panel {
+  margin-top: clamp(32px, 5vw, 72px);
+}
+
+/* ============================== THE HOUSE ============================= */
+
+.houseGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+  align-items: start;
+  gap: clamp(32px, 5vw, 80px);
+  margin-top: clamp(32px, 4.5vw, 64px);
+}
+
+.prose {
+  max-width: 42rem;
+  min-width: 0;
+}
+
+.prose p {
+  margin: 0 0 1.1em;
+  color: var(--ink-2);
+  font-size: clamp(1rem, 1.15vw, 1.125rem);
+  line-height: 1.72;
+}
+
+.prose p:first-child::first-line {
+  color: var(--linen);
+}
+
+.subhead {
+  margin: clamp(28px, 3.4vw, 44px) 0 clamp(16px, 2vw, 24px);
+  padding-top: clamp(20px, 2.4vw, 28px);
+  border-top: 1px solid var(--hair);
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.amenities {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11.5rem), 1fr));
+  gap: clamp(14px, 1.8vw, 22px) clamp(16px, 2vw, 28px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.amenities li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  color: var(--ink-2);
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+.amenityIcon {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  color: var(--lichen);
+  opacity: 0.85;
+}
+
+/* ---- the booking panel ---- */
+
+.booking {
+  position: sticky;
+  top: clamp(16px, 3vw, 32px);
+  min-width: 0;
+  padding: clamp(20px, 2.4vw, 28px);
+  border: 1px solid var(--hair);
+  background: linear-gradient(180deg, var(--peat) 0%, rgba(9, 14, 10, 0.55) 100%);
+}
+
+.bookHead {
+  margin: 0;
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.bookPrice {
+  margin: 0.7rem 0 0;
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: clamp(1.75rem, 2.6vw, 2.25rem);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.bookPrice i {
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-style: normal;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  vertical-align: 0.45em;
+}
+
+.bookFacts {
+  margin: clamp(18px, 2.2vw, 24px) 0 0;
+  padding: 0;
+  border-top: 1px solid var(--hair-soft);
+}
+
+.bookFacts > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--hair-soft);
+}
+
+.bookFacts dt {
+  color: var(--haze);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.bookFacts dd {
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 300;
+  text-align: right;
+}
+
+/* not a value, an absence — it must not read like one of the readings */
+.bookPending {
+  color: var(--ink-3) !important;
+  font-style: italic;
+}
+
+/* A disabled control, styled as one. It deliberately does not wear the moss
+   fill the live nav button wears: nothing here should look pressable. */
+.reserveButton {
+  width: 100%;
+  margin-top: clamp(18px, 2.2vw, 24px);
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--hair);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--haze);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  cursor: not-allowed;
+}
+
+.bookNote {
+  margin: clamp(14px, 1.8vw, 18px) 0 0;
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.bookFine {
+  margin: 0.9rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--hair-soft);
+  color: var(--ink-3);
+  font-size: 0.6875rem;
+  line-height: 1.6;
+}
+
+/* ============================= WHERE IT IS ============================ */
+
+.whereGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(28px, 4vw, 72px);
+  margin-top: clamp(32px, 4.5vw, 64px);
+}
+
+.facts {
+  margin: 0;
+  border-top: 1px solid var(--hair);
+}
+
+.facts > div {
+  display: grid;
+  grid-template-columns: minmax(0, 10rem) minmax(0, 1fr);
+  gap: 0.5rem clamp(16px, 2.4vw, 32px);
+  padding: clamp(16px, 2vw, 22px) 0;
+  border-bottom: 1px solid var(--hair-soft);
+}
+
+.facts dt {
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+  margin: 0;
+  color: var(--linen);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.factValue {
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.factNote {
+  color: var(--ink-3);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+/* ---- closures: printed, never quietly removed from a calendar ---- */
+
+.closed {
+  padding: clamp(20px, 2.4vw, 28px);
+  border: 1px solid var(--hair);
+  background: var(--peat);
+}
+
+.closedHead {
+  margin: 0 0 clamp(14px, 1.8vw, 20px);
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.closedList {
+  display: grid;
+  gap: clamp(14px, 1.8vw, 20px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.closedList li {
+  display: grid;
+  gap: 0.4rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid rgba(147, 179, 130, 0.4);
+}
+
+.closedWhen {
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+}
+
+.closedWhy,
+.closedNone {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+/* ============================ OTHER HOUSES ============================ */
+
+.more {
+  padding-bottom: clamp(56px, 8vw, 120px);
+}
+
+/* gap:1px over a moss-tinted ground — the grid lines are the hairlines */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: clamp(28px, 4vw, 56px) 0 0;
+  padding: 0;
+  background: var(--hair-soft);
+  list-style: none;
+}
+
+/* ============================== RESPONSIVE ============================= */
+
+@media (max-width: 1080px) {
+  .houseGrid,
+  .whereGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mediaNote {
+    display: none;
+  }
+
+  .booking {
+    position: static;
+    max-width: 32rem;
+  }
+
+  .prose {
+    max-width: 42rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* three into two: the odd one out goes wide and takes a wide crop with it */
+  .cards > li:last-child {
+    grid-column: 1 / -1;
+    --card-media-ratio: 16 / 7;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero {
+    min-height: 86svh;
+  }
+
+  .facts > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cards > li:last-child {
+    --card-media-ratio: 4 / 3;
+  }
+}
+
+/* ============================ REDUCED MOTION =========================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before,
+  .page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
