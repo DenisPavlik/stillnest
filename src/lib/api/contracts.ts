@@ -32,6 +32,25 @@ export const nightPriceSchema = z.object({
   rule_label: z.string().nullable().optional(),
 });
 
+/**
+ * Why a stay was refused. Mirrors `availability.Reason` in Python, which is the
+ * one place these are defined.
+ *
+ * Kept as a plain string array on the wire rather than an enum: an unknown
+ * reason arriving from a newer Python deploy should render as "unavailable",
+ * not fail the whole parse and blank the booking widget.
+ */
+export const UNAVAILABLE_REASONS = [
+  "inverted",
+  "past",
+  "min_nights",
+  "capacity",
+  "booked",
+  "blocked",
+] as const;
+
+export type UnavailableReason = (typeof UNAVAILABLE_REASONS)[number];
+
 export const availabilityResponseSchema = z.object({
   available: z.boolean(),
   nights: z.array(nightPriceSchema).default([]),
@@ -40,6 +59,36 @@ export const availabilityResponseSchema = z.object({
   total_cents: z.number().int().default(0),
   min_nights: z.number().int().default(1),
   reasons: z.array(z.string()).default([]),
+});
+
+/* ------------------------------------------------------------------ *
+ *  Calendar — GET /api/py/calendar/{property_id}?month=YYYY-MM
+ * ------------------------------------------------------------------ */
+
+const monthString = z
+  .string()
+  .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "expected YYYY-MM");
+
+export const calendarDaySchema = z.object({
+  night: isoDate,
+  available: z.boolean(),
+  /** What this one night costs — seasonal rules apply per night. */
+  price_cents: z.number().int(),
+  /** The minimum a stay *starting* on this night would be held to. */
+  min_nights: z.number().int(),
+  rule_label: z.string().nullable().optional(),
+  /** "past" | "booked" | "blocked", or null when the night is free. */
+  reason: z.string().nullable().optional(),
+});
+
+export const calendarResponseSchema = z.object({
+  /** Canonical uuid — the request may have been made with a slug. */
+  property_id: z.string(),
+  slug: z.string(),
+  month: monthString,
+  base_price_cents: z.number().int(),
+  min_nights: z.number().int(),
+  days: z.array(calendarDaySchema).default([]),
 });
 
 export const searchFiltersSchema = z.object({
@@ -73,5 +122,7 @@ export const searchResponseSchema = z.object({
 export type HealthResponse = z.infer<typeof healthResponseSchema>;
 export type AvailabilityRequest = z.infer<typeof availabilityRequestSchema>;
 export type AvailabilityResponse = z.infer<typeof availabilityResponseSchema>;
+export type CalendarDay = z.infer<typeof calendarDaySchema>;
+export type CalendarResponse = z.infer<typeof calendarResponseSchema>;
 export type SearchRequest = z.infer<typeof searchRequestSchema>;
 export type SearchResponse = z.infer<typeof searchResponseSchema>;

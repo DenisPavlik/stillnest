@@ -45,6 +45,16 @@ export function capitalise(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
+/** "three nights" · "one night". Nothing stops a minimum stay being 1. */
+export function nightsWord(n: number): string {
+  return `${numberWord(n)} night${n === 1 ? "" : "s"}`;
+}
+
+/** "two bedrooms" · "one bedroom". */
+export function bedroomsWord(n: number): string {
+  return `${numberWord(n)} bedroom${n === 1 ? "" : "s"}`;
+}
+
 /* ---------------------------- calendar dates ---------------------------- *
  *  Stay dates are calendar dates, never instants. Nothing below constructs a
  *  local Date from a string — `new Date("2026-11-01")` is UTC midnight, which
@@ -57,11 +67,28 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December",
 ];
 
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 /** "2026-11-01" -> "1 November 2026". */
 export function formatDay(iso: string): string {
   const [y, m, d] = iso.split("-").map(Number);
   const month = MONTHS[(m ?? 1) - 1] ?? "";
   return `${d} ${month} ${y}`;
+}
+
+/**
+ * "2026-12-04" -> "Fri 4 Dec". Narrow enough for a column of nights in the
+ * booking panel, where the year is already established by the dates above it.
+ *
+ * The weekday is the one part that needs a Date, and it is read back in UTC —
+ * the same discipline as the rest of this section, for the same reason.
+ */
+export function formatShortDay(iso: string): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  const at = new Date(Date.UTC(y ?? 1970, (m ?? 1) - 1, d ?? 1));
+  const weekday = WEEKDAYS[at.getUTCDay()] ?? "";
+  const month = MONTHS[(m ?? 1) - 1]?.slice(0, 3) ?? "";
+  return `${weekday} ${d} ${month}`;
 }
 
 /**

@@ -11,12 +11,14 @@ import "server-only";
 import type {
   AvailabilityRequest,
   AvailabilityResponse,
+  CalendarResponse,
   HealthResponse,
   SearchRequest,
   SearchResponse,
 } from "./contracts";
 import {
   availabilityResponseSchema,
+  calendarResponseSchema,
   healthResponseSchema,
   searchResponseSchema,
 } from "./contracts";
@@ -70,6 +72,20 @@ export function checkAvailability(
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+/**
+ * Per-night availability and price for one month, for the date picker.
+ *
+ * `propertyId` may be a uuid or a slug — the page usually has the slug, and the
+ * response echoes back the canonical uuid. `month` is "YYYY-MM".
+ */
+export function fetchCalendar(
+  propertyId: string,
+  month: string,
+): Promise<CalendarResponse> {
+  const path = `/calendar/${encodeURIComponent(propertyId)}?month=${encodeURIComponent(month)}`;
+  return call(path, calendarResponseSchema);
 }
 
 export function searchSemantic(payload: SearchRequest): Promise<SearchResponse> {

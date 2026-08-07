@@ -249,113 +249,14 @@
   opacity: 0.85;
 }
 
-/* ---- the booking panel ---- */
+/* ---- the booking panel: PLACEMENT ONLY ----
+   Everything inside the panel — its surface, its controls, its four states —
+   lives in booking-panel.module.css, next to the component that owns them.
+   What the page decides is where the panel sits, and that is all this is. */
 
 .booking {
   position: sticky;
   top: clamp(16px, 3vw, 32px);
-  min-width: 0;
-  padding: clamp(20px, 2.4vw, 28px);
-  border: 1px solid var(--hair);
-  background: linear-gradient(180deg, var(--peat) 0%, rgba(9, 14, 10, 0.55) 100%);
-}
-
-.bookHead {
-  margin: 0;
-  color: var(--haze);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.bookPrice {
-  margin: 0.7rem 0 0;
-  color: var(--linen);
-  font-family: var(--font-mono);
-  font-size: clamp(1.75rem, 2.6vw, 2.25rem);
-  font-weight: 300;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-}
-
-.bookPrice i {
-  color: var(--haze);
-  font-size: 0.6875rem;
-  font-style: normal;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  vertical-align: 0.45em;
-}
-
-.bookFacts {
-  margin: clamp(18px, 2.2vw, 24px) 0 0;
-  padding: 0;
-  border-top: 1px solid var(--hair-soft);
-}
-
-.bookFacts > div {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.4rem 1rem;
-  padding: 0.7rem 0;
-  border-bottom: 1px solid var(--hair-soft);
-}
-
-.bookFacts dt {
-  color: var(--haze);
-  font-size: 0.625rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.bookFacts dd {
-  margin: 0;
-  color: var(--linen);
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  font-weight: 300;
-  text-align: right;
-}
-
-/* not a value, an absence — it must not read like one of the readings */
-.bookPending {
-  color: var(--ink-3) !important;
-  font-style: italic;
-}
-
-/* A disabled control, styled as one. It deliberately does not wear the moss
-   fill the live nav button wears: nothing here should look pressable. */
-.reserveButton {
-  width: 100%;
-  margin-top: clamp(18px, 2.2vw, 24px);
-  padding: 0.85rem 1rem;
-  border: 1px solid var(--hair);
-  border-radius: 2px;
-  background: transparent;
-  color: var(--haze);
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  letter-spacing: 0.04em;
-  cursor: not-allowed;
-}
-
-.bookNote {
-  margin: clamp(14px, 1.8vw, 18px) 0 0;
-  color: var(--ink-3);
-  font-size: 0.75rem;
-  line-height: 1.6;
-}
-
-.bookFine {
-  margin: 0.9rem 0 0;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--hair-soft);
-  color: var(--ink-3);
-  font-size: 0.6875rem;
-  line-height: 1.6;
 }
 
 /* ============================= WHERE IT IS ============================ */

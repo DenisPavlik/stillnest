@@ -14,14 +14,17 @@ import { BIOME_LABEL, SOLITUDE_NOTE, biomeGround } from "@/components/solitude/r
 import { StayCard } from "@/components/stay-card";
 import { allStaySlugs, featuredStays, getStayBySlug } from "@/lib/db/queries";
 import {
+  bedroomsWord,
   capitalise,
   formatClosedRange,
   formatCoords,
   formatKm,
   formatPriceEur,
+  nightsWord,
   numberWord,
 } from "@/lib/format";
 
+import { BookingPanel, type Closure } from "./booking-panel";
 import s from "./stay.module.css";
 
 /* ==================================================================== *
@@ -36,10 +39,11 @@ import s from "./stay.module.css";
  *  scene inside it obeys the rules an <img> or a looping <video> would,
  *  so the Phase 9 swap is one line and nothing moves.
  *
- *  Nothing on this page pretends to be bookable. Dates and pricing belong
- *  to Phases 4 and 5; until then the reserve control is disabled and says
- *  what it is, on the one page where a visitor would most want to believe
- *  otherwise.
+ *  Dates and prices are real now — the panel asks the engine and prints
+ *  what it says, or admits the engine did not answer. Holding a date is
+ *  not: checkout is the next phase, so the reserve control stays disabled
+ *  and says so, on the one page where a visitor would most want to
+ *  believe otherwise.
  * ==================================================================== */
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
@@ -71,15 +75,31 @@ const BLOCK_REASON: Record<string, string> = {
   hold: "Held, not yet released.",
 };
 
-/** "three nights" · "one night". The column is a smallint and nothing stops it
-    being 1, so the copy does not assume the plural. */
-function nights(n: number): string {
-  return `${numberWord(n)} night${n === 1 ? "" : "s"}`;
+interface Block {
+  startsOn: string;
+  endsOn: string;
+  reason: string;
+  note: string | null;
 }
 
-/** "two bedrooms" · "one bedroom". */
-function bedrooms(n: number): string {
-  return `${numberWord(n)} bedroom${n === 1 ? "" : "s"}`;
+/** "Closed by the owner. Road uncleared; access on skis only, not offered." */
+function closureWhy(block: Block): string {
+  const why = BLOCK_REASON[block.reason] ?? "Closed.";
+  return block.note ? `${why} ${block.note}` : why;
+}
+
+/**
+ * The same closure, said once and used twice: under "Closed" further down the
+ * page, and inside the booking panel when the engine refuses a range for reason
+ * `blocked`. The engine's word is a machine word covering six situations — this
+ * is the sentence a guest can act on, and it must not exist in two versions.
+ */
+function closuresFor(blocks: readonly Block[]): Closure[] {
+  return blocks.map((block) => ({
+    startsOn: block.startsOn,
+    endsOn: block.endsOn,
+    sentence: `${formatClosedRange(block.startsOn, block.endsOn)} — ${closureWhy(block)}`,
+  }));
 }
 
 export default async function StayPage({
@@ -145,8 +165,8 @@ export default async function StayPage({
               <span>{coords}</span>
               <span>Sleeps {numberWord(stay.capacity)}</span>
               <span>
-                {formatPriceEur(stay.basePriceCents)} / night · {nights(stay.minNights)}{" "}
-                minimum
+                {formatPriceEur(stay.basePriceCents)} / night ·{" "}
+                {nightsWord(stay.minNights)} minimum
               </span>
             </p>
           </div>
@@ -181,7 +201,7 @@ export default async function StayPage({
           variant="split"
           kicker="The house"
           title="What is actually here."
-          aside={`Sleeps ${numberWord(stay.capacity)} in ${bedrooms(stay.bedrooms)}. ${capitalise(nights(stay.minNights))} minimum — anything shorter is a drive, not a stay.`}
+          aside={`Sleeps ${numberWord(stay.capacity)} in ${bedroomsWord(stay.bedrooms)}. ${capitalise(nightsWord(stay.minNights))} minimum — anything shorter is a drive, not a stay.`}
         />
 
         <div className={s.houseGrid}>
@@ -205,55 +225,20 @@ export default async function StayPage({
             </ul>
           </div>
 
-          {/* ---- booking: a placeholder that does not lie about itself ---- */}
-          <aside className={s.booking} id="reserve" aria-labelledby="reserve-heading">
-            <h3 className={s.bookHead} id="reserve-heading">
-              Reserve
-            </h3>
-
-            <p className={s.bookPrice}>
-              {formatPriceEur(stay.basePriceCents)}
-              <i>&nbsp;/ night</i>
-            </p>
-
-            <dl className={s.bookFacts}>
-              <div>
-                <dt>Minimum stay</dt>
-                <dd>{capitalise(nights(stay.minNights))}</dd>
-              </div>
-              <div>
-                <dt>Sleeps</dt>
-                <dd>
-                  {capitalise(numberWord(stay.capacity))} · {bedrooms(stay.bedrooms)}
-                </dd>
-              </div>
-              <div>
-                <dt>Dates</dt>
-                <dd className={s.bookPending}>Not open yet</dd>
-              </div>
-            </dl>
-
-            <button
-              className={s.reserveButton}
-              type="button"
-              disabled
-              aria-describedby="reserve-note"
-            >
-              Reserve — not open
-            </button>
-
-            <p className={s.bookNote} id="reserve-note">
-              There is no calendar here because there is nothing behind one yet.
-              Availability and the real price for a set of dates are calculated by the
-              booking service, which is not built.
-            </p>
-
-            <p className={s.bookFine}>
-              Base rate, before season. And plainly: Stillnest is a concept project — this
-              house is fictional, nothing on this page can be booked, and no money moves
-              anywhere.
-            </p>
-          </aside>
+          {/* ---- booking: a real date check, and a control that still says no ----
+              The panel is the page's only client component. It knows the house's
+              id, its ceilings and its closures, and nothing else; it asks the
+              route handler, which asks the engine, and it renders whatever comes
+              back — including "nobody answered". */}
+          <BookingPanel
+            className={s.booking}
+            propertyId={stay.id}
+            basePriceCents={stay.basePriceCents}
+            minNights={stay.minNights}
+            capacity={stay.capacity}
+            bedrooms={stay.bedrooms}
+            closures={closuresFor(stay.blocks)}
+          />
         </div>
       </section>
 
@@ -319,10 +304,7 @@ export default async function StayPage({
                     <span className={s.closedWhen}>
                       {formatClosedRange(block.startsOn, block.endsOn)}
                     </span>
-                    <span className={s.closedWhy}>
-                      {BLOCK_REASON[block.reason] ?? "Closed."}
-                      {block.note ? ` ${block.note}` : ""}
-                    </span>
+                    <span className={s.closedWhy}>{closureWhy(block)}</span>
                   </li>
                 ))}
               </ul>
