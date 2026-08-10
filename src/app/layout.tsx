@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Mono, Instrument_Sans } from "next/font/google";
 
+import { MotionProvider } from "@/components/motion/motion-provider";
+
 import "./globals.css";
 
 /* Three faces, three jobs, no overlap:
@@ -39,7 +41,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${display.variable} ${sans.variable} ${mono.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <MotionProvider />
+        {children}
+      </body>
     </html>
   );
 }

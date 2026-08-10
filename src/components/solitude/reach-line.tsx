@@ -38,14 +38,20 @@ export function ReachLine({ km, left, right, compact = false }: ReachLineProps):
       role="img"
       aria-label={`${formatKm(km)} kilometres from ${left} to the ${right}`}
     >
-      <span className={s.reachValue}>{formatKm(km)} km</span>
-      <span className={s.reachRule}>
+      <span className={s.reachValue} data-reach-value>
+        {formatKm(km)} km
+      </span>
+      {/* `data-reach-rule` lets a caller draw the measurement out rather than
+          have it simply appear. Widening the rule carries the ticks and the far
+          end point with it, so the distance really does extend to its reading —
+          which is the one thing on this page worth watching happen. */}
+      <span className={s.reachRule} data-reach-rule>
         <span className={s.reachMinor} aria-hidden="true" />
         <span className={s.reachMajor} aria-hidden="true" />
         <span className={s.reachHere} aria-hidden="true" />
         <span className={s.reachThere} aria-hidden="true" />
       </span>
-      <figcaption className={s.reachEnds}>
+      <figcaption className={s.reachEnds} data-reach-ends>
         <span>{left}</span>
         <span>{right}</span>
       </figcaption>

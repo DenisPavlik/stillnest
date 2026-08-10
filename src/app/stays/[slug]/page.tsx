@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { AmenityIcon } from "@/components/amenity-icon";
 import { FilmGrain } from "@/components/film-grain";
+import { Reveal } from "@/components/motion/reveal";
 import { hashSeed } from "@/components/scene/geometry";
 import { StayScene } from "@/components/scene/stay-scene";
 import { SectionHead } from "@/components/section-head";
@@ -151,7 +152,10 @@ export default async function StayPage({
 
           <div className={s.heroSpace} />
 
-          <div className={s.heroFoot}>
+          {/* The hero is already on screen at load, so this reads as the page
+              settling rather than as a scroll reveal: the place, then its name,
+              then what it costs — the order the words are read in. */}
+          <Reveal as="div" className={s.heroFoot} stagger={0.1} distance={16}>
             <p className={s.eyebrow}>
               <span>{BIOME_LABEL[stay.biome]}</span>
               <span>{where}</span>
@@ -169,7 +173,7 @@ export default async function StayPage({
                 {nightsWord(stay.minNights)} minimum
               </span>
             </p>
-          </div>
+          </Reveal>
         </div>
 
         <p className={s.mediaNote}>
@@ -179,33 +183,45 @@ export default async function StayPage({
 
       {/* ========================= SOLITUDE INDEX ========================= */}
       <section className={`${s.section} ${s.survey}`} id="index">
-        <SectionHead
-          variant="split"
-          kicker="The Solitude Index"
-          title="What the survey found."
-          aside="Five readings, taken on foot before the house was allowed onto the map. None of them is an estimate, and none of them is a photograph of a good day."
-        />
+        <Reveal>
+          <SectionHead
+            variant="split"
+            kicker="The Solitude Index"
+            title="What the survey found."
+            aside="Five readings, taken on foot before the house was allowed onto the map. None of them is an estimate, and none of them is a photograph of a good day."
+          />
+        </Reveal>
 
-        <SolitudeIndex
-          className={s.panel}
-          name={stay.name}
-          where={`${where} · ${coords}`}
-          readings={stay}
-          seed={seed}
-        />
+        {/* The head, the five instruments and the composite come online one
+            band at a time — the same selector, the same stagger and the same
+            distance the home page uses on this exact panel, because a survey
+            that reports itself differently on two pages is two surveys. */}
+        <Reveal className={s.panel} select="[data-panel-row]" stagger={0.09} distance={12}>
+          <SolitudeIndex
+            name={stay.name}
+            where={`${where} · ${coords}`}
+            readings={stay}
+            seed={seed}
+          />
+        </Reveal>
       </section>
 
       {/* ============================ THE HOUSE =========================== */}
       <section className={s.section} id="house">
-        <SectionHead
-          variant="split"
-          kicker="The house"
-          title="What is actually here."
-          aside={`Sleeps ${numberWord(stay.capacity)} in ${bedroomsWord(stay.bedrooms)}. ${capitalise(nightsWord(stay.minNights))} minimum — anything shorter is a drive, not a stay.`}
-        />
+        <Reveal>
+          <SectionHead
+            variant="split"
+            kicker="The house"
+            title="What is actually here."
+            aside={`Sleeps ${numberWord(stay.capacity)} in ${bedroomsWord(stay.bedrooms)}. ${capitalise(nightsWord(stay.minNights))} minimum — anything shorter is a drive, not a stay.`}
+          />
+        </Reveal>
 
+        {/* The grid itself is NOT wrapped: the booking panel inside it is
+            sticky, and a wrapper element only as tall as the panel would give
+            sticky nothing to travel inside. The panel reveals itself instead. */}
         <div className={s.houseGrid}>
-          <div className={s.prose}>
+          <Reveal as="div" className={s.prose} stagger={0.07}>
             {paragraphs.map((paragraph) => (
               <p key={paragraph.slice(0, 32)}>{paragraph}</p>
             ))}
@@ -223,7 +239,7 @@ export default async function StayPage({
                 </li>
               ))}
             </ul>
-          </div>
+          </Reveal>
 
           {/* ---- booking: a real date check, and a control that still says no ----
               The panel is the page's only client component. It knows the house's
@@ -244,14 +260,16 @@ export default async function StayPage({
 
       {/* =========================== WHERE IT IS ========================== */}
       <section className={s.section} id="where">
-        <SectionHead
-          variant="split"
-          kicker="Where it is"
-          title="Findable. Not quickly."
-          aside="Enough to know what you are agreeing to, and not enough to put anyone on the doorstep."
-        />
+        <Reveal>
+          <SectionHead
+            variant="split"
+            kicker="Where it is"
+            title="Findable. Not quickly."
+            aside="Enough to know what you are agreeing to, and not enough to put anyone on the doorstep."
+          />
+        </Reveal>
 
-        <div className={s.whereGrid}>
+        <Reveal as="div" className={s.whereGrid} stagger={0.1}>
           {/* The two facts under the address are the two that decide whether
               you can go: what is nearest, and what you are standing on. Both
               come from the shared copy generators, so neither can describe
@@ -316,24 +334,28 @@ export default async function StayPage({
               </p>
             )}
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* =========================== OTHER HOUSES ========================= */}
       {others.length > 0 ? (
         <section className={`${s.section} ${s.more}`} id="more">
-          <SectionHead
-            variant="split"
-            kicker="Elsewhere"
-            title="Other houses."
-            aside="The three furthest from anyone at all. Ranked by distance, like everything else on this site."
-          />
+          <Reveal>
+            <SectionHead
+              variant="split"
+              kicker="Elsewhere"
+              title="Other houses."
+              aside="The three furthest from anyone at all. Ranked by distance, like everything else on this site."
+            />
+          </Reveal>
 
-          <ul className={s.cards}>
+          {/* Three cards, so <Reveal stagger> is enough — the catalog's twelve
+              are the ones that need batching. */}
+          <Reveal as="ul" className={s.cards} stagger={0.08}>
             {others.map((other) => (
               <StayCard key={other.slug} stay={other} />
             ))}
-          </ul>
+          </Reveal>
         </section>
       ) : null}
 

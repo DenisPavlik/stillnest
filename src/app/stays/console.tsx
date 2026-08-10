@@ -3,13 +3,17 @@
 import { useRouter } from "next/navigation";
 import {
   useEffect,
+  useRef,
   useState,
   useTransition,
   type CSSProperties,
   type MouseEvent,
   type ReactNode,
 } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
+import { prefersReducedMotion } from "@/components/motion/prefers-reduced";
 import { f1, seeded } from "@/components/scene/geometry";
 import { BIOME_LABEL, bortleFill } from "@/components/solitude/readings";
 import { formatKm } from "@/lib/format";
@@ -120,6 +124,34 @@ export function StaysConsole({
 
     return () => clearTimeout(timer);
   }, [draft, query, bounds, signature, router]);
+
+  /* The one animated thing on the console, and it is a readout rather than a
+     control: the house count drops onto its new value the way a needle settles.
+     Nothing a hand is touching moves — a control that animates is a control
+     that feels slow, and this instrument has to answer the moment it is moved.
+
+     It runs only when the number actually changes, so dragging a slider across
+     a stretch that filters nothing out leaves the readout perfectly still. */
+  const countRef = useRef<HTMLSpanElement>(null);
+  const shownCount = useRef(resultCount);
+
+  useGSAP(
+    () => {
+      const el = countRef.current;
+      const changed = shownCount.current !== resultCount;
+      shownCount.current = resultCount;
+
+      if (!el || !changed) return;
+      if (prefersReducedMotion()) return;
+
+      gsap.fromTo(
+        el,
+        { opacity: 0.2, y: -4 },
+        { opacity: 1, y: 0, duration: 0.34, ease: "power2.out", overwrite: true },
+      );
+    },
+    { dependencies: [resultCount] },
+  );
 
   function navigate(href: string) {
     startTransition(() => router.push(href, { scroll: false }));
@@ -466,7 +498,9 @@ export function StaysConsole({
       {/* ------------------------------ readout ------------------------------ */}
       <div className={s.foot}>
         <p className={s.count} aria-live="polite">
-          <span className={s.countValue}>{pad(resultCount)}</span>
+          <span className={s.countValue} ref={countRef}>
+            {pad(resultCount)}
+          </span>
           <span className={s.countTotal}>of {pad(total)} houses</span>
         </p>
         <p className={s.reading}>{reading}</p>

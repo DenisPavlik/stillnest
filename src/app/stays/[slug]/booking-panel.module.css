@@ -181,7 +181,14 @@ select.control option {
 
 /* ---------------------------- what came back ---------------------------- */
 
+/* The `min-height` is a stability floor, not spacing. The resting copy is
+   already taller than this, so it changes nothing on the common screen; what
+   it stops is the collapse to a single "Checking those dates…" line, which
+   used to drag the reserve control up two centimetres and then push it back
+   down a moment later. Between the floor and the height tween in the
+   component, an answer arriving moves what is below it once, smoothly. */
 .answer {
+  min-height: 3.4rem;
   margin-top: clamp(16px, 2vw, 22px);
   padding-top: clamp(14px, 1.8vw, 18px);
   border-top: 1px solid var(--hair-soft);

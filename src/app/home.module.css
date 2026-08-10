@@ -72,6 +72,25 @@
     );
 }
 
+/* ---- the dim ---------------------------------------------------------- *
+   The picture does not end, it dissolves: as the hero leaves, this fills to
+   the page's own ground colour, so the photograph and the section under it
+   are the same black at the seam.
+
+   It starts fully transparent. Nothing here hides anything — the opacity is
+   driven by the departure timeline in home-motion.tsx and by nothing else,
+   and with no JavaScript it never leaves zero.
+ * ---------------------------------------------------------------------- */
+
+.dim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--spruce);
+}
+
 .frame {
   position: relative;
   z-index: 2;
@@ -153,6 +172,25 @@
   max-width: var(--max);
   margin: 0 auto;
   padding: clamp(72px, 11vw, 168px) var(--gutter) clamp(56px, 8vw, 110px);
+}
+
+/* The seam. A measured hairline at the join, in the same gradient the reach
+   line is drawn with: warm at the end you are standing at, gone by the far
+   end. It is drawn left to right as you cross it — the last beat of the
+   hero's departure, and the first still thing on the page. */
+.threshold {
+  position: absolute;
+  top: 0;
+  right: var(--gutter);
+  left: var(--gutter);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(233, 168, 94, 0.5) 0%,
+    rgba(147, 179, 130, 0.26) 18%,
+    rgba(147, 179, 130, 0.08) 62%,
+    rgba(147, 179, 130, 0) 100%
+  );
 }
 
 .indexPanel {

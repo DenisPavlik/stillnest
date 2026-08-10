@@ -7,11 +7,15 @@ import s from "./film-grain.module.css";
  *  onto the scene, so it does not travel with the page as it scrolls.
  *
  *  One per page: the filter carries an id.
+ *
+ *  `data-grain` is the handle the home page thins it with as the hero
+ *  leaves. The grain is the page's literal noise, so it is the one thing
+ *  that has to stop when the noise does.
  * -------------------------------------------------------------------- */
 
 export function FilmGrain({ uid = "fn-grain" }: { uid?: string }): ReactNode {
   return (
-    <svg className={s.grain} aria-hidden="true">
+    <svg className={s.grain} aria-hidden="true" data-grain>
       <filter id={uid}>
         <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="4" stitchTiles="stitch" />
         <feColorMatrix type="saturate" values="0" />

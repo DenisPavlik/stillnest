@@ -15,6 +15,18 @@ import s from "./forest-scene.module.css";
  *  viewBox 1400×1000, "slice" so it behaves like object-fit: cover. The
  *  composition is kept inside the central band so the 375px crop still
  *  lands on the house.
+ *
+ *  DEPTH HOOKS — every plane carries `data-depth`, so the home page can
+ *  drift them apart on scroll without knowing a single thing about what
+ *  is drawn inside them. The hook is a contract, not a coupling: when a
+ *  photograph replaces this file there is no `[data-depth]` to find and
+ *  the caller falls back to moving the media slot as one piece. See
+ *  `src/app/home-motion.tsx`.
+ *
+ *  Two rules keep that safe. Every plane translates by less than the
+ *  overdraw it was already drawn with, so nothing can slide far enough to
+ *  show its own edge; and everything happens inside the SVG viewport,
+ *  which clips, so no transform in here can widen the document.
  * ==================================================================== */
 
 const WATERLINE = 658;
@@ -220,29 +232,43 @@ export function ForestScene({ className, uid = "fn-hero" }: ForestSceneProps): R
       <rect x="0" y="260" width="1400" height={WATERLINE - 260} fill={`url(#${uid}-fog)`} />
 
       {/* far plane: texture, not trees — you are not meant to count them */}
-      <path d={far} fill="#33443a" opacity="0.5" filter={`url(#${uid}-blurFar)`} />
-      <rect x="0" y="400" width="1400" height={WATERLINE - 400} fill={`url(#${uid}-fog2)`} />
-      <path d={mid} fill="#1a241d" opacity="0.94" filter={`url(#${uid}-blurMid)`} />
+      <g data-depth="far">
+        <path d={far} fill="#33443a" opacity="0.5" filter={`url(#${uid}-blurFar)`} />
+        <rect x="0" y="400" width="1400" height={WATERLINE - 400} fill={`url(#${uid}-fog2)`} />
+      </g>
 
-      <g className={s.fogDrift}>
-        <ellipse
-          cx="700"
-          cy="590"
-          rx="820"
-          ry="86"
-          fill="rgba(196,208,180,0.13)"
-          filter={`url(#${uid}-blurNear)`}
-        />
+      <g data-depth="mid">
+        <path d={mid} fill="#1a241d" opacity="0.94" filter={`url(#${uid}-blurMid)`} />
+      </g>
+
+      {/* Two nested groups on purpose: the CSS keyframes own the inner
+          element's transform, and a CSS transform beats the transform
+          attribute GSAP writes. The outer one is the parallax handle. */}
+      <g data-depth="fog">
+        <g className={s.fogDrift} data-fog-drift>
+          <ellipse
+            cx="700"
+            cy="590"
+            rx="820"
+            ry="86"
+            fill="rgba(196,208,180,0.13)"
+            filter={`url(#${uid}-blurNear)`}
+          />
+        </g>
       </g>
 
       {/* the house, set back into the clearing */}
-      <g transform="translate(215.4,190.2) scale(0.74)">
-        <House uid={`${uid}-a`} />
+      <g data-depth="house">
+        <g transform="translate(215.4,190.2) scale(0.74)">
+          <House uid={`${uid}-a`} />
+        </g>
       </g>
 
       {/* near plane closes around the clearing */}
-      <path d={nearL} fill="#0a0f0b" />
-      <path d={nearR} fill="#0a0f0b" />
+      <g data-depth="near">
+        <path d={nearL} fill="#0a0f0b" />
+        <path d={nearR} fill="#0a0f0b" />
+      </g>
 
       {/* shoreline: rock, moss, the last dry metre */}
       <path
@@ -255,11 +281,16 @@ export function ForestScene({ className, uid = "fn-hero" }: ForestSceneProps): R
 
       <g mask={`url(#${uid}-mirrorMask)`}>
         <g transform={`translate(0,${WATERLINE * 2}) scale(1,-1)`} filter={`url(#${uid}-blurWater)`}>
-          <path d={nearL} fill="#080d09" opacity="0.7" />
-          <path d={nearR} fill="#080d09" opacity="0.7" />
-          <path d={mid} fill="#111811" opacity="0.5" />
-          <g transform="translate(215.4,190.2) scale(0.74)">
-            <House uid={`${uid}-b`} />
+          {/* Inside the flip, +y is up the screen — which is the direction a
+              reflection travels when the thing it reflects sinks. One handle,
+              and the double stays attached to its trees. */}
+          <g data-depth="mirror">
+            <path d={nearL} fill="#080d09" opacity="0.7" />
+            <path d={nearR} fill="#080d09" opacity="0.7" />
+            <path d={mid} fill="#111811" opacity="0.5" />
+            <g transform="translate(215.4,190.2) scale(0.74)">
+              <House uid={`${uid}-b`} />
+            </g>
           </g>
         </g>
       </g>
@@ -287,8 +318,10 @@ export function ForestScene({ className, uid = "fn-hero" }: ForestSceneProps): R
         ))}
       </g>
 
-      {/* foreground trunks — out of focus, framing, almost black */}
-      <g fill="#040604">
+      {/* foreground trunks — out of focus, framing, almost black.
+          Drawn from -20 to 1020 in a 1000-tall box: 20 units of overdraw at
+          each end, which is the budget the parallax is allowed to spend. */}
+      <g fill="#040604" data-depth="fore">
         <path d={trunk(72, 86, 54, -20, 1020, 22)} filter={`url(#${uid}-blurNear)`} />
         <path d={trunk(1332, 100, 62, -20, 1020, -30)} filter={`url(#${uid}-blurNear)`} />
         <path
@@ -303,8 +336,10 @@ export function ForestScene({ className, uid = "fn-hero" }: ForestSceneProps): R
         />
       </g>
 
-      {/* boughs hanging into the frame — you are standing under a tree */}
-      <g fill="#050806" filter={`url(#${uid}-blurBough)`}>
+      {/* Boughs hanging into the frame — you are standing under a tree.
+          These are anchored just outside the top corners, so they may only
+          ever travel up. Pull them down and their stumps walk into shot. */}
+      <g fill="#050806" filter={`url(#${uid}-blurBough)`} data-depth="bough">
         <g transform="translate(84,-70) rotate(128)">
           <path d={spruce(0, 0, 470, seeded(5))} />
         </g>

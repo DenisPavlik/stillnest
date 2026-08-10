@@ -1,12 +1,22 @@
 "use client";
 
-import { useEffect, useId, useState, useSyncExternalStore, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 import {
   OFFLINE_MESSAGE,
   isAvailabilityAnswer,
   type AvailabilityAnswer,
 } from "@/lib/api/answer";
+import { prefersReducedMotion } from "@/components/motion/prefers-reduced";
 import type { AvailabilityResponse } from "@/lib/api/contracts";
 import { nextDay, nightCount, rangesOverlap } from "@/lib/dates";
 import {
@@ -153,8 +163,127 @@ export function BookingPanel({
 
   const nightsAsked = asked ? nightCount(checkIn, checkOut) : 0;
 
+  /* ---------------------------- the motion ----------------------------
+     Two jobs, and the first one is not decoration.
+
+     1. NOTHING JUMPS. Every state this panel can be in is a different
+        height — three lines of resting copy, one line of "checking", a
+        month of nights — and each swap moved everything below the answer
+        by up to a couple of hundred pixels in a single frame. The controls
+        themselves sit ABOVE the answer and so never move; the reserve
+        control below it did, and a control that teleports out from under a
+        cursor mid-click is a bug, not a polish item. The region is measured
+        before and after each change and tweened between the two, so the
+        panel opens and closes instead of snapping.
+
+     2. THE ANSWER IS NOTICED. When a date changes and the engine returns a
+        different price, the figures used to be replaced in place — the same
+        panel, quietly holding different numbers. The nightly rows and the
+        totals come in on a short stagger so a changed answer registers as
+        having changed, and it is over well before anyone could read it.
+
+     The whole thing is keyed on what is rendered, not on the fetch, so a
+     stale reply that never lands on screen never animates either. --------- */
+  const panelRef = useRef<HTMLElement>(null);
+  const answerRef = useRef<HTMLDivElement>(null);
+  const answerHeight = useRef<number | null>(null);
+
+  /* The panel's own arrival, done from inside rather than by wrapping it in
+     <Reveal> on the page: this element is `position: sticky`, and a wrapper
+     no taller than the panel would leave sticky nothing to travel inside. */
+  useGSAP(
+    () => {
+      const el = panelRef.current;
+      if (!el) return;
+      if (prefersReducedMotion()) return;
+
+      gsap.from(el, {
+        opacity: 0,
+        y: 18,
+        duration: 0.9,
+        ease: "power2.out",
+        scrollTrigger: { trigger: el, start: "top 88%", once: true },
+      });
+    },
+    { dependencies: [] },
+  );
+
+  useGSAP(
+    () => {
+      const el = answerRef.current;
+      if (!el) return;
+      if (prefersReducedMotion()) return;
+
+      const previous = answerHeight.current;
+
+      /* Measure the new state at its NATURAL height, with any height tween
+         from the previous answer killed first — otherwise a fast second
+         change measures a frame of the first animation and the error
+         compounds until the panel is the wrong size. */
+      gsap.killTweensOf(el);
+      gsap.set(el, { clearProps: "height,overflow" });
+      const height = el.offsetHeight;
+      answerHeight.current = height;
+
+      /* WHILE CHECKING, THE PANEL HOLDS ITS SHAPE.
+
+         "Checking those dates…" is one short line where three lines of copy
+         used to be, so the honest measurement says shrink — and then the
+         answer lands a quarter of a second later and says grow, by twice as
+         much. Everything below reversed direction mid-flight for no reason
+         the visitor could see. The region keeps the height it already had
+         until there is something to show, and then moves once. */
+      if (checking && previous !== null && height < previous) {
+        gsap.set(el, { height: previous, overflow: "hidden" });
+        answerHeight.current = previous;
+        return;
+      }
+
+      const timeline = gsap.timeline();
+
+      // First render has nothing to travel from: it is simply the panel.
+      if (previous !== null && Math.abs(previous - height) > 2) {
+        timeline.fromTo(
+          el,
+          { height: previous, overflow: "hidden" },
+          {
+            height,
+            duration: 0.34,
+            ease: "power2.out",
+            clearProps: "height,overflow",
+          },
+          0,
+        );
+      }
+
+      const rows = gsap.utils.toArray<HTMLElement>(
+        [`.${s.night}`, `.${s.totals} > div`, `.${s.reasons} li`].join(", "),
+        el,
+      );
+
+      if (rows.length > 0) {
+        timeline.from(
+          rows,
+          {
+            opacity: 0,
+            y: 6,
+            duration: 0.3,
+            ease: "power2.out",
+            /* `amount` caps the whole cascade rather than the step: a month
+               in deep winter is thirty rows, and thirty times a per-row
+               delay would still be arriving after the reader got there. */
+            stagger: { each: 0.03, amount: 0.24 },
+          },
+          0.04,
+        );
+      }
+    },
+    { dependencies: [asked, checking, answer] },
+  );
+
   return (
     <aside
+      ref={panelRef}
       className={className ? `${s.panel} ${className}` : s.panel}
       id="reserve"
       aria-labelledby={`${id}-heading`}
@@ -235,7 +364,7 @@ export function BookingPanel({
       {/* --------------------------- what came back ---------------------------
           One region, always present, announced on change: a screen reader hears
           the answer arrive instead of discovering it by exploring. */}
-      <div className={s.answer} aria-live="polite" aria-busy={checking}>
+      <div className={s.answer} ref={answerRef} aria-live="polite" aria-busy={checking}>
         {!asked ? (
           <p className={s.resting}>
             Pick two dates. The rate above is the base rate — a season can raise it,

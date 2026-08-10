@@ -42,16 +42,58 @@ for (const route of ROUTES) {
 
     await page.waitForLoadState("networkidle");
 
-    const overflow = await page.evaluate(() => {
+    /**
+     * Walk the whole page down and back up before measuring anything.
+     *
+     * Two reasons, and both of them are the motion layer.
+     *
+     * Scrubbed timelines only apply their transforms *while* you are scrolling
+     * past them, so measuring at the top of the page measures the one state in
+     * which nothing has moved — which is precisely the state that cannot break.
+     * The widest the document ever gets is somewhere in the middle of the
+     * scroll, so that is where the guard has to look. This returns the worst
+     * width seen anywhere on the way down.
+     *
+     * And reveals are scroll-triggered: below the fold they are sitting at
+     * opacity 0 waiting for a trigger that a `fullPage` screenshot will never
+     * fire, because Chromium captures beyond the viewport instead of scrolling.
+     * Without the walk, every section under the hero photographs blank.
+     */
+    const worst = await page.evaluate(async () => {
       const doc = document.documentElement;
-      return { scrollWidth: doc.scrollWidth, clientWidth: doc.clientWidth };
+      const frame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 60)));
+      let scrollWidth = doc.scrollWidth;
+
+      const measure = () => {
+        scrollWidth = Math.max(scrollWidth, doc.scrollWidth);
+      };
+
+      const step = Math.round(window.innerHeight * 0.6);
+      for (let y = 0; y < doc.scrollHeight; y += step) {
+        window.scrollTo(0, y);
+        await frame();
+        measure();
+      }
+
+      window.scrollTo(0, doc.scrollHeight);
+      await frame();
+      measure();
+
+      // Back to the top, and give the scrubbed hero time to unwind before the
+      // shutter opens — a screenshot of a half-faded hero is not a design.
+      window.scrollTo(0, 0);
+      await frame();
+      await frame();
+      await frame();
+
+      return { scrollWidth, clientWidth: doc.clientWidth };
     });
 
     // A 1px tolerance absorbs sub-pixel rounding at fractional device ratios.
     expect(
-      overflow.scrollWidth,
-      `horizontal overflow at ${testInfo.project.name}: content ${overflow.scrollWidth}px in a ${overflow.clientWidth}px viewport`,
-    ).toBeLessThanOrEqual(overflow.clientWidth + 1);
+      worst.scrollWidth,
+      `horizontal overflow at ${testInfo.project.name}: content ${worst.scrollWidth}px in a ${worst.clientWidth}px viewport`,
+    ).toBeLessThanOrEqual(worst.clientWidth + 1);
 
     await page.screenshot({
       path: `tests/__screenshots__/${route.name}--${testInfo.project.name}.png`,

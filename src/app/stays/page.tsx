@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { FilmGrain } from "@/components/film-grain";
+import { Reveal } from "@/components/motion/reveal";
 import { SectionHead } from "@/components/section-head";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
@@ -11,6 +12,7 @@ import { StayCard } from "@/components/stay-card";
 import { biomeCounts, countStays, listStays, solitudeBounds } from "@/lib/db/queries";
 import { capitalise, formatKm, numberWord } from "@/lib/format";
 
+import { CardGrid } from "./card-grid";
 import { StaysConsole } from "./console";
 import {
   STAYS_PATH,
@@ -62,12 +64,21 @@ export default async function StaysPage({
   const diagnosis =
     stays.length === 0 ? await diagnose(query, bounds) : null;
 
+  /* The canonical query string. The console uses it to tell its own pushes
+     apart from someone else's navigation; the grid uses it to notice that the
+     catalog was re-cut and re-measure its triggers. */
+  const signature = toQuery(query, bounds);
+
   return (
     <main className={s.page}>
       <FilmGrain uid="st-grain" />
       <SiteNav variant="bar" />
 
-      <header className={s.head}>
+      {/* The heading block and the console are both above the fold, so these two
+          reveals are a load-in rather than a scroll reveal: the page settles in
+          the order it is read, and the console arrives a beat after the sentence
+          that explains what it is for. */}
+      <Reveal as="header" className={s.head} distance={14}>
         <SectionHead
           as="h1"
           kicker="The catalog"
@@ -79,19 +90,19 @@ export default async function StaysPage({
           }
           lede="Set the console for how alone you want to be. Every figure it filters on was walked to and measured on the ground, after dark — none of it is inferred from a map."
         />
-      </header>
+      </Reveal>
 
-      <div className={s.consoleWrap}>
+      <Reveal as="div" className={s.consoleWrap} delay={0.12} distance={14}>
         <StaysConsole
           bounds={bounds}
           query={query}
-          signature={toQuery(query, bounds)}
+          signature={signature}
           biomeCounts={counts}
           resultCount={stays.length}
           total={total}
           reading={describeQuery(query)}
         />
-      </div>
+      </Reveal>
 
       <section className={s.results} id="results">
         <h2 className={s.srOnly}>
@@ -101,13 +112,13 @@ export default async function StaysPage({
         </h2>
 
         {stays.length > 0 ? (
-          <ul className={s.cards}>
+          <CardGrid className={s.cards} signature={signature}>
             {stays.map((stay) => (
               <StayCard key={stay.slug} stay={stay} />
             ))}
-          </ul>
+          </CardGrid>
         ) : (
-          <div className={s.empty}>
+          <Reveal as="div" className={s.empty} stagger={0.09} distance={14}>
             <p className={s.emptyKicker}>Nothing on the map</p>
             <p className={s.emptyTitle}>{diagnosis?.headline}</p>
             <p className={s.emptyBody}>{diagnosis?.body}</p>
@@ -126,7 +137,7 @@ export default async function StaysPage({
                 </Link>
               ) : null}
             </div>
-          </div>
+          </Reveal>
         )}
       </section>
 

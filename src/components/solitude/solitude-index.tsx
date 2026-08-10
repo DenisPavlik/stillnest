@@ -102,8 +102,12 @@ export function SolitudeIndex({
   ];
 
   return (
+    /* `data-panel-row` marks the bands a caller may bring on one at a time —
+       the head, the five instruments, the composite. Five readings arriving
+       together are a spec sheet; arriving in order they are five instruments
+       reporting in. */
     <article className={className ? `${s.panel} ${className}` : s.panel}>
-      <header className={s.panelHead}>
+      <header className={s.panelHead} data-panel-row>
         <div>
           <h3 className={s.panelName}>{name}</h3>
           <p className={s.panelWhere}>{where}</p>
@@ -117,7 +121,7 @@ export function SolitudeIndex({
 
       <ul className={s.metrics}>
         {rows.map((row) => (
-          <li key={row.label} className={s.metric}>
+          <li key={row.label} className={s.metric} data-panel-row>
             <p className={s.mLabel}>{row.label}</p>
             <p className={s.mValue}>
               {row.value}
@@ -129,7 +133,7 @@ export function SolitudeIndex({
         ))}
       </ul>
 
-      <footer className={s.panelFoot}>
+      <footer className={s.panelFoot} data-panel-row>
         <span>Composite index</span>
         <span className={s.panelScore}>
           {score ?? compositeIndex(readings)}

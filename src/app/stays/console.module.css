@@ -20,11 +20,21 @@
   background: linear-gradient(180deg, var(--peat) 0%, rgba(9, 14, 10, 0.4) 100%);
 }
 
-/* the whole console recedes a hair while the catalog is being re-cut */
+/* The whole console recedes a hair while the catalog is being re-cut.
+   The transition lives on the resting rule, not on the pending one, so the
+   console comes BACK as gently as it went — declared only on the pending
+   state it dimmed over 200ms and then snapped back the instant the answer
+   landed, which read as a flinch. Out is a touch slower than back: leaving is
+   the console admitting it is thinking, returning is the answer arriving. */
+.foot,
+.grid {
+  transition: opacity 260ms ease;
+}
+
 .console[data-pending] .foot,
 .console[data-pending] .grid {
   opacity: 0.62;
-  transition: opacity 200ms ease;
+  transition-duration: 200ms;
 }
 
 /* ============================== GROUND ============================== */
@@ -343,6 +353,14 @@ label.question {
   background: transparent;
 }
 
+/* Both thumbs brighten under the hand and dim again when it lets go — the
+   ONLY thing on either slider that is allowed a transition. The thumb's
+   position, the lit stretch behind it and the figure above it are all driven
+   straight from the value with nothing easing them, because a control whose
+   readout lags the hand by even 120ms stops feeling like an instrument and
+   starts feeling like a page that is struggling. What eases here is the glow,
+   which nobody is aiming with. */
+
 /* distance: a lit window sliding along the line */
 .inputDot::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -354,6 +372,7 @@ label.question {
   background: #f2c286;
   box-shadow: 0 0 16px 5px rgba(233, 168, 94, 0.32);
   cursor: ew-resize;
+  transition: box-shadow 220ms ease;
 }
 
 .inputDot::-moz-range-thumb {
@@ -364,6 +383,19 @@ label.question {
   background: #f2c286;
   box-shadow: 0 0 16px 5px rgba(233, 168, 94, 0.32);
   cursor: ew-resize;
+  transition: box-shadow 220ms ease;
+}
+
+.inputDot:hover::-webkit-slider-thumb,
+.inputDot:focus-visible::-webkit-slider-thumb,
+.inputDot:active::-webkit-slider-thumb {
+  box-shadow: 0 0 22px 7px rgba(233, 168, 94, 0.46);
+}
+
+.inputDot:hover::-moz-range-thumb,
+.inputDot:focus-visible::-moz-range-thumb,
+.inputDot:active::-moz-range-thumb {
+  box-shadow: 0 0 22px 7px rgba(233, 168, 94, 0.46);
 }
 
 /* silence: a threshold cursor standing on the trace, not a bead */
@@ -377,6 +409,7 @@ label.question {
   background: #f2c286;
   box-shadow: 0 0 14px 4px rgba(233, 168, 94, 0.26);
   cursor: ew-resize;
+  transition: box-shadow 220ms ease;
 }
 
 .inputBar::-moz-range-thumb {
@@ -387,6 +420,19 @@ label.question {
   background: #f2c286;
   box-shadow: 0 0 14px 4px rgba(233, 168, 94, 0.26);
   cursor: ew-resize;
+  transition: box-shadow 220ms ease;
+}
+
+.inputBar:hover::-webkit-slider-thumb,
+.inputBar:focus-visible::-webkit-slider-thumb,
+.inputBar:active::-webkit-slider-thumb {
+  box-shadow: 0 0 20px 6px rgba(233, 168, 94, 0.4);
+}
+
+.inputBar:hover::-moz-range-thumb,
+.inputBar:focus-visible::-moz-range-thumb,
+.inputBar:active::-moz-range-thumb {
+  box-shadow: 0 0 20px 6px rgba(233, 168, 94, 0.4);
 }
 
 /* ============================== DARK SKY ============================== */
