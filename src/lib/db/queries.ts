@@ -1,8 +1,9 @@
 import "server-only";
 
-import { and, asc, count, desc, eq, gte, lte, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, inArray, lte, sql } from "drizzle-orm";
 
 import { db } from "./index";
+import { orderBySlugs } from "./order";
 import {
   amenities,
   availabilityBlocks,
@@ -18,7 +19,9 @@ import {
  * product, so it is expressed in the query layer rather than bolted on in the UI.
  *
  * "Search by feeling" (free text -> embedding -> pgvector) is NOT here. It lives
- * in the Python service and arrives in Phase 8; this layer stays deterministic.
+ * in the Python service; this layer stays deterministic. What this layer does for
+ * it is `staysBySlugs` — read the houses it ranked, in the order it ranked them,
+ * and hold them to the same WHERE clause everything else on the page obeys.
  */
 
 export type Biome = (typeof properties.$inferSelect)["biome"];
@@ -99,11 +102,13 @@ function whereFor(filters: StayFilters) {
 }
 
 /**
- * The hero poster comes from the property's `exterior` scene. A LATERAL join
- * keeps it to one round trip and, unlike a join on property_scenes, cannot
- * multiply rows when a property gains more scenes later.
+ * The columns behind one card.
+ *
+ * The hero poster comes from the property's `exterior` scene. A correlated
+ * subquery keeps it to one round trip and, unlike a join on property_scenes,
+ * cannot multiply rows when a property gains more scenes later.
  */
-export async function listStays(filters: StayFilters = {}): Promise<StayCard[]> {
+function cardColumns() {
   const poster = db
     .select({ path: propertyScenes.posterPath })
     .from(propertyScenes)
@@ -116,26 +121,58 @@ export async function listStays(filters: StayFilters = {}): Promise<StayCard[]> 
     .orderBy(asc(propertyScenes.sort))
     .limit(1);
 
+  return {
+    id: properties.id,
+    slug: properties.slug,
+    name: properties.name,
+    tagline: properties.tagline,
+    biome: properties.biome,
+    country: properties.country,
+    region: properties.region,
+    capacity: properties.capacity,
+    basePriceCents: properties.basePriceCents,
+    solitudeKm: properties.solitudeKm,
+    noiseDb: properties.noiseDb,
+    connectivity: properties.connectivity,
+    bortle: properties.bortle,
+    posterPath: sql<string | null>`(${poster})`,
+  };
+}
+
+export async function listStays(filters: StayFilters = {}): Promise<StayCard[]> {
   return db
-    .select({
-      id: properties.id,
-      slug: properties.slug,
-      name: properties.name,
-      tagline: properties.tagline,
-      biome: properties.biome,
-      country: properties.country,
-      region: properties.region,
-      capacity: properties.capacity,
-      basePriceCents: properties.basePriceCents,
-      solitudeKm: properties.solitudeKm,
-      noiseDb: properties.noiseDb,
-      connectivity: properties.connectivity,
-      bortle: properties.bortle,
-      posterPath: sql<string | null>`(${poster})`,
-    })
+    .select(cardColumns())
     .from(properties)
     .where(whereFor(filters))
     .orderBy(ORDER[filters.sort ?? "solitude"]);
+}
+
+/**
+ * The same cards as `listStays`, for a list of slugs, **in the order given**.
+ *
+ * That order is the whole point: it is a ranking computed elsewhere — by
+ * semantic search, over meaning rather than metres — and SQL is asked only for
+ * membership, never for sequence. No `ORDER BY` is issued at all; the ranking is
+ * re-applied over the returned rows by `orderBySlugs`.
+ *
+ * `filters` is not optional decoration either. Similarity ranks, it never
+ * admits: the Python service enforces the filters it understands, and the rest
+ * of the console — the distance floor, the noise ceiling, the sky class — is
+ * enforced right here, so a house can never appear on this page in defiance of a
+ * reading the visitor set. A slug that fails any of them is simply not returned.
+ */
+export async function staysBySlugs(
+  slugs: string[],
+  filters: StayFilters = {},
+): Promise<StayCard[]> {
+  if (slugs.length === 0) return [];
+
+  const rows = await db
+    .select(cardColumns())
+    .from(properties)
+    .where(and(whereFor(filters), inArray(properties.slug, slugs)));
+
+  return orderBySlugs(rows, slugs);
 }
 
 export async function countStays(filters: StayFilters = {}): Promise<number> {

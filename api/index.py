@@ -19,16 +19,24 @@ from fastapi import FastAPI, Header, HTTPException
 from stillnest import month as month_calendar
 from stillnest import repository
 from stillnest.availability import Reason, check
+from stillnest.embeddings import EmbeddingError, embed_one
+from stillnest.env import load_dotfiles
 from stillnest.models import (
     AvailabilityRequest,
     AvailabilityResponse,
     CalendarResponse,
     HealthResponse,
     NightPrice,
+    SearchHit,
     SearchRequest,
     SearchResponse,
 )
 from stillnest.pricing import quote
+from stillnest.repository import connection, load_property_text, store_embedding
+from stillnest.search import SearchFilters, semantic_search
+
+# Local runs only — a no-op on Vercel, where the platform injects env.
+load_dotfiles()
 
 app = FastAPI(
     title="Stillnest API",
@@ -203,12 +211,44 @@ async def search_semantic(
 ) -> SearchResponse:
     """Free text ("alone by a lake, snow, no signal") -> ranked properties.
 
-    TODO(Phase 8): embed the query, pgvector cosine search, then apply hard
-    filters (dates, capacity, biome) in SQL. Hard filters must never be
-    overridden by vector similarity.
+    The query is embedded and compared by cosine distance, but the filters run
+    as a WHERE clause. Similarity ranks; it never admits. A house that sleeps
+    two must not surface for a party of six however well it matches, and a
+    cosine distance has no concept of "no match" to protect against that.
     """
     require_internal_secret(x_internal_secret)
-    raise HTTPException(status_code=501, detail="Not implemented until Phase 8")
+
+    query = payload.query.strip()
+    if not query:
+        return SearchResponse(hits=[], query_understood_as=None)
+
+    try:
+        vector = await embed_one(query)
+    except EmbeddingError as exc:
+        # The catalog is still browsable without search, so this is a 503 the
+        # caller can degrade around rather than a 500 that reads as a bug.
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    async with connection() as conn:
+        hits = await semantic_search(
+            conn,
+            vector,
+            SearchFilters(
+                biome=payload.filters.biome,
+                guests=payload.filters.guests,
+                max_solitude_km=payload.filters.max_solitude_km,
+                connectivity=payload.filters.connectivity,
+            ),
+            payload.limit,
+        )
+
+    return SearchResponse(
+        hits=[
+            SearchHit(property_id=h.property_id, slug=h.slug, score=h.score)
+            for h in hits
+        ],
+        query_understood_as=query,
+    )
 
 
 @app.post(f"{PREFIX}/internal/embed")
@@ -216,6 +256,24 @@ async def embed_property(
     property_id: str,
     x_internal_secret: str | None = Header(default=None),
 ) -> dict:
-    """Regenerate one property's embedding after admin CRUD. TODO(Phase 8)."""
+    """Regenerate one property's embedding.
+
+    Called after admin CRUD, and by the backfill script. Embedding on write
+    rather than on read is the whole reason search is fast: the expensive call
+    happens once per edit, not once per visitor.
+    """
     require_internal_secret(x_internal_secret)
-    raise HTTPException(status_code=501, detail="Not implemented until Phase 8")
+
+    async with connection() as conn:
+        row = await load_property_text(conn, property_id)
+        if row is None:
+            raise HTTPException(status_code=404, detail="property not found")
+
+        try:
+            vector = await embed_one(row.to_prompt())
+        except EmbeddingError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+        await store_embedding(conn, property_id, vector)
+
+    return {"property_id": property_id, "dimensions": len(vector)}

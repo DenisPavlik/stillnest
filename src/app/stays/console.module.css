@@ -201,6 +201,16 @@ label.question {
   line-height: 1.5;
 }
 
+/* A control that has been taken away, saying why. It sits where the chips
+   sat, at the chips' own height, so nothing under it moves when a sentence
+   is asked or cleared. */
+.suspended {
+  margin: clamp(14px, 1.6vw, 20px) 0 0;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
 /* ============================== SLIDERS ============================== */
 
 .track {

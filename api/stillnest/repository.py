@@ -35,6 +35,7 @@ from uuid import UUID
 import asyncpg
 
 from stillnest.availability import Occupied, Reason
+from stillnest.embeddings import PropertyText, to_pgvector
 from stillnest.pricing import PricingRule
 
 LIVE_BOOKING_STATUSES: tuple[str, ...] = ("pending", "confirmed")
@@ -224,3 +225,68 @@ async def load_occupied(
         _OCCUPIED_SQL, slug, maybe_uuid, start, end, list(LIVE_BOOKING_STATUSES)
     )
     return tuple(_to_occupied(row) for row in rows)
+
+
+async def load_property_text(
+    conn: asyncpg.Connection, property_id: str | UUID
+) -> PropertyText | None:
+    """Everything a property is embedded from.
+
+    Assembled from the measurements as well as the prose — the readings ARE the
+    product, so "no signal" has to be findable even when the description never
+    uses that phrase.
+    """
+    slug, uuid_value = _ref(property_id)
+    row = await conn.fetchrow(
+        """
+        SELECT name, tagline, description, biome::text AS biome, region, country,
+               solitude_km, noise_db, connectivity::text AS connectivity, bortle
+        FROM properties
+        WHERE slug = $1 OR id = $2::uuid
+        LIMIT 1
+        """,
+        slug,
+        uuid_value,
+    )
+    if row is None:
+        return None
+
+    return PropertyText(
+        name=row["name"],
+        tagline=row["tagline"],
+        description=row["description"],
+        biome=row["biome"],
+        region=row["region"],
+        country=row["country"],
+        solitude_km=float(row["solitude_km"]),
+        noise_db=int(row["noise_db"]),
+        connectivity=row["connectivity"],
+        bortle=int(row["bortle"]),
+    )
+
+
+async def store_embedding(
+    conn: asyncpg.Connection, property_id: str | UUID, vector: list[float]
+) -> None:
+    slug, uuid_value = _ref(property_id)
+    await conn.execute(
+        """
+        UPDATE properties SET embedding = $3::vector
+        WHERE slug = $1 OR id = $2::uuid
+        """,
+        slug,
+        uuid_value,
+        to_pgvector(vector),
+    )
+
+
+async def slugs_needing_embedding(
+    conn: asyncpg.Connection, *, only_missing: bool = True
+) -> list[str]:
+    """Which properties still have no vector. The backfill uses this so a rerun
+    after a partial failure costs nothing instead of re-embedding everything."""
+    condition = "AND embedding IS NULL" if only_missing else ""
+    rows = await conn.fetch(
+        f"SELECT slug FROM properties WHERE status = 'live' {condition} ORDER BY slug"
+    )
+    return [row["slug"] for row in rows]

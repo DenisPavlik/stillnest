@@ -1,0 +1,226 @@
+/* ==================================================================== *
+   THE SENTENCE — the console's first control.
+
+   It sits in the same body as the rest of the panel and is separated from
+   it by the same hairline, so it reads as the top of one instrument
+   rather than a search bar parked above one.
+
+   No box, no pill, no magnifier. A rule, and a sentence resting on it —
+   the display face, because this is the one place a visitor speaks in the
+   site's own voice. Everything around it is mono and small, so the
+   sentence is unambiguously the loudest thing here.
+ * ==================================================================== */
+
+.field {
+  display: block;
+  padding: clamp(20px, 2.8vw, 34px) clamp(18px, 2.4vw, 34px) clamp(16px, 2.2vw, 24px);
+  border-bottom: 1px solid var(--hair);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+/* Same treatment as the console's own section labels — this is one panel. */
+.label {
+  margin: 0;
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.clear {
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 200ms ease;
+}
+
+.clear:hover {
+  border-bottom-color: var(--lichen);
+}
+
+/* ------------------------------- the line ------------------------------ */
+
+.line {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(12px, 2vw, 26px);
+  margin-top: clamp(10px, 1.4vw, 16px);
+  padding-bottom: clamp(8px, 1.1vw, 13px);
+  border-bottom: 1px solid var(--hair);
+  transition: border-color 220ms ease;
+}
+
+/* The rule IS the focus ring: it thickens and goes moss-green under the
+   caret. The input's own outline is removed only because this replaces it
+   with something more visible, never to leave focus unmarked. */
+.line:focus-within {
+  border-bottom-color: var(--lichen);
+  box-shadow: 0 1px 0 var(--lichen);
+}
+
+.input {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  appearance: none;
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(1.1875rem, 3.2vw, 2.125rem);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.008em;
+}
+
+.input:focus,
+.input:focus-visible {
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--ink-3);
+  font-style: italic;
+  opacity: 1;
+}
+
+/* The browser's own clear button only empties the box; it does not undo the
+   search, which is what someone pressing it would mean. Ours does, and sits
+   with the label where it can be labelled in words. */
+.input::-webkit-search-cancel-button,
+.input::-webkit-search-decoration {
+  display: none;
+  appearance: none;
+}
+
+.go {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.28rem;
+  padding: 0 0 3px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 200ms ease,
+    border-color 200ms ease;
+}
+
+.go:hover {
+  color: #b8d3a6;
+  border-bottom-color: var(--lichen);
+}
+
+.arrow {
+  display: block;
+  width: 22px;
+  height: 8px;
+  overflow: visible;
+}
+
+/* ----------------------------- what to type ---------------------------- */
+
+.tries {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem clamp(14px, 1.8vw, 26px);
+  margin: clamp(12px, 1.6vw, 18px) 0 0;
+}
+
+.triesLabel {
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.try {
+  max-width: 100%;
+  color: var(--ink-2);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-style: italic;
+  line-height: 1.35;
+  text-decoration: none;
+  border-bottom: 1px solid var(--hair-soft);
+  transition:
+    color 200ms ease,
+    border-color 200ms ease;
+}
+
+.try:hover {
+  color: var(--linen);
+  border-bottom-color: var(--lichen);
+}
+
+/* ------------------------------ the outage ----------------------------- */
+
+/* Not ember. Amber on this site means lit, live, answering — an outage is
+   the one thing it must never be spent on. */
+.note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.8rem;
+  max-width: 56ch;
+  margin: clamp(12px, 1.6vw, 18px) 0 0;
+  color: var(--haze);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.noteTag {
+  flex: none;
+  padding: 0.18rem 0.42rem;
+  border: 1px solid var(--hair);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ============================== RESPONSIVE ============================= */
+
+@media (max-width: 640px) {
+  .line {
+    gap: 10px;
+  }
+
+  .go {
+    letter-spacing: 0.12em;
+  }
+
+  .arrow {
+    width: 16px;
+  }
+
+  .try {
+    font-size: 0.9375rem;
+  }
+}

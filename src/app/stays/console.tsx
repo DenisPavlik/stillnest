@@ -7,7 +7,6 @@ import {
   useState,
   useTransition,
   type CSSProperties,
-  type MouseEvent,
   type ReactNode,
 } from "react";
 import gsap from "gsap";
@@ -27,9 +26,12 @@ import {
   isFiltered,
   stayHref,
   toQuery,
+  type SearchState,
   type SolitudeBounds,
   type StayQuery,
 } from "./search-params";
+import { SearchField } from "./search-field";
+import { softLink } from "./soft-link";
 import s from "./console.module.css";
 
 /* ==================================================================== *
@@ -68,6 +70,8 @@ export interface StaysConsoleProps {
   total: number;
   /** The current filter, written out as a sentence. Composed on the server. */
   reading: string;
+  /** null when no sentence was asked; otherwise how the search service answered. */
+  search: SearchState | null;
 }
 
 interface Draft {
@@ -90,6 +94,7 @@ export function StaysConsole({
   resultCount,
   total,
   reading,
+  search,
 }: StaysConsoleProps): ReactNode {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -157,26 +162,7 @@ export function StaysConsole({
     startTransition(() => router.push(href, { scroll: false }));
   }
 
-  /** A real anchor that soft-navigates on a plain left click, and nothing else. */
-  function link(href: string) {
-    return {
-      href,
-      onClick(event: MouseEvent<HTMLAnchorElement>) {
-        if (
-          event.defaultPrevented ||
-          event.button !== 0 ||
-          event.metaKey ||
-          event.ctrlKey ||
-          event.shiftKey ||
-          event.altKey
-        ) {
-          return;
-        }
-        event.preventDefault();
-        navigate(href);
-      },
-    };
-  }
+  const link = (href: string) => softLink(href, navigate);
 
   const kmSpan = Math.max(1, bounds.maxKm - bounds.minKm);
   const dbSpan = Math.max(1, bounds.maxDb - bounds.minDb);
@@ -192,12 +178,20 @@ export function StaysConsole({
   const sky = query.maxBortle ?? bounds.maxBortle;
   const sleeps = query.guests ?? 1;
 
+  /* The one condition under which the grid is NOT in the order the "Ranked by"
+     control says: a sentence was asked and the search answered it. If search is
+     offline the ordinary sort is back in charge, so the control is too. */
+  const byMeaning = query.q !== undefined && search === "ok";
+
   return (
     <section
       className={s.console}
-      aria-label="Filter the catalog by how alone you want to be"
+      aria-label="Search the catalog, and filter it by how alone you want to be"
       data-pending={pending ? "" : undefined}
     >
+      {/* ------------------------------ sentence ----------------------------- */}
+      <SearchField query={query} bounds={bounds} search={search} navigate={navigate} />
+
       {/* ------------------------------ ground ------------------------------ */}
       <div className={s.ground}>
         <p className={s.groundLabel}>Ground</p>
@@ -467,31 +461,53 @@ export function StaysConsole({
           <p className={s.caption}>beds, not invitations — none of these houses is large</p>
         </div>
 
-        {/* ----------------------------- rank ------------------------------ */}
+        {/* ----------------------------- rank ------------------------------ *
+            While a sentence is ranking the catalog, this control is not
+            merely ignored — it is REMOVED. Leaving four chips lit, one of
+            them marked as current, next to a grid that is in a completely
+            different order would be the console lying about the page it is
+            attached to. It comes back the moment the sentence is cleared,
+            still set to whatever it was set to.                            */}
         <div className={s.cell}>
           <div className={s.cellHead}>
             <p className={s.question} id="dial-sort">
               Ranked by
             </p>
+            {byMeaning ? (
+              <p className={s.readout}>
+                <span className={s.readoutOp}>by</span>meaning
+              </p>
+            ) : null}
           </div>
 
-          <ul className={s.chips} aria-labelledby="dial-sort">
-            {SORT_VALUES.map((value) => {
-              const on = query.sort === value;
-              return (
-                <li key={value}>
-                  <a
-                    className={on ? `${s.chip} ${s.chipOn}` : s.chip}
-                    aria-current={on ? "true" : undefined}
-                    {...link(stayHref(query, { sort: value }, bounds))}
-                  >
-                    {SORT_LABEL[value]}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-          <p className={s.caption}>distance is the default — the view is not a metric</p>
+          {byMeaning ? (
+            <p className={s.suspended}>
+              The sentence is doing the ranking. Clear it to rank by distance,
+              silence, darkness or price again.
+            </p>
+          ) : (
+            <ul className={s.chips} aria-labelledby="dial-sort">
+              {SORT_VALUES.map((value) => {
+                const on = query.sort === value;
+                return (
+                  <li key={value}>
+                    <a
+                      className={on ? `${s.chip} ${s.chipOn}` : s.chip}
+                      aria-current={on ? "true" : undefined}
+                      {...link(stayHref(query, { sort: value }, bounds))}
+                    >
+                      {SORT_LABEL[value]}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          <p className={s.caption}>
+            {byMeaning
+              ? "closest first — a distance in meaning, not in kilometres"
+              : "distance is the default — the view is not a metric"}
+          </p>
         </div>
       </div>
 

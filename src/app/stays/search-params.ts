@@ -18,6 +18,7 @@ import { BIOME_LABEL } from "@/components/solitude/readings";
  * ==================================================================== */
 
 export const PARAM = {
+  q: "q",
   biome: "biome",
   km: "km",
   db: "db",
@@ -59,10 +60,21 @@ export interface SolitudeBounds {
 }
 
 /**
+ * The longest sentence we will embed. Long enough for anything anybody would
+ * actually type at a search box, short enough that a pasted essay cannot turn
+ * the catalog into an embedding bill or an unshareable URL. Cut, not rejected —
+ * the first line of a long paste is still a real question.
+ */
+export const MAX_QUERY_CHARS = 160;
+
+/**
  * A parsed query. Structurally a `StayFilters`, except `sort` is always
- * resolved — the catalog is never unordered.
+ * resolved — the catalog is never unordered — and `q`, which no SQL filter
+ * reads: it goes to the semantic search instead, and comes back as an order.
  */
 export interface StayQuery {
+  /** The sentence, normalised. Never present and empty — absent means absent. */
+  q?: string;
   biome?: Biome;
   minSolitudeKm?: number;
   maxNoiseDb?: number;
@@ -72,8 +84,15 @@ export interface StayQuery {
   sort: StaySort;
 }
 
-/** Every filter that can be individually relaxed. `sort` is not a filter. */
-export type RelaxKey = Exclude<keyof StayQuery, "sort">;
+/**
+ * Every filter that can be individually relaxed. `sort` is not a filter, and
+ * neither is `q` — the sentence narrows nothing on its own, it only ranks, so
+ * it is dropped as a whole rather than relaxed.
+ */
+export type RelaxKey = Exclude<keyof StayQuery, "sort" | "q">;
+
+/** What came back from the search service, as far as the UI needs to know. */
+export type SearchState = "ok" | "offline";
 
 /* ------------------------------ parsing ------------------------------ */
 
@@ -90,6 +109,24 @@ function integer(raw: Raw, key: string): number | undefined {
   const value = one(raw, key)?.trim();
   if (!value || !/^-?\d{1,6}$/.test(value)) return undefined;
   return Number(value);
+}
+
+/**
+ * A sentence, normalised.
+ *
+ * Whitespace is collapsed so that "  snow   " and "snow" are the same address
+ * and hit the same cache, and a query that is nothing but whitespace is not a
+ * query at all — it is dropped here rather than sent off to be embedded, which
+ * would cost a network round trip to be told there are no hits.
+ */
+function sentence(raw: Raw, key: string): string | undefined {
+  const value = one(raw, key);
+  if (typeof value !== "string") return undefined;
+
+  const collapsed = value.replace(/\s+/g, " ").trim();
+  if (!collapsed) return undefined;
+
+  return collapsed.slice(0, MAX_QUERY_CHARS).trim();
 }
 
 function clamp(n: number, low: number, high: number): number {
@@ -118,6 +155,9 @@ function member<T extends string>(
  */
 export function parseStayQuery(raw: Raw, bounds: SolitudeBounds): StayQuery {
   const query: StayQuery = { sort: member(raw, PARAM.sort, SORT_VALUES) ?? DEFAULT_SORT };
+
+  const q = sentence(raw, PARAM.q);
+  if (q) query.q = q;
 
   const biome = member(raw, PARAM.biome, BIOME_VALUES);
   if (biome) query.biome = biome;
@@ -163,6 +203,8 @@ export function parseStayQuery(raw: Raw, bounds: SolitudeBounds): StayQuery {
 export function toQuery(query: StayQuery, bounds: SolitudeBounds): string {
   const params = new URLSearchParams();
 
+  // The sentence leads: it is what the visitor would read back out of the URL.
+  if (query.q) params.set(PARAM.q, query.q);
   if (query.biome) params.set(PARAM.biome, query.biome);
   if (query.minSolitudeKm !== undefined && query.minSolitudeKm > bounds.minKm) {
     params.set(PARAM.km, String(query.minSolitudeKm));
@@ -201,7 +243,19 @@ export function without(query: StayQuery, key: RelaxKey): StayQuery {
   return next;
 }
 
-/** Whether anything at all is narrowing the catalog. Sort does not count. */
+/** The same state with the sentence dropped and every reading kept. */
+export function withoutQuery(query: StayQuery): StayQuery {
+  const next: StayQuery = { ...query };
+  delete next.q;
+  return next;
+}
+
+/**
+ * Whether anything at all is narrowing the catalog. Sort does not count, and
+ * neither does the sentence: `q` re-ranks the catalog and can only ever be
+ * refused by the readings, so it is cleared by its own control rather than by
+ * "Clear", which is about the instrument.
+ */
 export function isFiltered(query: StayQuery): boolean {
   return (
     query.biome !== undefined ||

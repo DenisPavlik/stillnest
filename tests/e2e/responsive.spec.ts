@@ -28,6 +28,20 @@ const ROUTES = [
      empty state has to hold the page up too, and name the reading that did
      the excluding. */
   { path: "/stays?km=80&signal=none", name: "stays-empty" },
+  /* A sentence. The grid comes back in an order no ORDER BY produced, and the
+     field holding the sentence is the largest type on the page — the two things
+     most likely to push a phone sideways. Whether the Python service is up
+     decides which state this photographs, and BOTH are states the page has to
+     hold: ranked by meaning, or the ordinary catalog with search declared down.
+     Neither is allowed to overflow. */
+  {
+    path: "/stays?q=alone+by+a+lake%2C+snow%2C+no+signal",
+    name: "stays-search",
+  },
+  /* A sentence that survives the search and is then refused by the console —
+     the empty state has to name which of the two did the excluding, and offer
+     a way out of each. */
+  { path: "/stays?q=deep+snow&km=80&signal=none", name: "stays-search-empty" },
   /* Two detail pages, not one: the hero scene, the instruments and the copy are
      all generated from the stay's own readings, so a desert house at Bortle 1
      exercises different code from a forest house at Bortle 2. */

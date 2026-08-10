@@ -25,6 +25,12 @@ import {
 
 const BASE = process.env.PYTHON_API_URL ?? "http://127.0.0.1:8000";
 
+/**
+ * Long enough for a cold Python function plus an embedding round trip, short
+ * enough that a visitor never waits on a service that is not coming back.
+ */
+const REQUEST_TIMEOUT_MS = 8_000;
+
 class PythonApiError extends Error {
   constructor(
     public readonly status: number,
@@ -43,6 +49,13 @@ async function call<T>(
   const secret = process.env.INTERNAL_API_SECRET;
   if (!secret) throw new Error("INTERNAL_API_SECRET is not set");
 
+  /**
+   * A refused connection fails instantly; a *wedged* one does not fail at all.
+   * Without a deadline, one unhealthy instance of the Python service would hold
+   * a page render open until the platform's own timeout — the visitor sees a
+   * spinner rather than the catalog, which is strictly worse than the honest
+   * "search is offline" fallback the callers already handle.
+   */
   const response = await fetch(`${BASE}/api/py${path}`, {
     ...init,
     headers: {
@@ -51,6 +64,7 @@ async function call<T>(
       ...init?.headers,
     },
     cache: "no-store",
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
 
   if (!response.ok) {
