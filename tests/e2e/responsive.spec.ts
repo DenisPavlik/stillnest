@@ -17,6 +17,11 @@ import { expect, test } from "@playwright/test";
 const ROUTES = [
   { path: "/", name: "home" },
   { path: "/stays", name: "stays" },
+  /* The only page made entirely of sentences. Its risk is the opposite of the
+     catalog's: no grid to blow out, but a two-column refusals block and a
+     two-column readings table that both have to collapse cleanly, and long
+     unbreakable prose lines are the classic way a phone gains 40px of width. */
+  { path: "/philosophy", name: "philosophy" },
   /* The console at full deflection: every control engaged, so the widest state
      of each one is measured — and a filtered view is proven to survive a cold
      load from nothing but its URL. */

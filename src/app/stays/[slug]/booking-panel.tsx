@@ -22,7 +22,7 @@ import { nextDay, nightCount, rangesOverlap } from "@/lib/dates";
 import {
   bedroomsWord,
   capitalise,
-  formatPriceEur,
+  formatPriceUsd,
   formatShortDay,
   nightsWord,
   numberWord,
@@ -293,7 +293,7 @@ export function BookingPanel({
       </h3>
 
       <p className={s.price}>
-        {formatPriceEur(basePriceCents)}
+        {formatPriceUsd(basePriceCents)}
         <i>&nbsp;/ night</i>
       </p>
 
@@ -510,7 +510,7 @@ function Breakdown({
           <li key={night.night} className={s.night}>
             <span className={s.nightDay}>{formatShortDay(night.night)}</span>
             <span className={s.nightRule}>{night.rule_label ?? ""}</span>
-            <span className={s.nightRate}>{formatPriceEur(night.price_cents)}</span>
+            <span className={s.nightRate}>{formatPriceUsd(night.price_cents)}</span>
           </li>
         ))}
       </ul>
@@ -518,18 +518,18 @@ function Breakdown({
       <dl className={s.totals}>
         <div>
           <dt>{capitalise(nightsWord(quote.nights.length))}</dt>
-          <dd>{formatPriceEur(quote.subtotal_cents)}</dd>
+          <dd>{formatPriceUsd(quote.subtotal_cents)}</dd>
         </div>
         {quote.fees_cents > 0 ? (
           <div>
             <dt>Fees</dt>
-            <dd>{formatPriceEur(quote.fees_cents)}</dd>
+            <dd>{formatPriceUsd(quote.fees_cents)}</dd>
           </div>
         ) : null}
         <div className={s.totalRow}>
           <dt>Total</dt>
           <dd className={lit ? `${s.total} ${s.totalLit}` : s.total}>
-            {formatPriceEur(quote.total_cents)}
+            {formatPriceUsd(quote.total_cents)}
           </dd>
         </div>
       </dl>

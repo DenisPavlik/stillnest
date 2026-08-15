@@ -27,15 +27,66 @@ These are not stylistic preferences. Break one and the image is unusable.
    marketing. We are standing there, on foot, at dusk, the way the survey was taken.
 5. **Dusk or blue hour.** Never midday. Never a bright blue sky.
 
-## The house is small in frame
+## The house is the subject, but it is never alone in the frame
 
-The single most common failure. **The house occupies roughly 10–15% of the frame
-width.** Fill the frame with a beautiful cabin and you are selling a cabin; keep it
-small against a lot of dark and you are selling the distance around it — which is the
-actual product.
+**The house occupies roughly 45–55% of the frame width, and no more than about 10% of
+the frame area.** Those two numbers together are the rule; the width alone is not.
 
-If an image comes back with a big hero house, regenerate. It is the one thing not
-worth compromising on.
+This replaces an earlier rule of 10–15% of width, which was wrong in both directions
+and was corrected against real images (owner's call, and he was right). At 10–15% the
+house is a detail in a landscape photograph — the site stops selling a stay and starts
+selling a forest, and nobody books a forest. What the rule was actually protecting is
+**area**: the house has to sit inside far more dark than house, so the distance around
+it is the thing you feel.
+
+The forest, the ridge or the snow must still rise well above the roofline on both
+sides. That is what holds the scale when the house gets big enough to want.
+
+## Aspect ratio is a composition decision, not an export setting
+
+A landscape still cannot serve a phone-shaped hero. The slot is about **0.50** wide to
+tall; a 3:2 photograph is **1.50**. `object-fit: cover` resolves that by keeping the
+height and throwing away two thirds of the width — measured on the real file, the house
+spanned **154% of the frame** and was cut in half on both sides.
+
+Adding height to the source is what saves the width. In a portrait container `cover`
+takes the full height of the source, so a taller source survives with more of its width
+intact:
+
+| Source ratio | Width surviving a 375×747 hero | House in frame |
+|---|---|---|
+| 3:2 (landscape) | 33.5% | 154.7% — cut |
+| 1:1 | 50.2% | 103.1% — cut |
+| 3:4 | 66.9% | 77.3% |
+| **9:16** | **89.2%** | **58.0%** |
+
+So: **9:16 for any full-height portrait hero.** Not 1:1 — it still cuts.
+
+The switch in the markup is on **aspect ratio, not width** (`max-aspect-ratio: 1/1`),
+because what breaks the shot is the slot being taller than it is wide, and a portrait
+tablet does that at 768px exactly as a phone does at 375px.
+
+## One house, one building — derive views, never re-prompt them
+
+**The single most expensive mistake available in this phase.** GPT Image 2 has no
+memory between generations. Ask twice for "the house at Hollowmoss" and you get two
+different buildings — different chimney, different window layout, different roof. Three
+prompts produced three houses before anyone noticed.
+
+On a booking site that is not a cosmetic problem. A visitor moves from the card to the
+detail page to the interior; if the building changes on the way, the catalog stops
+being believable.
+
+So, per house:
+
+1. Generate exteriors until one is right. **That file is now canonical.**
+2. Every other view — portrait crop, interior, seasonal, video still — is made by
+   **attaching that file and editing it**, never by running the prompt again.
+3. The edit prompt opens by forbidding change: *"Keep this exact building unchanged —
+   same roofline, same stone chimney, same window layout, same lit interior. Do not
+   redesign or move the house."* Then it says what to add.
+
+Record which file is canonical in `content/CREDITS.md` as you go.
 
 ---
 
@@ -44,11 +95,23 @@ worth compromising on.
 Substitute the bracketed parts from the table below. Keep everything else verbatim —
 the constants are what make twelve images look like one catalog.
 
+**On a fresh generation the prompt asks for 30% and the model delivers about 50%.** That
+is measured, not guessed. Do not "correct" it upward when the image comes back bigger —
+asking for the number you actually want overshoots it.
+
+**On an edit the same number lands honestly.** Asking a zoom-out edit for 30% produced
+25.4%. The two are different instruments: a fresh generation is composing a scene and
+treats the figure as a hint, an edit is transforming pixels it can already measure.
+
 ```
 A small modern off-grid house in [BIOME SETTING], photographed at dusk.
 Dark timber, stone and large glass; a low horizontal single-storey form.
-The house is SMALL in the frame, occupying about 12% of the image width,
-positioned [PLACEMENT]. One warm amber light glows from inside the windows —
+The camera stands on the near side, closer than a wide landscape shot —
+the house occupies about 30% of the image width and is clearly the subject,
+positioned [PLACEMENT]. The landscape still rises well above the roofline
+on both sides and fills the frame behind it, so the house remains
+surrounded rather than isolated. One warm amber light glows from inside
+the windows —
 it is the only warm light in the picture; everything else is cold and
 desaturated. [FOREGROUND ELEMENT]. Heavy atmospheric haze, deep shadows,
 muted [PALETTE] tones.

@@ -489,13 +489,6 @@ label.question {
     inset 0 -2px 0 rgba(147, 179, 130, 0.55);
 }
 
-.skyCellDead,
-.skyCellDead:hover {
-  opacity: 0.14;
-  box-shadow: none;
-  cursor: not-allowed;
-}
-
 .skyDots {
   position: absolute;
   inset: 0;

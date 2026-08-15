@@ -9,8 +9,16 @@
   background: var(--spruce);
 }
 
+/* A column, not a block. The three readings and the price are the whole
+   point of a card — you are meant to compare houses on them across a row —
+   so they are anchored to the bottom and every card in a row lines them up
+   on the same baseline. Laid out in flow they drift by the height of one
+   line of copy, and a one-line tagline sits its price a line above its
+   neighbour's. The slack goes above the rule instead, where nothing is
+   being compared. */
 .link {
-  display: block;
+  display: flex;
+  flex-direction: column;
   height: 100%;
   padding: clamp(18px, 1.8vw, 26px) clamp(16px, 1.6vw, 24px) clamp(24px, 2.4vw, 32px);
   color: inherit;
@@ -66,6 +74,9 @@
 /* ---- the body ---- */
 
 .body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   padding-top: clamp(16px, 1.6vw, 22px);
 }
 
@@ -103,6 +114,14 @@
   color: var(--ink-3);
   font-size: 0.8125rem;
   line-height: 1.65;
+}
+
+/* The name, the region and the tagline. It takes the slack, which is what
+   aligns everything below it: the difference between a one-line and a
+   two-line tagline is absorbed here, above the rule, where nothing is being
+   compared — instead of below it, where the readings are. */
+.bodyTop {
+  flex: 1;
 }
 
 .stats {

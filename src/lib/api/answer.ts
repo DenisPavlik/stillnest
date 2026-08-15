@@ -9,7 +9,7 @@
  * render, rather than an exception it could accidentally show as a price. The
  * Python service is a separate process — during local development it is often
  * not running, and after deploy it is unreachable until it gets its own project.
- * A booking panel that quietly rendered €0 in that window would be lying about
+ * A booking panel that quietly rendered $0 in that window would be lying about
  * the one number a guest came for.
  *
  * Client-safe: types and copy only, no server imports.

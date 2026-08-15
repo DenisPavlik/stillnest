@@ -46,6 +46,16 @@
   background: var(--spruce);
 }
 
+/* <picture> is an inline box by default, and the departure timeline tweens
+   the slot's first element child — which is this. It has to be a block that
+   fills the slot, or the scale and drift land on a zero-height inline and
+   nothing moves. The <img> inside does the actual cropping. */
+.mediaPicture {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
 .mediaEl {
   position: absolute;
   inset: 0;

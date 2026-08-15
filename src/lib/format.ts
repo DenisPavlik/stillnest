@@ -7,8 +7,22 @@
  * and the browser, and every number on this site is rendered on the server.
  */
 
-/** 41000 -> "€410" · 41050 -> "€410.50". */
-export function formatPriceEur(cents: number): string {
+/**
+ * 41000 -> "$410" · 41050 -> "$410.50".
+ *
+ * Dollars, while distances stay metric, and the split is deliberate. The
+ * price is the one figure a visitor does arithmetic on, and the audience for
+ * this site is American — a euro sign buys a pause for conversion at exactly
+ * the moment somebody is imagining themselves in the house.
+ *
+ * The readings do not follow it. They are measurements, not consumer
+ * quantities, and two of the five (decibels, Bortle class) have no imperial
+ * form at all — converting only the distances would leave the instrument
+ * panel half imperial and half metric, which is worse than either. There is
+ * no currency column anywhere: cents are just integers, so this function is
+ * the only place the unit is decided.
+ */
+export function formatPriceUsd(cents: number): string {
   const negative = cents < 0;
   const abs = Math.abs(Math.trunc(cents));
   const whole = Math.trunc(abs / 100);
@@ -17,7 +31,7 @@ export function formatPriceEur(cents: number): string {
     fraction === 0
       ? String(whole)
       : `${whole}.${fraction < 10 ? `0${fraction}` : String(fraction)}`;
-  return `${negative ? "−" : ""}€${body}`;
+  return `${negative ? "−" : ""}$${body}`;
 }
 
 /** 88 -> "88" · 12.5 -> "12.5". Distances are measured, so they never round up. */

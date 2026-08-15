@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { MobileMenu } from "./mobile-menu";
 import s from "./site-nav.module.css";
 
 /* -------------------------------------------------------------------- *
@@ -22,11 +23,21 @@ export interface NavLink {
   href: string;
 }
 
+/**
+ * Every entry here goes somewhere that exists. It is worth stating because
+ * it briefly did not: "Philosophy" and "The Index" pointed at the same
+ * anchor, and "Journal" pointed at the house grid — three labels promising
+ * pages, one of them real. A nav that lies is the first thing a visitor
+ * finds out about a site, and on a site arguing for honest measurement it
+ * costs more than it does anywhere else.
+ *
+ * `/journal` is parked in the roadmap. It comes back here when it is built,
+ * and not before.
+ */
 export const NAV_LINKS: readonly NavLink[] = [
   { label: "Houses", href: "/stays" },
   { label: "The Index", href: "/#index" },
-  { label: "Philosophy", href: "/#index" },
-  { label: "Journal", href: "/#houses" },
+  { label: "Philosophy", href: "/philosophy" },
 ];
 
 export interface SiteNavProps {
@@ -63,6 +74,10 @@ export function SiteNav({
       <a className={s.reserve} href={reserveHref}>
         {reserveLabel}
       </a>
+      {/* Below 680px `.navLinks` is display:none and this takes over. It is
+          the only client component in the nav; everything else here stays
+          server-rendered. */}
+      <MobileMenu links={links} reserveHref={reserveHref} reserveLabel={reserveLabel} />
     </nav>
   );
 

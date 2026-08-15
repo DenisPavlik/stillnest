@@ -3,12 +3,12 @@ import type { ReactNode } from "react";
 import { FilmGrain } from "@/components/film-grain";
 import { Reveal } from "@/components/motion/reveal";
 import { hashSeed } from "@/components/scene/geometry";
-import { ForestScene } from "@/components/scene/forest-scene";
 import { SectionHead } from "@/components/section-head";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
 import { ReachLine, SolitudeIndex } from "@/components/solitude";
 import { StayCard } from "@/components/stay-card";
+import { Still } from "@/components/still";
 import { countStays, featuredStays, getStayBySlug } from "@/lib/db/queries";
 import { capitalise, formatCoords, numberWord } from "@/lib/format";
 
@@ -44,6 +44,7 @@ const HERO = {
   moment: "63°41′N 13°06′E · 21:40 · 3°C · fog",
 } as const;
 
+
 export default async function HomePage(): Promise<ReactNode> {
   const [featured, total] = await Promise.all([featuredStays(3), countStays()]);
 
@@ -64,12 +65,30 @@ export default async function HomePage(): Promise<ReactNode> {
           are what it addresses, and they are the whole contract: see
           home-motion.tsx. */}
       <HeroDeparture className={s.hero} id="top">
-        {/* MEDIA SLOT — swap the <ForestScene> below for <img> or <video
-            autoPlay muted loop playsInline> with the same className and
-            nothing else moves. The parallax notices the difference on its
-            own and falls back to drifting the slot as one piece. */}
+        {/* MEDIA SLOT — Phase 9. The generated <ForestScene> that stood here
+            has been replaced by the real photograph, and the parallax noticed
+            on its own: with no [data-depth] planes to find it drifts the slot
+            as one piece, exactly as it was built to.
+
+            TWO FILES, ONE BUILDING. A landscape photograph in a phone-shaped
+            hero is not a crop problem, it is a geometry problem — the slot is
+            about 0.50 wide-to-tall and the picture is 1.50, so `cover` throws
+            away two thirds of the width and cuts the house in half. Measured:
+            the house spans 154% of the frame at 375px. The portrait file is
+            the same photograph extended upward into forest and downward into
+            water, so the house lands at 60% and fits whole.
+
+            The switch is on aspect ratio, not on width: what breaks the shot
+            is the slot being taller than it is wide, and a portrait tablet
+            does that at 768px just as a phone does at 375px. */}
         <div className={s.media} data-hero-slot>
-          <ForestScene className={s.mediaEl} />
+          <Still
+            className={s.mediaPicture}
+            base="stays/hollowmoss-04/exterior"
+            portraitBase="stays/hollowmoss-04/exterior-portrait"
+            alt={`${HERO.house} at dusk — a low timber house lit from within, on the far bank of black standing water in old spruce forest.`}
+            priority
+          />
         </div>
         <div className={s.scrim} aria-hidden="true" />
 
@@ -89,10 +108,20 @@ export default async function HomePage(): Promise<ReactNode> {
             </p>
 
             <div className={s.reachBlock} data-hero-reach>
+              {/* "this house" rather than the house's name: on a first visit
+                  `HOLLOWMOSS 04` is an unexplained code, and an unexplained
+                  code at one end of a measurement makes the whole measurement
+                  unreadable. The name is not what the hero is selling — the
+                  distance is. */}
               <ReachLine
                 km={HERO.solitudeKm}
-                left={HERO.house}
+                left="this house"
                 right="nearest lit window"
+                /* One line, and one line only. The hero is a fixed height and
+                   the coordinates below it have to survive; a second sentence
+                   here also said what the section under the fold already says
+                   about surveying on foot. */
+                note="The nearest light you could walk to."
               />
               <p className={s.heroWhere} data-hero-where>
                 <span>{HERO.place}</span>

@@ -42,6 +42,14 @@
   background: var(--spruce);
 }
 
+/* What <Still> gets when it stands in the hero: the positioning only. The
+   component brings its own display:block and the object-fit on the image
+   inside it. */
+.mediaPicture {
+  position: absolute;
+  inset: 0;
+}
+
 .mediaEl {
   position: absolute;
   inset: 0;
@@ -50,6 +58,50 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+/* ============================== INSIDE ==============================
+   The interior photograph, full width. It is a sibling of the sections
+   rather than a child of one, so it can ignore `--max` without a `100vw`
+   trick — `100vw` counts the scrollbar and is how a page gains twenty
+   pixels of sideways scroll on a desktop and nowhere else.
+ * ==================================================================== */
+
+.inside {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.insideMedia {
+  position: relative;
+  display: block;
+  width: 100%;
+  /* Wider than the source's 3:2 on purpose: a band, not a second hero. The
+     crop takes the top and bottom, which here is more forest and more
+     water — the two things there is most of. */
+  aspect-ratio: 21 / 9;
+}
+
+.insideNote {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0.9rem var(--gutter) 0;
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  /* A 21:9 band on a phone is a 160px letterbox. Squarer, so the room is
+     actually a room. */
+  .insideMedia {
+    aspect-ratio: 4 / 3;
+  }
 }
 
 /* above the media, so it survives a real photograph landing under it */

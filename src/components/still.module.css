@@ -1,0 +1,18 @@
+/* <picture> is an inline box by default. It has to be a block, because the
+   callers position it (absolutely, inside a media slot) and the hero's
+   departure timeline tweens it — a zero-height inline would take the
+   transform and show nothing. The caller's own class supplies the
+   positioning; this only makes it a box. */
+.picture {
+  display: block;
+}
+
+/* The image does the cropping, the same way every generated scene it
+   replaces did, so a slot does not care which of the two it is handed. */
+.img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}

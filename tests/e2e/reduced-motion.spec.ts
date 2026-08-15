@@ -15,7 +15,10 @@
 
 import { expect, test } from "@playwright/test";
 
-const ROUTES = ["/", "/stays", "/stays/hollowmoss-04"];
+/* `/philosophy` carries the most Reveal-wrapped text on the site and is the
+   page where a reveal that never fires costs the most — it is nothing but
+   words, so a stuck wrapper is the whole page gone. */
+const ROUTES = ["/", "/stays", "/stays/hollowmoss-04", "/philosophy"];
 
 for (const path of ROUTES) {
   test(`${path} stays fully legible with reduced motion`, async ({ page }, testInfo) => {

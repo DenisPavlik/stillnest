@@ -1,0 +1,404 @@
+/* ==================================================================== *
+   PHILOSOPHY — the one page made of sentences.
+
+   Built on scale rather than on repetition. Four sections with the same
+   kicker-and-heading block at the same size is a rhythm you stop hearing
+   after the second one, and on a page with no pictures that is the whole
+   design. So: an opening at hero size, an ordinal big enough to be a
+   graphic, one line that ignores the page measure completely, and an
+   ending set smaller than everything above it.
+
+   Colours and type come from globals.css. Nothing new is invented here.
+ * ==================================================================== */
+
+.page {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 100svh;
+  overflow-x: clip;
+  background: var(--spruce);
+  color: var(--linen);
+  font-family: var(--font-sans);
+}
+
+/* ============================== OPENING ============================== */
+
+/* Near a full screen, so the statement is the only thing in view and the
+   page begins with a held breath rather than with a stack of headings. */
+.opening {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: var(--max);
+  min-height: min(78svh, 720px);
+  margin: 0 auto;
+  padding: clamp(40px, 6vw, 88px) var(--gutter) clamp(32px, 5vw, 72px);
+}
+
+.eyebrow {
+  margin: 0 0 clamp(20px, 3vw, 40px);
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Hero scale on a page with no hero. Two clauses on two lines: the first
+   states the negative, the second — in the display italic the site uses for
+   its second thoughts — carries the actual claim. */
+.statement {
+  display: flex;
+  flex-direction: column;
+  max-width: 18ch;
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 6.25rem);
+  font-weight: 300;
+  line-height: 0.98;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.statement em {
+  color: var(--haze);
+  font-style: italic;
+}
+
+/* Set against the statement rather than under it: small, late, and indented
+   to the right on wide screens so the eye finishes the sentence before it
+   finds the explanation. */
+.openingLede {
+  max-width: 46ch;
+  margin: clamp(32px, 4.5vw, 64px) 0 0;
+  color: var(--ink-2);
+  font-size: clamp(0.95rem, 1.05vw, 1.0625rem);
+  line-height: 1.7;
+}
+
+/* ============================== SECTIONS ============================= */
+
+.section {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(64px, 9vw, 130px) var(--gutter) 0;
+}
+
+.section:last-of-type {
+  padding-bottom: clamp(72px, 10vw, 140px);
+}
+
+/* The ordinal is the rhythm. It replaces the kicker rule the rest of the
+   site uses — same job, done by size instead of by a line, and it gives
+   each section a landmark you can find while scrolling past. Outlined
+   rather than filled so it never competes with the heading beside it. */
+.ordinal {
+  margin: 0 0 clamp(-6px, -0.4vw, 0px);
+  color: transparent;
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  -webkit-text-stroke: 1px rgba(147, 179, 130, 0.34);
+}
+
+/* 26ch, not 20: at 20 the short headings broke in the wrong place — the
+   line landed after "Surveyed on", which reads as a typo rather than as a
+   line break. `text-wrap: balance` needs room to choose. */
+.sectionTitle {
+  max-width: 26ch;
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 3.4vw, 3.1rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+.sectionLede {
+  max-width: 54ch;
+  margin: clamp(18px, 2vw, 28px) 0 0;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+/* ============================== PROSE =============================== */
+
+/* 62 characters. Long enough not to feel chopped, short enough that the
+   eye finds the next line without hunting for it. */
+.prose {
+  max-width: 62ch;
+  margin-top: clamp(28px, 3.5vw, 48px);
+}
+
+.prose p {
+  margin: 0 0 1.15em;
+  color: var(--ink-2);
+  font-size: clamp(0.95rem, 1.05vw, 1.0625rem);
+  line-height: 1.75;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* =============================== BLEED ==============================
+   The only element on the site that ignores `--max`. It is a full-width
+   band rather than a `100vw` trick on purpose: `100vw` includes the
+   scrollbar, which is exactly how a page gains twenty pixels of sideways
+   scroll on a desktop and nowhere else.
+ * ==================================================================== */
+
+.bleed {
+  width: 100%;
+  margin-top: clamp(56px, 8vw, 110px);
+  padding: clamp(56px, 8vw, 112px) var(--gutter);
+  border-top: 1px solid var(--hair-soft);
+  border-bottom: 1px solid var(--hair-soft);
+  background: var(--peat);
+}
+
+.bleedLine {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  max-width: 24ch;
+  margin: 0 auto;
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4.4vw, 3.75rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.014em;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.bleedLine em {
+  color: var(--lichen);
+  font-style: italic;
+}
+
+/* ============================= THE METHOD ============================ */
+
+.method {
+  margin: clamp(40px, 5vw, 72px) 0 0;
+  border-top: 1px solid var(--hair-soft);
+}
+
+.methodRow {
+  display: grid;
+  grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+  gap: clamp(12px, 2.6vw, 40px);
+  padding: clamp(22px, 2.6vw, 36px) 0;
+  border-bottom: 1px solid var(--hair-soft);
+}
+
+.methodRow dt {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.15rem 0.9rem;
+}
+
+/* Small, mono, and the same amber the live readings use — an instrument
+   channel number, not a list bullet. */
+.methodIndex {
+  grid-row: span 2;
+  color: rgba(233, 168, 94, 0.7);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+}
+
+.methodName {
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.006em;
+}
+
+.methodUnit {
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.methodRow dd {
+  max-width: 58ch;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.footnote {
+  max-width: 62ch;
+  margin-top: clamp(24px, 3vw, 40px);
+}
+
+.footnote p {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+/* ============================= THE REFUSALS ========================== */
+
+/* Two columns of raised ground on one hairline grid — the same trick the
+   home page's card row uses: gap:1px over a moss tint, so the dividers
+   are the gaps themselves. */
+.refusals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: clamp(40px, 5vw, 72px) 0 0;
+  padding: 0;
+  background: var(--hair-soft);
+  list-style: none;
+}
+
+.refusals li {
+  padding: clamp(26px, 3vw, 44px);
+  background: var(--peat);
+}
+
+.refusalIndex {
+  display: block;
+  margin-bottom: clamp(14px, 1.6vw, 22px);
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+}
+
+.refusals h3 {
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1.7vw, 1.55rem);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.004em;
+  text-wrap: balance;
+}
+
+.refusals p {
+  max-width: 46ch;
+  margin: 0.85rem 0 0;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+/* ============================== HONESTY ==============================
+   Smaller than everything above it, and on a narrow measure. The page has
+   spent three sections raising its voice; the admission that none of the
+   houses exist would be absurd at the same volume.
+ * ==================================================================== */
+
+.admission {
+  max-width: 58ch;
+  padding-top: clamp(28px, 3.5vw, 48px);
+  border-top: 1px solid var(--hair-soft);
+}
+
+.admissionTitle {
+  margin: 0 0 clamp(20px, 2.4vw, 32px);
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.6vw, 2.35rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.008em;
+}
+
+.admission > p {
+  margin: 0 0 1.15em;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  line-height: 1.75;
+}
+
+.onward {
+  margin: clamp(28px, 3.5vw, 48px) 0 0 !important;
+}
+
+.onward a {
+  padding-bottom: 0.35rem;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+  background-image: linear-gradient(var(--lichen), var(--lichen));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  transition: background-size 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.onward a:hover {
+  background-size: 0% 1px;
+}
+
+/* ============================== RESPONSIVE ============================ */
+
+@media (max-width: 860px) {
+  .methodRow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.85rem;
+  }
+
+  .refusals {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .opening {
+    min-height: min(70svh, 560px);
+  }
+
+  /* A hairline stroke at display size disappears on a phone — under about
+     4rem the counters fill in and it reads as a smudge. Filled and dimmed
+     instead, which keeps it a landmark without pretending to be an outline.
+
+     The tuck comes off with it: an outline can sit almost on the heading
+     because it is mostly air, and a filled numeral at the same distance
+     reads as two lines colliding. */
+  .ordinal {
+    margin-bottom: 6px;
+    color: rgba(147, 179, 130, 0.3);
+    -webkit-text-stroke: 0;
+  }
+}
+
+/* ============================ REDUCED MOTION ========================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before,
+  .page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

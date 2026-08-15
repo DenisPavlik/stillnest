@@ -16,7 +16,35 @@ ffmpeg. **Ambient beds** come from ElevenLabs SFX v2, which loops natively.
 
 | Asset | Model | Prompt | Notes |
 |---|---|---|---|
-| _(none yet)_ | | | |
+| `stays/hollowmoss-04/exterior.jpg` | GPT Image 2 (edit) | The canonical frame attached, asked to zoom **out** — more forest left and right, more cloud above, more water below — with the building explicitly forbidden to change. | **The Hollowmoss 04 in use.** 1536×1024 (3:2), 190 KB. House 25.4% of frame width, down from 51.8% before the zoom-out; at 51.8% the tagline landed on top of the house on desktop. |
+| `stays/hollowmoss-04/exterior-portrait.jpg` | GPT Image 2 (edit) | Canonical frame attached, asked to extend vertically to 9:16 — forest continued upward into cloud, water downward with the reflection — while explicitly forbidding any change to the building. | Mobile hero only. 1400×2488 (0.5628 ≈ 9:16). House 53.1% of source, 59.6% of a 375×747 hero. |
+| `stays/hollowmoss-04/interior.jpg` | GPT Image 2 (reference) | Canonical exterior **attached as a reference**, not edited: an interior is a new camera position rather than a transformation of the facade. Asked to match what is visible through the glass — vertical timber, the stone chimney breast, black-framed bays — with the stove lit in that chimney and the water going dark outside. | 3072×2048 (3:2). The stove sits in the same stone mass that reads as a chimney on the facade, which is what makes the two pictures one building. |
+
+Both descend by **edit** from one generated frame (the ~51.8% exterior, kept out of the
+repo — superseded by its own zoom-out). That is why they are the same building: re-running
+the prompt produces a different house every time. See the rule in
+`content/prompts/README.md`.
+
+### Upscaling and the derived files
+
+GPT Image 2 stops at 1536px on the long edge, and the hero is full-bleed — on a 2560px
+ultrawide that is a 1.67× stretch, visible as softness. Both files above were put through
+**fal.ai AuraSR** (4×, `checkpoint: v2`, overlapping tiles) via `scripts/upscale.py`, then
+resampled down to their target width. AuraSR is a GAN super-resolver rather than a
+diffusion upscaler, chosen because it sharpens what is there instead of re-imagining it —
+verified afterwards that the window layout, chimney and interior were unchanged.
+
+Roughly $0.02 per image at fal's compute-second pricing; ~20s each.
+
+Everything below is generated locally by Pillow from the two files above, and can be
+regenerated at any time — no model involved:
+
+| File | From | Purpose |
+|---|---|---|
+| `exterior-1536.jpg` · `.webp` | `exterior.jpg` | The small rung of the hero `srcSet`. A phone would otherwise pull 667 KB to paint 375 CSS px. |
+| `exterior.webp` | `exterior.jpg` | 247 KB against the JPEG's 667 KB, same picture. |
+| `exterior-portrait.webp` | `exterior-portrait.jpg` | Same trade for the portrait hero. |
+| `interior-1536.jpg` · `.webp` · `interior.webp` | `interior.jpg` | The same three rungs for the full-bleed interior band on the detail page. |
 
 ## Video loops
 

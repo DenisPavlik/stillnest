@@ -340,43 +340,39 @@ export function StaysConsole({
             </p>
           </div>
 
+          {/* Only the classes we actually have. The scale is nine cells by
+              convention and this drew all nine, greying out everything above
+              the brightest sky on the map — five dead cells out of nine, which
+              reads as a control that is mostly broken rather than as a scale
+              that is mostly unused.
+
+              What those cells were carrying was context: class 4 means nothing
+              until you can see how far it is from a city. That argument moves
+              into the caption below, where it costs a line of type instead of
+              more than half the instrument. */}
           <ul className={s.sky} aria-labelledby="dial-sky">
-            {Array.from({ length: 9 }, (_, i) => {
+            {Array.from({ length: bounds.maxBortle }, (_, i) => {
               const cls = i + 1;
-              const beyond = cls > bounds.maxBortle;
               const accepted = cls <= sky;
               const className = [
                 s.skyCell,
                 accepted ? s.skyCellOn : "",
                 cls === sky ? s.skyCellPick : "",
-                beyond ? s.skyCellDead : "",
               ]
                 .filter(Boolean)
                 .join(" ");
 
-              const body = (
-                <>
-                  <SkyDots index={i} />
-                  <i className={s.skyNum}>{cls}</i>
-                </>
-              );
-
               return (
                 <li key={cls} style={{ "--cell": bortleFill(i) } as CSSProperties}>
-                  {beyond ? (
-                    <span className={className} aria-disabled="true">
-                      {body}
-                    </span>
-                  ) : (
-                    <a
-                      className={className}
-                      aria-current={cls === sky ? "true" : undefined}
-                      aria-label={`Accept skies of class ${cls} or darker`}
-                      {...link(stayHref(query, { maxBortle: cls }, bounds))}
-                    >
-                      {body}
-                    </a>
-                  )}
+                  <a
+                    className={className}
+                    aria-current={cls === sky ? "true" : undefined}
+                    aria-label={`Accept skies of class ${cls} or darker`}
+                    {...link(stayHref(query, { maxBortle: cls }, bounds))}
+                  >
+                    <SkyDots index={i} />
+                    <i className={s.skyNum}>{cls}</i>
+                  </a>
                 </li>
               );
             })}
@@ -384,11 +380,11 @@ export function StaysConsole({
 
           <p className={s.ends}>
             <span>1 · no glow at all</span>
-            <span>9 · city</span>
+            <span>{bounds.maxBortle} · the brightest we keep</span>
           </p>
           <p className={s.caption}>
             {bounds.maxBortle < 9
-              ? `nothing on our map is brighter than class ${bounds.maxBortle}`
+              ? `the Bortle scale runs to 9, which is a city — nothing on our map is brighter than ${bounds.maxBortle}`
               : "light pollution, Bortle classes"}
           </p>
         </div>

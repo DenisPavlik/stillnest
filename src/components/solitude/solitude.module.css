@@ -108,6 +108,21 @@
   color: rgba(147, 179, 130, 0.85);
 }
 
+/* The sentence the instrument could not say about itself.
+
+   Deliberately NOT in the instrument's voice: body face, mixed case, no
+   tracking, and bright enough to actually read. Everything around it is
+   10px mono caps at low contrast, which is a texture the eye skims — one
+   more line in that register would have been skimmed with the rest. The
+   contrast in typeface is what makes it get read at all. */
+.reachNote {
+  max-width: 34ch;
+  margin: 0.85rem 0 0;
+  color: var(--ink-3);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
 .reachSmall {
   padding: 0;
 }

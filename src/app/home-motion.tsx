@@ -110,20 +110,18 @@ export function HeroDeparture({ className, id, children }: HeroDepartureProps): 
         .from(q("nav"), { opacity: 0, duration: 1.3 }, 0)
         .from(q("[data-hero-tagline] span"), { opacity: 0, y: 26, duration: 1.4, stagger: 0.16 }, 0.1)
         .from(q("[data-hero-lede]"), { opacity: 0, y: 14 }, 0.8)
-        /* The measurement extends to its reading. Widening the rule takes
-           the kilometre ticks and the far end point with it, so the far
-           door really does travel out to 34 km — the only thing on the
-           page you are meant to watch happen. */
-        .from(
-          q("[data-hero-reach] [data-reach-rule]"),
-          { width: 0, duration: 1.8, ease: "power2.inOut", clearProps: "width" },
-          1.0,
-        )
-        .from(
-          q("[data-hero-reach] [data-reach-value], [data-hero-reach] [data-reach-ends]"),
-          { opacity: 0, duration: 1.0 },
-          1.15,
-        )
+        /* The instrument arrives as one piece — lifted a little and faded up,
+           the same move every other element here makes.
+
+           It used to draw itself out instead: the rule widened from zero over
+           1.8s, carrying the ticks and the far end point with it, so the
+           distance visibly extended to its reading. It was the one thing on
+           the page you were meant to watch happen, and watching it is exactly
+           the problem — a bar travelling sideways under the tagline reads as
+           the page still loading, every single visit, on the load that decides
+           whether anyone stays. The ticks were never the issue and they stay.
+           A measurement does not have to perform being measured. */
+        .from(q("[data-hero-reach] [data-reach]"), { opacity: 0, y: 16, duration: 1.4 }, 1.0)
         .from(q("[data-hero-where]"), { opacity: 0, y: 10 }, 1.6);
 
       /* The camera stops walking: the picture comes to rest over three and a

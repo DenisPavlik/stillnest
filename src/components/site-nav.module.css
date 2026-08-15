@@ -95,9 +95,18 @@
 }
 
 @media (max-width: 680px) {
-  /* below this the links would crowd the wordmark — the nav keeps the two
-     things that matter and drops the rest */
+  /* Below this the links would crowd the wordmark, so the row keeps the
+     wordmark and Reserve and hands the rest to <MobileMenu>, whose trigger
+     appears at exactly this width. The two breakpoints are one decision —
+     move one and the site loses its navigation. */
   .navLinks {
     display: none;
+  }
+
+  /* The menu trigger sits after the wordmark in the DOM but Reserve is the
+     primary action and belongs on the outside edge, so it is ordered last
+     rather than reordered in the markup. */
+  .reserve {
+    order: 1;
   }
 }

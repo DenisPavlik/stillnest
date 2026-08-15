@@ -7,6 +7,7 @@ import { FilmGrain } from "@/components/film-grain";
 import { Reveal } from "@/components/motion/reveal";
 import { hashSeed } from "@/components/scene/geometry";
 import { StayScene } from "@/components/scene/stay-scene";
+import { Still } from "@/components/still";
 import { SectionHead } from "@/components/section-head";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
@@ -14,13 +15,14 @@ import { SolitudeIndex } from "@/components/solitude";
 import { BIOME_LABEL, SOLITUDE_NOTE, biomeGround } from "@/components/solitude/readings";
 import { StayCard } from "@/components/stay-card";
 import { allStaySlugs, featuredStays, getStayBySlug } from "@/lib/db/queries";
+import { hasPhotography } from "@/lib/media";
 import {
   bedroomsWord,
   capitalise,
   formatClosedRange,
   formatCoords,
   formatKm,
-  formatPriceEur,
+  formatPriceUsd,
   nightsWord,
   numberWord,
 } from "@/lib/format";
@@ -123,10 +125,13 @@ export default async function StayPage({
     .map((p) => p.trim())
     .filter(Boolean);
 
-  /* The exterior scene's caption is real data and describes the shot that
-     lands here in Phase 9. The picture under it is not that shot yet, and
-     the line says so rather than letting anyone assume otherwise. */
+  /* Scene captions are real data, written in Phase 2 against the shots that
+     would eventually land. For a house that now has them, the caption
+     describes the picture; for the rest, the hero still says "generated
+     stand-in" under it rather than letting anyone assume otherwise. */
   const exterior = stay.scenes.find((scene) => scene.kind === "exterior");
+  const interior = stay.scenes.find((scene) => scene.kind === "interior");
+  const photographed = hasPhotography(stay.slug);
 
   return (
     <main className={s.page}>
@@ -134,16 +139,32 @@ export default async function StayPage({
 
       {/* ============================== HERO ============================== */}
       <header className={s.hero}>
-        {/* MEDIA SLOT — swap <StayScene> for <img> or <video autoPlay muted
-            loop playsInline> with the same className and nothing moves. */}
+        {/* MEDIA SLOT — a photograph where one exists, the generated scene
+            everywhere else. Both fill the slot the same way, which is the
+            whole reason the slot was built as a slot.
+
+            `hasPhotography` rather than the poster key in `property_scenes`:
+            the seed wrote keys for all twelve houses in Phase 2, so reading
+            the database here would hang eleven broken images on the catalog
+            until the last still is generated. */}
         <div className={s.media}>
-          <StayScene
-            biome={stay.biome}
-            bortle={stay.bortle}
-            seed={seed}
-            uid={`sh-${stay.slug}`}
-            className={s.mediaEl}
-          />
+          {photographed ? (
+            <Still
+              className={s.mediaPicture}
+              base={`stays/${stay.slug}/exterior`}
+              portraitBase={`stays/${stay.slug}/exterior-portrait`}
+              alt={`${stay.name} at dusk, seen from across the water.`}
+              priority
+            />
+          ) : (
+            <StayScene
+              biome={stay.biome}
+              bortle={stay.bortle}
+              seed={seed}
+              uid={`sh-${stay.slug}`}
+              className={s.mediaEl}
+            />
+          )}
         </div>
         <div className={s.scrim} aria-hidden="true" />
 
@@ -169,15 +190,20 @@ export default async function StayPage({
               <span>{coords}</span>
               <span>Sleeps {numberWord(stay.capacity)}</span>
               <span>
-                {formatPriceEur(stay.basePriceCents)} / night ·{" "}
+                {formatPriceUsd(stay.basePriceCents)} / night ·{" "}
                 {nightsWord(stay.minNights)} minimum
               </span>
             </p>
           </Reveal>
         </div>
 
+        {/* The stand-in label comes off the moment a real photograph is
+            behind it. Leaving it on would be the site telling a lie about
+            its own picture, which is a strange thing to do on a page whose
+            argument is that every figure on it was measured. */}
         <p className={s.mediaNote}>
-          {exterior?.caption ?? `${stay.name}, from the approach`} · generated stand-in
+          {exterior?.caption ?? `${stay.name}, from the approach`}
+          {photographed ? null : " · generated stand-in"}
         </p>
       </header>
 
@@ -205,6 +231,26 @@ export default async function StayPage({
           />
         </Reveal>
       </section>
+
+      {/* ============================= INSIDE =============================
+          The one full-bleed moment on the page, and it earns the width: the
+          survey above it is instruments and numbers, and this is the first
+          thing that answers "yes, but what is it like to be in there".
+
+          It sits before the description rather than after on purpose — you
+          look, then you read. Only rendered where a real interior exists;
+          there is no generated stand-in for a room, and inventing one would
+          be a picture of a house nobody surveyed. */}
+      {photographed && interior ? (
+        <Reveal as="figure" className={s.inside} distance={18}>
+          <Still
+            className={s.insideMedia}
+            base={`stays/${stay.slug}/interior`}
+            alt={`Inside ${stay.name}: a wood stove lit in a stone chimney breast, timber walls, and the water going dark beyond the glass.`}
+          />
+          <figcaption className={s.insideNote}>{interior.caption ?? "The stove, lit"}</figcaption>
+        </Reveal>
+      ) : null}
 
       {/* ============================ THE HOUSE =========================== */}
       <section className={s.section} id="house">

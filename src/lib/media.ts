@@ -20,6 +20,61 @@ export function mediaUrl(path: string): string {
 }
 
 /**
+ * Houses whose real photography exists on disk.
+ *
+ * `property_scenes` has carried poster keys for all twelve since Phase 2 —
+ * `stays/<slug>/exterior.jpg` and so on — because the seed wrote the paths the
+ * catalog *would* use. Only the houses listed here actually have files behind
+ * those keys; the rest still draw their generated scene, and reading the
+ * database instead of this set would hang eleven broken images on the catalog.
+ *
+ * A hand-kept set rather than a filesystem check on purpose: when
+ * `NEXT_PUBLIC_MEDIA_BASE_URL` points at R2 there is no local file to stat, and
+ * a check that silently stops working is worse than a list somebody has to
+ * remember to edit. **Add a slug here in the same commit as its files.**
+ */
+const PHOTOGRAPHED: ReadonlySet<string> = new Set(["hollowmoss-04"]);
+
+export function hasPhotography(slug: string): boolean {
+  return PHOTOGRAPHED.has(slug);
+}
+
+/**
+ * The rungs a still is published at, widest last.
+ *
+ * 3072 exists because the hero is full-bleed and an ultrawide monitor asks for
+ * 2560 device pixels; 1536 exists so a phone does not download 667 KB to paint
+ * 375 CSS px. Keep in step with `scripts/upscale.py` and the derivative sizes
+ * recorded in `content/CREDITS.md`.
+ */
+const RUNGS = [1536, 3072] as const;
+
+export interface StillSources {
+  jpeg: string;
+  webp: string;
+  fallback: string;
+}
+
+/**
+ * Build the `srcSet` pair for a still stored as `<base>.jpg`.
+ *
+ * The naming convention is the contract: `<base>.jpg` is the widest rung and
+ * `<base>-1536.jpg` the narrow one, with `.webp` beside each. Everything is
+ * generated from one source by hand, so the convention is cheap to keep and
+ * this function is the only place that knows it.
+ */
+export function stillSources(base: string): StillSources {
+  const at = (rung: number, ext: string) =>
+    mediaUrl(rung === RUNGS[RUNGS.length - 1] ? `${base}.${ext}` : `${base}-${rung}.${ext}`);
+
+  return {
+    jpeg: RUNGS.map((r) => `${at(r, "jpg")} ${r}w`).join(", "),
+    webp: RUNGS.map((r) => `${at(r, "webp")} ${r}w`).join(", "),
+    fallback: mediaUrl(`${base}.jpg`),
+  };
+}
+
+/**
  * A living scene: a poster that renders immediately, an optional video loop
  * that swaps in once it can play through, and an optional ambient bed.
  *

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { StayCard as StayCardRow } from "@/lib/db/queries";
-import { formatKm, formatPriceEur } from "@/lib/format";
+import { formatKm, formatPriceUsd } from "@/lib/format";
 import { hashSeed } from "@/components/scene/geometry";
 import { MiniScene } from "@/components/scene/mini-scene";
 import { BIOME_LABEL } from "@/components/solitude/readings";
@@ -63,11 +63,16 @@ export function StayCard({ stay, href }: StayCardProps): ReactNode {
           <span className={s.biome}>{BIOME_LABEL[stay.biome]}</span>
         </div>
         <div className={s.body}>
-          <h3 className={s.name}>{stay.name}</h3>
-          <p className={s.region}>
-            {stay.region}, {stay.country}
-          </p>
-          {stay.tagline ? <p className={s.copy}>{stay.tagline}</p> : null}
+          {/* Grouped so the card can give this block the leftover height and
+              leave the readings and the price on a shared baseline across a
+              row. A tagline of one line versus two must not move a price. */}
+          <div className={s.bodyTop}>
+            <h3 className={s.name}>{stay.name}</h3>
+            <p className={s.region}>
+              {stay.region}, {stay.country}
+            </p>
+            {stay.tagline ? <p className={s.copy}>{stay.tagline}</p> : null}
+          </div>
           <dl className={s.stats}>
             {stats.map(([label, value]) => (
               <div key={label}>
@@ -77,7 +82,7 @@ export function StayCard({ stay, href }: StayCardProps): ReactNode {
             ))}
           </dl>
           <p className={s.price}>
-            {formatPriceEur(stay.basePriceCents)}
+            {formatPriceUsd(stay.basePriceCents)}
             <i>&nbsp;/ night</i>
           </p>
         </div>

@@ -1,6 +1,6 @@
 /**
  * Money is the one thing on this site that is never allowed to be approximately
- * right, and every price the catalog prints goes through `formatPriceEur`. The
+ * right, and every price the catalog prints goes through `formatPriceUsd`. The
  * coordinate formatter is here for the same reason the money one is: it is the
  * only place a measured number is turned into something a human reads, so a
  * rounding mistake would show up on every page at once and nowhere else.
@@ -14,26 +14,26 @@ import {
   formatCoords,
   formatDay,
   formatKm,
-  formatPriceEur,
+  formatPriceUsd,
   numberWord,
 } from "@/lib/format";
 
-describe("formatPriceEur", () => {
-  it("prints whole euros without a decimal tail", () => {
-    expect(formatPriceEur(41000)).toBe("€410");
-    expect(formatPriceEur(31000)).toBe("€310");
+describe("formatPriceUsd", () => {
+  it("prints whole dollars without a decimal tail", () => {
+    expect(formatPriceUsd(41000)).toBe("$410");
+    expect(formatPriceUsd(31000)).toBe("$310");
   });
 
   it("keeps two digits of cents when there are any", () => {
-    expect(formatPriceEur(41050)).toBe("€410.50");
-    expect(formatPriceEur(41005)).toBe("€410.05");
+    expect(formatPriceUsd(41050)).toBe("$410.50");
+    expect(formatPriceUsd(41005)).toBe("$410.05");
   });
 
   it("does not lose cents to floating point", () => {
     // 0.1 + 0.2 arithmetic is exactly what this function exists to avoid.
-    expect(formatPriceEur(30)).toBe("€0.30");
-    expect(formatPriceEur(1)).toBe("€0.01");
-    expect(formatPriceEur(0)).toBe("€0");
+    expect(formatPriceUsd(30)).toBe("$0.30");
+    expect(formatPriceUsd(1)).toBe("$0.01");
+    expect(formatPriceUsd(0)).toBe("$0");
   });
 });
 
