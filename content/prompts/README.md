@@ -219,13 +219,51 @@ houses that were all a dark box with a lit window.
 | `tidebreak-03` ✅ | basalt cliff, breaking sea below, headland behind | three terraces stepping down the cliff | dark oiled timber + glass | outdoor bath on the middle deck |
 | `moss-verse-01` | ancient moss rainforest, boulders, ferns, canopy above | raised on posts, plan curved around the boulders | cedar + glass | cedar soaking tub on the deck, steaming into mist |
 | `sparv-04` | dark tarn, granite shore, pines behind | a low pavilion out **on the water**, on a timber jetty | black steel + glass | sauna at the jetty's end, ladder into the tarn |
-| `quiet-fern-06` | a gorge in temperate rainforest, water below, tree ferns | **a bridge spanning the gorge** | weathering steel + glass | glass floor panel over the drop, rain outside |
+| `quiet-fern-06` | open button-grass moorland, nothing breaking the horizon, the whole sky | **low and long on a raised pale plinth, its whole roof glazed** — the only house whose picture is about the sky rather than the building. Not sunk into the ground: that is how Whitehour became a bunker | pale concrete plinth, dark timber walls, a continuous glass roof | the bed lying under the glass roof beneath the Milky Way, telescope beside it |
 | `whitehour-08` | Kerlingarfjöll: ochre and rust rhyolite, steam from the ground, snow in the shadows | a low arc hugging the slope | dark timber + glass on a stone base | geothermal pool below the house, steaming |
 | `rimefall-02` | open snow, no trees, flat to the horizon | **a ring around an inner courtyard**, with **one bay of the ring cut fully open toward the camera** so the courtyard reads | pale concrete + timber | the hot tub seen through that opening, its steam plume rising clear above the roofline — resolved because it is large and moving, not a prop |
 | `meridian-05` | Atacama, a rock escarpment, salt pan running out below | **a long low bar set into the escarpment**, its flat roofline a dead-straight dark line against the ridge's textured base rather than against sky, with one full-height slot cut through the bar that the warm light comes out of | concrete mixed with local sand | black plunge pool holding the sky, and the light-slot itself · **no fire** |
 | `hollow-cedar-07` | standing bamboo, steep valley, stems crossing the frame | raised on posts with a long engawa veranda | cedar frame + paper screens | onsen bath, lantern light through paper · **no fire** |
 | `kaldbak-09` | Faroese hillside above a sound, cropped grass, sea beyond | long and low, roof flying out over a terrace | turf roof + dry stone | hot tub on the terrace over the sound |
 | `driftline-10` | Lofoten, standing water, black peaks behind | **two towers on stilts in the water**, joined by a covered link | black timber (rorbu) | sauna in one tower, ladder into the sea |
+
+### One thing per interior, and it is never books and a stove again
+
+The interiors repeated before anyone noticed, because the same furniture answers every
+prompt: a wall of books, a wood stove, a sofa, a long table. Five houses in, the owner
+called it — *"крізь все однакове, там книжки, камін"* — and he is right; on a detail page
+the interior sits inches from the exterior and the sameness is unmissable.
+
+**And the interior material has to change too, not just the furniture.** The first five
+interiors were all lined in honey-coloured timber, because warm timber is the easy way to
+carry "one warm light from inside" — and it made five different buildings share one room.
+Warm *light* is the rule; a warm *surface* is not. Light falling on charcoal plaster, lime
+wash, board-formed concrete, dark stained boards or bare stone is still warm light, and it
+looks like a different house. Timber lining is now the exception that has to be argued
+for, not the default.
+
+**Each house gets one object that only it has, and the rest of the room defers to it.**
+Not a set of props: one idea, and everything else quiet. `quiet-fern-06` is a bed under a
+glass roof with a telescope beside it, and no bookshelf at all. `hollow-cedar-07` is water
+and paper. `meridian-05` is depth and shadow — a room where the far end is dark. If the
+one object cannot be named in three words, the interior is not designed yet.
+
+One surface and one idea per house, so no two rooms repeat:
+
+| House | Interior surface | The one idea |
+|---|---|---|
+| `hollowmoss-04` ✅ | timber and stone | the stove in the chimney breast |
+| `blackwater-11` ✅ | timber, double height | the mezzanine and the hung fireplace |
+| `tidebreak-03` ✅ | stone and timber | the hearth built into the rock wall |
+| `moss-verse-01` ✅ | cedar | the curve, and the wall of books |
+| `sparv-04` ✅ | pale pine | the free-standing stove, water on three sides |
+| `quiet-fern-06` | charcoal lime plaster, dark concrete floor | a dark room built for looking up — bed under glass, red reading light |
+| `whitehour-08` | board-formed concrete, wool | steam coming off the pool, seen from inside |
+| `rimefall-02` | lime-washed white, pale ash | the courtyard, walled on all sides |
+| `meridian-05` | rammed earth, unlined | one slot of light across a dark room, and depth |
+| `hollow-cedar-07` | paper screens, tatami, unfinished cedar | water, and light through paper |
+| `kaldbak-09` | dry stone and turf, dark boards | one deep window seat cut into a thick wall |
+| `driftline-10` | tarred boards, glulam | the sea directly beneath the floor |
 
 **Interior views** (`[THE VIEW]`), in the same order: black water and spruce · deep snow
 and pines · open sea breaking on rock · dripping moss and tree ferns · the tarn at eye
