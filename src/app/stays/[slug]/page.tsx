@@ -12,7 +12,12 @@ import { SectionHead } from "@/components/section-head";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
 import { SolitudeIndex } from "@/components/solitude";
-import { BIOME_LABEL, SOLITUDE_NOTE, biomeGround } from "@/components/solitude/readings";
+import {
+  BIOME_LABEL,
+  SOLITUDE_NOTE,
+  biomeGround,
+  biomeSetting,
+} from "@/components/solitude/readings";
 import { StayCard } from "@/components/stay-card";
 import { allStaySlugs, featuredStays, getStayBySlug } from "@/lib/db/queries";
 import { hasPhotography } from "@/lib/media";
@@ -153,7 +158,7 @@ export default async function StayPage({
               className={s.mediaPicture}
               base={`stays/${stay.slug}/exterior`}
               portraitBase={`stays/${stay.slug}/exterior-portrait`}
-              alt={`${stay.name} at dusk, seen from across the water.`}
+              alt={`${stay.name} at dusk — a low timber house lit from within, alone in ${biomeSetting(stay.biome)}.`}
               priority
             />
           ) : (
@@ -246,7 +251,7 @@ export default async function StayPage({
           <Still
             className={s.insideMedia}
             base={`stays/${stay.slug}/interior`}
-            alt={`Inside ${stay.name}: a wood stove lit in a stone chimney breast, timber walls, and the water going dark beyond the glass.`}
+            alt={`Inside ${stay.name}: a wood stove burning is the only light in a spare timber room, and ${biomeSetting(stay.biome)} going dark beyond the glass.`}
           />
           <figcaption className={s.insideNote}>{interior.caption ?? "The stove, lit"}</figcaption>
         </Reveal>

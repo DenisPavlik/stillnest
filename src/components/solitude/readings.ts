@@ -119,3 +119,34 @@ export function biomeGround(biome: Biome): string {
       return "above the treeline · rock and lichen · weather";
   }
 }
+
+/**
+ * Where an exterior photograph is standing, as a noun phrase for alt text.
+ *
+ * Deliberately at biome level rather than per house. The alt text for twelve
+ * houses cannot be twelve hand-written sentences that someone remembers to add
+ * — the first version of the detail page described a house "seen from across
+ * the water", which is true of Hollowmoss and a lie about a salt pan. Anything
+ * generated per house has to stay true for all twelve, and biome is the finest
+ * grain the database actually carries.
+ *
+ * The rest of the sentence comes from the base prompt's constants — dusk, a low
+ * timber house, one warm light from inside — which every image in the catalog
+ * is generated against, so it is safe to assert.
+ */
+export function biomeSetting(biome: Biome): string {
+  switch (biome) {
+    case "forest":
+      return "deep forest";
+    case "snow":
+      return "deep snow";
+    case "desert":
+      return "high desert";
+    case "bamboo":
+      return "a bamboo grove";
+    case "coast":
+      return "a cliff above open water";
+    default:
+      return "bare high ground above the treeline";
+  }
+}

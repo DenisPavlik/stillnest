@@ -32,6 +32,15 @@ export interface StillProps {
   portraitBase?: string;
   /** Set on the one image above the fold; leaves the rest to lazy-load. */
   priority?: boolean;
+  /**
+   * How wide the slot actually is, so the browser can pick a rung.
+   *
+   * Defaults to the full-bleed case, which is what the heroes and the interior
+   * band are. A card in the three-wide catalog grid is never more than ~440px,
+   * and left at `100vw` it would pull the 3072 file to paint it — the exact
+   * waste the narrow rung exists to prevent.
+   */
+  sizes?: string;
 }
 
 export function Still({
@@ -40,6 +49,7 @@ export function Still({
   className,
   portraitBase,
   priority = false,
+  sizes = "100vw",
 }: StillProps): ReactNode {
   const landscape = stillSources(base);
 
@@ -59,7 +69,7 @@ export function Still({
         </>
       ) : null}
 
-      <source type="image/webp" sizes="100vw" srcSet={landscape.webp} />
+      <source type="image/webp" sizes={sizes} srcSet={landscape.webp} />
 
       {/* A plain <img>, for the reason scene-media.tsx gives: a fixed slot
           filled with object-fit, where next/image's layout machinery buys
@@ -69,7 +79,7 @@ export function Still({
           serve. */}
       <img
         className={s.img}
-        sizes="100vw"
+        sizes={sizes}
         srcSet={landscape.jpeg}
         src={landscape.fallback}
         alt={alt}

@@ -23,24 +23,90 @@ These are not stylistic preferences. Break one and the image is unusable.
 3. **One warm light source, from inside the house.** Everything else in the frame is
    cold. That contrast *is* the brand — the palette has exactly one warm token
    (`--ember`) and it means "lit or live".
+
+   **Fire is not that source everywhere.** A burning hearth is right for forest, snow,
+   highland and coast, where the cold outside is the thing the warmth answers. In
+   bamboo and desert it is wrong — nobody lights a fire in a bamboo valley, and a
+   stove in the high desert reads as imported. There the warm source is lamplight:
+   light through paper screens and low lanterns in bamboo, a deep warm wash from the
+   back of the room in desert. The rule is one warm light from inside; fire is only
+   one way of supplying it.
 4. **Locked-off camera, eye level, no drone.** Aerial shots read as real-estate
    marketing. We are standing there, on foot, at dusk, the way the survey was taken.
 5. **Dusk or blue hour.** Never midday. Never a bright blue sky.
 
 ## The house is the subject, but it is never alone in the frame
 
-**The house occupies roughly 45–55% of the frame width, and no more than about 10% of
-the frame area.** Those two numbers together are the rule; the width alone is not.
+**The house occupies roughly 45–55% of the frame width.** That is the rule, and it is
+the whole of it.
 
-This replaces an earlier rule of 10–15% of width, which was wrong in both directions
-and was corrected against real images (owner's call, and he was right). At 10–15% the
-house is a detail in a landscape photograph — the site stops selling a stay and starts
-selling a forest, and nobody books a forest. What the rule was actually protecting is
-**area**: the house has to sit inside far more dark than house, so the distance around
-it is the thing you feel.
+It replaces an earlier rule of 10–15% of width, which was wrong in both directions and
+was corrected against real images (owner's call, and he was right). At 10–15% the house
+is a detail in a landscape photograph — the site stops selling a stay and starts selling
+a forest, and nobody books a forest.
 
-The forest, the ridge or the snow must still rise well above the roofline on both
-sides. That is what holds the scale when the house gets big enough to want.
+### The area cap is gone, and it was the cause of the sameness
+
+The width rule used to carry a second half: *no more than about 10% of frame area*. It
+has been removed, because the two numbers multiplied into a rule nobody intended. At 3:2,
+50% of frame width under a 10% area cap allows a bounding box no taller than **20% of
+frame height** — a silhouette wider than **3.75:1**. Worked in metres, at 50% width:
+
+| House | Share of frame area | Verdict under the old cap |
+|---|---|---|
+| long single-storey bar, 12 × 3 m | 9.4% | fits |
+| two-storey volume, 12 × 6 m | 18.8% | broke it, by double |
+| tower, 6 × 9 m | 56.2% | broke it, by six times |
+
+So the spec permitted exactly one shape: a long low bar. Every vertical silhouette — the
+thing that actually distinguishes one house from another — was arithmetically forbidden,
+and four houses in a row came back as a dark box with a lit window. The two frames that
+passed the owner's gate, Blackwater's stacked volumes and Tidebreak's three terraces,
+**both break the old cap**. The rule was already being overruled by the good pictures.
+
+What the cap was reaching for is real and worth keeping: the house has to sit inside far
+more dark than house. That is now carried by the rule below, which does not fight height.
+
+**The forest, the ridge or the snow must rise well above the roofline on both sides.**
+That is what holds the scale when the house gets big enough to want.
+
+Worth knowing where we stand against practice: of the published operator heroes measured
+during the framing research, every one puts the house at **14–30% of frame width** — Kip's
+Wildscapes 14%, Ascella 21%, Simplicity 23%, Fogo Island Inn 23.6% of *area*. Our 45–55%
+has no photographic precedent in that set. It is a deliberate departure, made because we
+are selling one building rather than a mood, and it stands. Just do not expect a reference
+photograph to look like our frame.
+
+**And nothing may stand in front of the building.** The landscape frames it, from the
+sides and from behind and across the ground in front — it never covers it. Moss Verse's
+first frame put a boulder across the middle of the facade and the picture stopped being
+of a house and started being of a forest. We rent the house; the setting is the reason
+it is worth renting, not the product. Trunks, rocks and ferns belong at the edges of the
+frame and low in the foreground, below the floor line.
+
+## Twelve buildings, not one building twelve times
+
+The constants in the base prompt are the **photography** — dusk, one warm light from
+inside, 50mm at eye level, no people, the palette. They are not the architecture. An
+early draft froze the building too ("a low horizontal single-storey form"), and twelve
+houses would have been the same house in twelve landscapes.
+
+**What makes two houses read as different is silhouette, not cladding.** Swapping timber
+for concrete and one storey for two produced four houses that a visitor would still
+call the same house, because all four were a low box with a big lit window. Change the
+outline against the sky: a tower, a bridge across a gorge, a ring around a courtyard, a
+pitched roof that flies out over a terrace, two volumes joined by a link, a curve.
+
+Two traps found the expensive way:
+
+- **Do not bury a house in the ground.** Whitehour's first attempt sat flush in the slope
+  with one long horizontal glass slot and read as a bunker. A house needs an outline.
+- **Do not strip the fittings.** Blackwater's first attempt forbade balconies, railings
+  and visible hardware, and came back a shed. Decks, rails, steps and terraces are what
+  say somebody lives here.
+
+The gate is not whether the image obeys this file. **The gate is whether the owner would
+rent the house.** Everything above is only how to get there faster.
 
 ## Aspect ratio is a composition decision, not an export setting
 
@@ -137,27 +203,289 @@ a chair, a shelf of books, one blanket.
 
 ## The twelve
 
-| Slug | Biome setting | Placement | Foreground element | Palette |
-|---|---|---|---|---|
-| `hollowmoss-04` | old spruce forest beside black standing water | centre, far bank | still water in the lower third, mirroring the house | green-black, moss, slate |
-| `blackwater-11` | dense pine on a snow shield | right third | untracked snow, low drifts | blue-grey, white, near-black |
-| `tidebreak-03` | black basalt cliff above open sea | left third, on the cliff edge | wet dark rock, sea spray haze | charcoal, cold steel, deep teal |
-| `whitehour-08` | bare alpine plateau above the treeline | centre, small on the horizon | wind-scoured snow and exposed rock | white, pale grey, faint blue |
-| `rimefall-02` | open snow plateau, no trees at all | right third, distant | flat snow running to the horizon | white-blue, grey, near-black |
-| `meridian-05` | high desert salt pan, no vegetation | centre, very small | cracked salt flat, distant ridge | ochre, dust, deep indigo sky |
-| `hollow-cedar-07` | standing bamboo grove | centre, half hidden by stems | bamboo stems crossing the foreground | jade, olive, warm grey |
-| `moss-verse-01` | ancient moss-covered rainforest | left third, raised on posts | moss-covered boulders and ferns | deep green, wet stone, black |
-| `kaldbak-09` | turf-roofed cliff above a sound | right third | dry stone wall, cropped grass | slate, moss, cold sea grey |
-| `sparv-04` | granite shelf above a dark tarn | centre | bare granite and low scrub | grey granite, black water, pine |
-| `quiet-fern-06` | temperate rainforest, tall wet trees | left third, deep in trees | tree ferns and hanging moss | emerald, brown-black, mist |
-| `driftline-10` | black rock shelf above a fjord | right third | dark rock and cold still water | blue-black, granite, steel |
+Four columns matter and they are not interchangeable. **Setting** has to give the frame
+three planes — foreground texture, a middle drop or water, a wall behind. **Silhouette**
+is what stops two houses reading as the same house. **Material** follows the biome:
+timber in forest, stone and turf where there is no timber, concrete mixed with local
+sand in desert, paper and cedar in bamboo. **The luxury object** is the one thing in
+frame that says somebody would pay to be here — a bath, a sauna, a pool, a fire outside.
+An earlier version of this table had none of those last two columns, and produced four
+houses that were all a dark box with a lit window.
 
-**Interior views** (`[THE VIEW]`), in the same order: black water and spruce · deep
-snow and pines · open sea at dusk · bare snow and sky · empty white plateau · a salt
-pan under stars · bamboo stems · dripping moss and ferns · the sound below · a dark
-tarn · wet ferns · a fjord going dark.
+| Slug | Setting (three planes) | Silhouette | Material | Luxury object |
+|---|---|---|---|---|
+| `hollowmoss-04` ✅ | old spruce, black standing water, far bank | low horizontal, single storey | dark timber + stone | the lit window over water |
+| `blackwater-11` ✅ | snowy pine on a snow shield | two stacked volumes, upper one cantilevered | charred black timber | double-height glass living room |
+| `tidebreak-03` ✅ | basalt cliff, breaking sea below, headland behind | three terraces stepping down the cliff | dark oiled timber + glass | outdoor bath on the middle deck |
+| `moss-verse-01` | ancient moss rainforest, boulders, ferns, canopy above | raised on posts, plan curved around the boulders | cedar + glass | cedar soaking tub on the deck, steaming into mist |
+| `sparv-04` | dark tarn, granite shore, pines behind | a low pavilion out **on the water**, on a timber jetty | black steel + glass | sauna at the jetty's end, ladder into the tarn |
+| `quiet-fern-06` | a gorge in temperate rainforest, water below, tree ferns | **a bridge spanning the gorge** | weathering steel + glass | glass floor panel over the drop, rain outside |
+| `whitehour-08` | Kerlingarfjöll: ochre and rust rhyolite, steam from the ground, snow in the shadows | a low arc hugging the slope | dark timber + glass on a stone base | geothermal pool below the house, steaming |
+| `rimefall-02` | open snow, no trees, flat to the horizon | **a ring around an inner courtyard**, with **one bay of the ring cut fully open toward the camera** so the courtyard reads | pale concrete + timber | the hot tub seen through that opening, its steam plume rising clear above the roofline — resolved because it is large and moving, not a prop |
+| `meridian-05` | Atacama, a rock escarpment, salt pan running out below | **a long low bar set into the escarpment**, its flat roofline a dead-straight dark line against the ridge's textured base rather than against sky, with one full-height slot cut through the bar that the warm light comes out of | concrete mixed with local sand | black plunge pool holding the sky, and the light-slot itself · **no fire** |
+| `hollow-cedar-07` | standing bamboo, steep valley, stems crossing the frame | raised on posts with a long engawa veranda | cedar frame + paper screens | onsen bath, lantern light through paper · **no fire** |
+| `kaldbak-09` | Faroese hillside above a sound, cropped grass, sea beyond | long and low, roof flying out over a terrace | turf roof + dry stone | hot tub on the terrace over the sound |
+| `driftline-10` | Lofoten, standing water, black peaks behind | **two towers on stilts in the water**, joined by a covered link | black timber (rorbu) | sauna in one tower, ladder into the sea |
+
+**Interior views** (`[THE VIEW]`), in the same order: black water and spruce · deep snow
+and pines · open sea breaking on rock · dripping moss and tree ferns · the tarn at eye
+level · the gorge below through rain · steam and ochre hills · the courtyard and flat
+snow beyond · the salt pan under stars · bamboo stems · the sound below · the fjord
+going dark.
 
 ---
+
+## Building the frame
+
+The rules above say what may be in the picture. They say nothing about where to stand,
+and that is what kept failing: a 50mm eye-level dusk frame can still be a landscape
+photograph with a house somewhere in it. Everything here came out of a research pass over
+published architectural photography and real operator heroes, then an adversarial pass
+that killed 49 of 125 candidate patterns — invented numbers, drone shots cited as
+eye-level practice, and advice that cannot be expressed to a diffusion model at all.
+**Where a number could not be sourced it says so.** A made-up number is worse than an
+admitted gap, because the next person builds on it.
+
+### Where the camera stands
+
+**Roughly 30 metres back.** At 50mm on 3:2 the horizontal field is 39.6°, so frame width
+is 0.72 × distance. Putting an 8 m facade across half the frame means standing at 22 m; a
+12 m facade at 33 m. Write it as `shot from roughly 30 metres on a 50mm`. It is also the
+honest reason the landscape keeps stealing the picture — at that distance the house
+genuinely is small, so its prominence has to come from tone and glow, never from size.
+
+**Lens at 1.4–1.5 m, and never tilted up.** Real-estate practice puts the camera at the
+height of the entry door and level ([fotello](https://fotello.co/blog/exteriorphotography),
+[fstoppers](https://www.fstoppers.com/education/4-easy-ways-improve-your-real-estate-photography-compositions-563000)).
+You cannot ask an image model for parallel verticals, so ask for the consequence:
+**the horizon sits on the frame's centre line and the camera is not looking up at the
+house.** The exact centimetre figure is ours, matched to the eye-level constant — *not
+sourced*.
+
+That level camera hands over a free test. With the lens at 1.45 m, everything above 1.45 m
+of building is drawn against open sky: the base lands about 10% of frame height below
+centre and the ridge about 10% above it. **If the whole house sits below the horizon line,
+the camera was too high or too far back — and that is exactly the frame that reads as a
+bunker.** Whitehour's first attempt failed precisely here.
+
+**Show the corner, not the elevation.** Two planes at different tones put an internal edge
+inside the silhouette, which is what stops a small volume flattening into a decal on the
+landscape. Degrees are not promptable; planes are — name them: *the entry wall and the
+glazed wall both visible, meeting at the corner nearest the camera, the two walls at
+clearly different tones.* Go frontal in exactly two cases: when the whole envelope glows
+as a lantern, or when a wedge or an apex is itself the subject.
+
+### The sky
+
+**20–25 minutes after sunset.** Multiple twilight practitioners converge on it, and the
+usable balance lasts only 10–15 minutes. **Never write "night", "after dark", "nocturnal"
+or "moonlit"** — that is a later, blacker phase, and it is where the jack-o'-lantern
+render comes from.
+
+Ask for the sky as a lit surface rather than a backdrop: *deep blue sky that still holds
+luminance, explicitly not a black night sky.* But it must lose to the window — see below.
+
+### The window has to be the brightest thing in the frame
+
+Our own palette has exactly one warm token and it means "lit or live". It was being broken
+without anyone noticing: measured across the first four houses, the brightest mass in the
+frame is the **sky**, not the lit window, in two of them.
+
+```
+blackwater-11    warm (0.67, 0.49) L=0.29   peak (0.53, 0.39) L=0.57   ok
+hollowmoss-04    warm (0.53, 0.58) L=0.07   peak (0.52, 0.16) L=0.34   FAIL
+moss-verse-01    warm (0.32, 0.50) L=0.04   peak (0.70, 0.34) L=0.42   FAIL
+tidebreak-03     warm (0.38, 0.38) L=0.23   peak (0.45, 0.47) L=0.62   ok
+```
+
+A dusk photograph of a house in a forest looks correct to the eye whichever thing in it
+happens to be brightest, which is why this needs a number rather than a glance.
+`python3 scripts/frame-check.py` reports it per house. Fix it in the prompt — a deeper
+sky and a brighter interior — not by editing the file, because the sky is half the picture.
+
+The facade itself is **dimly lit, not a silhouette**: cladding still shows material —
+timber grain, board joints, standing-seam ribs — lit by cold ambient skylight, clearly
+darker than the window but never a black cut-out. How much darker in stops is *not
+sourced*; anyone who offers you "2–3 stops under" invented it.
+
+### Separating the building from its background
+
+The highest-value pattern found, and it costs nothing against any constant: **put the
+light roof plane inside a dark background mass, and let only the ridge break out of it
+into sky.** On Kolman Boye's Vega Cottage it would have been easy for a grey house to
+vanish among grey fog and grey rock; the photographer keeps it by placing the bright roof
+within the bounds of the dark mountain behind
+([apalmanac](https://apalmanac.com/potw/project-of-the-week-ake-eson-lindman-kolman-boye-2604)).
+**Never let the house share a tone with anything it touches.** That is the entire cure for
+"grey building on grey ground", which is why Tidebreak's first concrete attempt failed.
+
+The dark mass goes **behind the walls and tops out below the ridge** — a far bank, a rising
+slope, a distant ridge. Not the trees at the house: a 20 m canopy 40 m behind an 8 m house
+fills the whole upper frame and leaves no sky for the ridge to break into. When the two
+rules collide, **ridge-into-sky wins**, because it is the fix for a named failure.
+
+Where no dark mass exists — open snow, moor, salt pan — the substitute is **mist as a
+separator, not an atmosphere wash**: it begins *behind* the building at roughly roof
+height, and the air between camera and facade stays clear. Mist in front is what turns a
+house into a grey smudge.
+
+### Foreground, without covering anything
+
+Two jobs, two places. **Vertical foliage lives in one outer third and the top corners**,
+as a vignette. **Ground texture lives in the bottom band, every mass below the floor
+line.** The positive form matters more than the prohibition: *the base of the building is
+visible along its whole length where it meets the ground.*
+
+An earlier research pass tried to license trunks crossing the frame "as long as they miss
+the glass". It was killed by measuring its own cited photograph, where the trunks stand at
+46–48% of frame width — directly across the facade. That is the Moss Verse boulder again.
+Foreground never enters the central third.
+
+### Where the luxury object goes — and why it can't be a prop
+
+Two measurements from our own code kill the obvious approach.
+
+**The card renders at ~31 px per metre, not 187.** A card is ~440 CSS px wide
+(`CARD_SIZES` in `src/components/stay-card.tsx`), so the full source width maps to about
+495 px. A 0.6 m chair is 18 px. A 0.15 m board joint is under 5 px — moiré, not detail.
+
+**The scrim paints the bottom of the frame black.** Both heroes composite a legibility
+gradient over the lower band — on the detail page 0.9 at the bottom, 0.56 at 30%
+(`src/app/stays/[slug]/stay.module.css`). Anything placed at the building's feet lands
+under a 44–54% black wash.
+
+So in the wide frame, desire has to be carried by **large forms**: the deck plane
+projecting past the volume, a cantilever with a visible shadow gap beneath it, glazing
+divided into a countable rhythm, the depth of a roof overhang, a long rail line. A tub or
+a fire in the wide shot is decoration nobody can resolve. **Safe area: nothing
+load-bearing below 58% of frame height or above 24%.**
+
+### The 9:16 hero is a different picture, not a crop
+
+It is made by outpainting the canonical 3:2 vertically, so its geometry is decided by the
+extension rather than by a camera. The width constant is currently undefined for it and is
+being broken in both directions — shipped houses measure 53%, 36% and 67% of source width.
+Until there is a rule, match the house's share to Hollowmoss's 53% and check it by eye at
+375 px.
+
+### And what the site then throws away
+
+Every band budget above is spent against the full 3:2 frame, and the site does not show
+the full frame. On a 2560×1080 display the home hero keeps the middle 63% of frame height;
+the detail hero keeps about 52%; the interior band cuts 18% from each end; the card takes
+5.6% off each side. Compose the load-bearing content into the middle half and treat the
+edges as expendable.
+
+### Per landscape
+
+Each row is a real published project, measured. Take the framing device and the material;
+do not copy the crop, because most of these put the house far smaller than we do.
+
+| Setting | Framing device | Material | Avoid |
+|---|---|---|---|
+| Boreal forest, black water | House is the *lightest* object: pale timber against fog-veiled conifers in three receding tonal steps, dark foliage vignette in both edge columns, full mirror reflection beneath. No sky needed. — Water Cave Sauna, [archdaily](https://www.archdaily.com/1036068) | Pale untreated pine, black water, moss | Dark trunks crossing dark cladding; mist between camera and house |
+| Snowy pine | Tonal inversion only — a black-stained envelope, walls and roof one unbroken material, reading as a single dark wedge. **Do not put the roofline against sky:** in snow, sky and ground sit at nearly the same value. Lift the volume ~1.5 m on slender posts for a hard shadow line beneath. — Skigard Hytte, [archdaily](https://www.archdaily.com/938440) | Black-stained ore pine outside, pale veneer inside | The roofline-against-sky reflex |
+| Basalt sea cliff | Stilts, so a strip of pale sea and afterglow shows beneath the floor line; put the roofline **in the afterglow band**, foreground rock in the bottom 20%, the frame darkening across with the building on the dark side. — Fogo Island Inn, [archdaily](https://www.archdaily.com/441419) | Pale vertical board, black window reveals, dark stilts, lichen granite | Exterior uplight on the facade — Fogo's warm blowout is floodlight, not an interior source |
+| Moss rainforest, backed by a ridge | Only the top ~10% is sky, so separation is the glow plus **a pale timber soffit lit from beneath a dark overhanging roof** — a bright horizontal line at the top of the volume. — Chalé da Mata, [archdaily](https://www.archdaily.com/1038037) | Cedar, glass, boulders, ferns | A boulder or fern mass across the glazing; deck uplights as a second warm source |
+| Dark tarn, jetty pavilion | Camera at water level from across the inlet, horizon at 55–60% of height, roofline in the sky's brightest band. Still water carries a full mirror of the lit window straight down. — Manshausen 2.0, [archdaily](https://www.archdaily.com/920773) | Black steel, glass, granite | Ladders, rungs and rails as desire objects — all below the resolvable threshold |
+| Gorge bridge | No sky at the building's level, so **build the backdrop**: a brighter gap — a canopy opening or a lit valley mouth — directly behind the building at its own height; bottom 45–50% near-black and *empty*, not busy. Lift it clear on steel rods for a shadow gap. — Juvet Landscape Hotel, [architizer](https://architizer.com/projects/juvet-landscape-hotel) | Weathering steel, glass, pale untreated timber, moss | Busy detailed understorey; black-stained *exterior* boards — Juvet's black oil is interior only |
+| Geothermal highland | **Invert the tonal structure.** Top 60% — sky and lava — near-black and featureless; the bottom 40% *rises*, because the milky water is the bright plane. The building reads as a dark bar against glowing water, with lava masses in the edge columns and the centre channel clear. — The Retreat at Blue Lagoon, [archdaily](https://www.archdaily.com/985770) | Board-formed concrete, black lava, bright moss, basalt | Pool-edge lighting standing in for the interior glow |
+| Open snow, no trees | Dark envelope plus the ~1.5 m post shadow line. On a treeless plateau use **two or three overlapping volumes** — open ground gives no scale reference and a lone box reads as a model. Site on a local high point and shoot from level with its base so the whole roof profile crosses sky. — Tungestølen, Snøhetta, [archdaily](https://www.archdaily.com/942033) | Pale concrete, timber | A courtyard fire as a second warm source |
+| High desert escarpment | A long low bar whose flat roofline reads as a dead-straight dark line against the **textured base of the ridge**, not against open sky. Sky 2–3× brighter than ground; scrub fills the bottom 40% with every plant top below the floor line. — Tucson Mountain Retreat, DUST, [archdaily](https://www.archdaily.com/370237) | Rammed earth, weathered steel roof plane, board-formed concrete | A fire bowl; a saguaro across the facade. **Honest gap:** that source has no dusk exterior at all — the geometry transfers, the light does not |
+| Bamboo valley | Bamboo is a fine vertical grain that swallows vertical forms, so the readable element is a long horizontal **deep overhanging eave with a pale lit soffit** — the one direction the background cannot compete with. — The Campsite Hotel, [archdaily](https://www.archdaily.com/1013137) | Steel frame, glulam, pale soffit, cedar and paper screens, gravel | Everything else in that source: its site is peri-urban, full of power lines, sheds and people. Use the eave geometry only |
+| Grass hillside above a sound | Dark-on-light: a dark envelope against pale sunless grass or a mist band starting behind at roof height. Flanking masses held **below** the roofline so the profile stays clean. — Shishi-Iwa House, Shigeru Ban, [archdaily](https://www.archdaily.com/910714) | Turf roof, dry stone, cedar | A large empty mown foreground earning nothing |
+| Fjord water, towers on stilts | **The lantern, in reverse:** an open timber lattice over full-height glass so the whole envelope emits, against a dark grey sky field. Camera low on smooth glaciated rock. Still one interior source — the screen distributes it. — House on an Island, Atelier Oslo, [archdaily](https://www.archdaily.com/910946) | Silvery acetylated timber lattice, exposed glulam, board-marked concrete, black rorbu timber | Copying its framing — copy the lantern mechanism only |
+
+### Two houses this spec caught before they were shot
+
+Both collisions were real rather than hypothetical, and both are now resolved in the table
+above. Recorded because the reasoning generalises.
+
+- **`rimefall-02`** was a ring with blank outer walls and a courtyard fire. Blank walls at
+  eye level from 30 m, with no glazing toward the camera and the courtyard fire banned as a
+  second warm source, *is* the bunker — it would have failed exactly as Whitehour did. Fixed
+  by cutting one bay of the ring open toward the camera, which gives the interior light a
+  route into frame and makes the courtyard legible at the same time. **When the glazed face
+  is not toward the camera, you must name the route the warm light takes out.**
+- **`meridian-05`** was assigned "pressed into the escarpment with slot-canyon light cuts"
+  while the desert row prescribed a long low bar — the silhouette and the framing
+  contradicted each other. Resolved as a long low bar with one full-height slot, so the
+  slot supplies both the light and the vertical incident.
+
+### What the model cannot do, so stop asking
+
+- **There is no negative-prompt channel.** GPT Image 2 exposes size, quality and format —
+  no `negative_prompt`, no `seed`. Our closing "no people, no cars, no roads" block is read
+  as content. It has worked so far through chat, but every prohibition is stronger stated
+  as a positive fact about the frame.
+- **No seed means no reproducible sky.** Cross-house consistency cannot come from
+  prompting; it comes from the canonical-file rule we already have.
+- **Stated fractions come back wrong, by a known factor.** Ask a fresh generation for 30%
+  and it delivers about 50%; ask an edit for 30% and it delivers 25%.
+- **Metric camera figures are style tokens, not projection.** "30 metres", "1.45 m",
+  "4–8° below the horizon" steer the look; the model does not compute them. Restate as what
+  is visible and what overlaps what.
+- **Anything under half a metre arrives as mush**, and then AuraSR invents its own version
+  of it. The upscale is a second author with no instructions.
+
+## Doing one house
+
+Hollowmoss 04 is the reference implementation of every step below. Three of these are
+yours and cannot be automated — the model is driven by hand in ChatGPT. The rest is one
+command.
+
+**1 · Exterior, fresh generation.** Base prompt plus the house's row from the table
+above. Ask for 30% of frame width and expect about 50%; do not correct it upward. Judge
+it against the width band — ~45–55% — against the frame recipe in **Building the frame**
+below, and against the other houses already done, not on its own. Then run
+`python3 scripts/frame-check.py <slug>` once the file is in place.
+
+**2 · That file is now canonical.** Save it as `exterior.jpg`. It is never regenerated,
+and every other view descends from it. This is the law that costs the most to break.
+
+**3 · Portrait hero — by EDIT.** Attach the canonical file, ask for 9:16, forbid any
+change to the building: *"Keep this exact building unchanged — same roofline, same stone
+chimney, same window layout, same lit interior. Do not redesign or move the house."* Then
+say what to extend. Every detail page hero is full-bleed portrait, so all twelve need
+one. Save as `exterior-portrait.jpg`.
+
+**4 · Interior — by REFERENCE, not edit.** Attach the canonical exterior as a reference
+in a normal message. An interior is a new camera position, not a transformation of the
+facade, and asking for an edit produces a facade with furniture in front of it. Use the
+interior paragraph above, and point at what is visible through the glass — the house's
+entry in the interior-views list. Save as `interior.jpg`.
+
+**Check the aspect ratio of anything an edit returns.** An edit does not have to give
+back the shape it was given: Moss Verse's boulder-clearing edit came back at 4:3 from a
+3:2 source, same pixel count reshaped, which is why it also looked softer — 6% fewer
+pixels across the width, on top of the edit pass. A landscape still that is not 3:2 gets
+cropped back to 3:2 locally rather than re-edited; asking the model again risks the
+building drifting, and a crop cannot.
+
+**5 · Upscale the three.** GPT Image 2 stops at 1536 and the hero is full-bleed:
+
+```
+python3 scripts/upscale.py public/stays/<slug>/exterior.jpg  --width 3072
+python3 scripts/upscale.py public/stays/<slug>/interior.jpg  --width 3072
+python3 scripts/upscale.py public/stays/<slug>/exterior-portrait.jpg --width 1400
+```
+
+**6 · Derive the other seven files.**
+
+```
+python3 scripts/derive.py <slug>
+```
+
+It writes the WebP beside every JPEG and the 1536 rung beside every 3072 one, at the
+exact quality settings that reproduce Hollowmoss 04, then tells you whether the house is
+complete. `--check` reports without writing; `--all` sweeps every house.
+
+**7 · Register the slug.** Add it to `PHOTOGRAPHED` in `src/lib/media.ts`, in the same
+commit as the files. Nothing renders until you do — and `tests/unit/photography.test.ts`
+fails if you register a slug whose files are missing.
+
+**8 · Log the assets** in `content/CREDITS.md`: model, which prompt, whether it was a
+generation, an edit or a reference, and anything measured.
 
 ## What happens to an image after it exists
 

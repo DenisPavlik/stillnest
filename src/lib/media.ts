@@ -32,8 +32,18 @@ export function mediaUrl(path: string): string {
  * `NEXT_PUBLIC_MEDIA_BASE_URL` points at R2 there is no local file to stat, and
  * a check that silently stops working is worse than a list somebody has to
  * remember to edit. **Add a slug here in the same commit as its files.**
+ *
+ * Exported so `tests/unit/photography.test.ts` can hold the list and the files
+ * on disk to each other — the list being hand-kept is the reason it needs a
+ * test, not a reason it cannot have one.
  */
-const PHOTOGRAPHED: ReadonlySet<string> = new Set(["hollowmoss-04"]);
+export const PHOTOGRAPHED: ReadonlySet<string> = new Set([
+  "hollowmoss-04",
+  "blackwater-11",
+  "tidebreak-03",
+  "moss-verse-01",
+  "sparv-04",
+]);
 
 export function hasPhotography(slug: string): boolean {
   return PHOTOGRAPHED.has(slug);

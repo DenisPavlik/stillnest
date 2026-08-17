@@ -19,16 +19,46 @@ ffmpeg. **Ambient beds** come from ElevenLabs SFX v2, which loops natively.
 | `stays/hollowmoss-04/exterior.jpg` | GPT Image 2 (edit) | The canonical frame attached, asked to zoom **out** — more forest left and right, more cloud above, more water below — with the building explicitly forbidden to change. | **The Hollowmoss 04 in use.** 1536×1024 (3:2), 190 KB. House 25.4% of frame width, down from 51.8% before the zoom-out; at 51.8% the tagline landed on top of the house on desktop. |
 | `stays/hollowmoss-04/exterior-portrait.jpg` | GPT Image 2 (edit) | Canonical frame attached, asked to extend vertically to 9:16 — forest continued upward into cloud, water downward with the reflection — while explicitly forbidding any change to the building. | Mobile hero only. 1400×2488 (0.5628 ≈ 9:16). House 53.1% of source, 59.6% of a 375×747 hero. |
 | `stays/hollowmoss-04/interior.jpg` | GPT Image 2 (reference) | Canonical exterior **attached as a reference**, not edited: an interior is a new camera position rather than a transformation of the facade. Asked to match what is visible through the glass — vertical timber, the stone chimney breast, black-framed bays — with the stove lit in that chimney and the water going dark outside. | 3072×2048 (3:2). The stove sits in the same stone mass that reads as a chimney on the facade, which is what makes the two pictures one building. |
+| `stays/blackwater-11/exterior.jpg` | GPT Image 2 (generation) | Two stacked volumes — a long horizontal lower one in charred black timber sitting into the snow bank, an upper one set back and cantilevered over the slope with a two-storey glass end wall; a double-height living room behind it with a suspended steel fireplace and a mezzanine; a deck wrapping the lower volume. Dense pine on a snow shield, right third. | **The canonical Blackwater 11.** 1536×1024 (3:2). House ~55% of frame width. Second attempt — see the rejected one below. |
+| `stays/blackwater-11/exterior-portrait.jpg` | GPT Image 2 (edit) | Canonical frame attached, extended vertically to 9:16 — pines continued upward into low cloud, snow downward into the foreground — with every part of the building explicitly forbidden to change. | Mobile hero only. 1400×2488 (0.5628), the same ratio as Hollowmoss's. |
+| `stays/blackwater-11/interior.jpg` | GPT Image 2 (reference) | Canonical exterior **attached as a reference**, stated explicitly as not an edit. Asked for the double-height living room read off the facade: exposed timber beams, the mezzanine and its black steel rail, the suspended fireplace lit, a long table, pines and deep snow through the two-storey glass. | 3072×2048 (3:2). Every element was already visible through the glass in the exterior, which is what makes the two pictures one building. |
+| `stays/tidebreak-03/exterior.jpg` | GPT Image 2 (generation) | Three stacked terraces stepping down a basalt cliff rather than one floating slab; dark oiled timber, a two-storey glass seaward face, a stone hearth alight on the lowest level, a deck with a black steel rail and an outdoor bath steaming. Left third, spray haze in the foreground. | **The canonical Tidebreak 03.** 1536×1024 (3:2). Second attempt — see the rejected one below. |
+| `stays/tidebreak-03/exterior-portrait.jpg` | GPT Image 2 (edit) | Canonical frame attached, extended vertically to 9:16 — cliff continued upward into low cloud, rock and breaking sea downward — with every part of the building explicitly forbidden to change. | Mobile hero only. 1400×2488 (0.5628). House ~36% of source against Hollowmoss's 53%: the drama here is the cliff, so the house sits smaller in the phone hero than in the other two. |
+| `stays/tidebreak-03/interior.jpg` | GPT Image 2 (reference) | Canonical exterior attached as a reference. Asked for the lowest level — the room out over the drop: stone hearth alight in the back wall, timber ceiling, the mezzanine and its steel rail, deep chairs turned to the water, and the cliff and breaking sea through the full-height glass. | 3072×2048 (3:2). |
 
-Both descend by **edit** from one generated frame (the ~51.8% exterior, kept out of the
-repo — superseded by its own zoom-out). That is why they are the same building: re-running
-the prompt produces a different house every time. See the rule in
+| `stays/moss-verse-01/exterior.jpg` | GPT Image 2 (generation, then edit) | Raised clear of the forest floor on slim posts, the long glazed wall curving around the boulders instead of cutting past them; pale cedar, a deck, and a cedar soaking tub steaming at its far end. Ancient moss rainforest, left third. | **The canonical Moss Verse 01.** The first frame put a mossy boulder across the middle of the facade — the picture became one of a forest rather than of a house, and the owner called it. A second edit moved the camera left and down to clear it, the building forbidden to change. |
+| `stays/moss-verse-01/exterior-portrait.jpg` | GPT Image 2 (edit) | The cleared frame attached, extended vertically to 9:16 — cedar trunks continued up into canopy and mist, moss and tree ferns down into the foreground. | Mobile hero only. 1400×2488 (0.5628). House ~67% of source, the strongest of the four so far in a phone hero. |
+| `stays/moss-verse-01/interior.jpg` | GPT Image 2 (reference) | Canonical exterior attached as a reference. The long narrow room behind the curve: cedar ceiling and walls, a wall of books, a long table, and the curved glass with mossy cedar trunks, ferns and the steaming tub beyond. | 3072×2048 (3:2). |
+
+| `stays/sparv-04/exterior.jpg` | GPT Image 2 (generation, then edit) | A long low pavilion built out on a timber jetty over the tarn rather than on the shore; pale untreated pine with black window frames, a separate sauna volume steaming at the jetty's end. Camera at water level from the far shore. | **The canonical Sparv 04, and the first house shot to the "Building the frame" spec.** The generation's interior read as a meeting room — a grid of dining chairs, no bed, no stove — which also contradicted its own listing (wood stove, reading room). One edit changed **only what is behind the glass**: sofa, armchairs, a lit stove, a bookshelf wall, a shorter table. |
+| `stays/sparv-04/exterior-portrait.jpg` | GPT Image 2 (edit) | The corrected frame attached, extended vertically to 9:16 — sky upward above the treeline, granite shore and water downward. | Mobile hero only. 1400×2488 (0.5628). House ~41% of source; the reflection doubles its vertical presence, which is why it was accepted below Hollowmoss's 53%. |
+| `stays/sparv-04/interior.jpg` | GPT Image 2 (reference) | Canonical exterior attached as a reference. The room looking out over the water: pale timber, the bookshelf wall, sofa and armchairs turned to the glass, the lit stove, and the sauna volume steaming out along the jetty beyond the glazing. | 3072×2048 (3:2). |
+
+Per house, the portrait and the interior both descend from **one** generated exterior —
+by edit and by reference respectively. That is why each set is the same building:
+re-running a prompt produces a different house every time. See the rule in
 `content/prompts/README.md`.
+
+Hollowmoss's canonical frame was itself the ~51.8% exterior, kept out of the repo and
+superseded by its own zoom-out edit.
+
+### Rejected, and why — kept so nobody regenerates them
+
+| Attempt | Why it was cut |
+|---|---|
+| Blackwater 11, first exterior | A tall narrow two-storey box in charred timber on steel legs, one glass gable, one small window. It satisfied every rule in the prompt README and was still a shed — "a dog kennel", nothing anyone would book. The prompt had asked for "no balcony, no railings, no visible hardware", which is what stripped it. **The gate is whether the owner would rent the house, not whether the image obeys the rules.** |
+| Tidebreak 03, first exterior | A single board-formed concrete bar cantilevered off the cliff. Grey concrete against grey basalt made the house disappear, and the interior was a sliver with no warmth in it — it read as a visitor centre, not somewhere to sleep. Fixed by trading concrete for dark timber and one slab for three stepped terraces, so the contrast and the lit rooms came back. |
+
+That failure also corrected a mistake in the base prompt: its constants were freezing the
+**architecture**, so twelve houses would have been the same building in twelve biomes. The
+constants are the **photography** — dusk, one warm light from inside, 50mm at eye level,
+no people. Each house gets its own building, and it has to be generous: two volumes,
+cantilevers, full-height glass, a lit interior with something to look at.
 
 ### Upscaling and the derived files
 
 GPT Image 2 stops at 1536px on the long edge, and the hero is full-bleed — on a 2560px
-ultrawide that is a 1.67× stretch, visible as softness. Both files above were put through
+ultrawide that is a 1.67× stretch, visible as softness. Every file above was put through
 **fal.ai AuraSR** (4×, `checkpoint: v2`, overlapping tiles) via `scripts/upscale.py`, then
 resampled down to their target width. AuraSR is a GAN super-resolver rather than a
 diffusion upscaler, chosen because it sharpens what is there instead of re-imagining it —
@@ -36,8 +66,10 @@ verified afterwards that the window layout, chimney and interior were unchanged.
 
 Roughly $0.02 per image at fal's compute-second pricing; ~20s each.
 
-Everything below is generated locally by Pillow from the two files above, and can be
-regenerated at any time — no model involved:
+Everything below is generated locally by Pillow from the three files above, and can be
+regenerated at any time — no model involved. **`python3 scripts/derive.py <slug>` writes
+all seven**, at the quality settings that reproduce Hollowmoss's hand-made derivatives
+byte for byte, and then reports whether the house is complete:
 
 | File | From | Purpose |
 |---|---|---|
