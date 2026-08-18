@@ -44,6 +44,8 @@ export const PHOTOGRAPHED: ReadonlySet<string> = new Set([
   "moss-verse-01",
   "sparv-04",
   "quiet-fern-06",
+  "whitehour-08",
+  "rimefall-02",
 ]);
 
 export function hasPhotography(slug: string): boolean {
