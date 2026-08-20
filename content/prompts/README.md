@@ -222,10 +222,10 @@ houses that were all a dark box with a lit window.
 | `quiet-fern-06` | open button-grass moorland, nothing breaking the horizon, the whole sky | **low and long on a raised pale plinth, its whole roof glazed** — the only house whose picture is about the sky rather than the building. Not sunk into the ground: that is how Whitehour became a bunker | pale concrete plinth, dark timber walls, a continuous glass roof | the bed lying under the glass roof beneath the Milky Way, telescope beside it |
 | `whitehour-08` | Kerlingarfjöll: ochre and rust rhyolite, steam from the ground, snow in the shadows | a low arc hugging the slope | dark timber + glass on a stone base | geothermal pool below the house, steaming |
 | `rimefall-02` | open snow, no trees, flat to the horizon | **a ring around an inner courtyard**, with **one bay of the ring cut fully open toward the camera** so the courtyard reads | pale concrete + timber | the hot tub seen through that opening, its steam plume rising clear above the roofline — resolved because it is large and moving, not a prop |
-| `meridian-05` | Atacama, a rock escarpment, salt pan running out below | **a long low bar set into the escarpment**, its flat roofline a dead-straight dark line against the ridge's textured base rather than against sky, with one full-height slot cut through the bar that the warm light comes out of | concrete mixed with local sand | black plunge pool holding the sky, and the light-slot itself · **no fire** |
-| `hollow-cedar-07` | standing bamboo, steep valley, stems crossing the frame | raised on posts with a long engawa veranda | cedar frame + paper screens | onsen bath, lantern light through paper · **no fire** |
-| `kaldbak-09` | Faroese hillside above a sound, cropped grass, sea beyond | long and low, roof flying out over a terrace | turf roof + dry stone | hot tub on the terrace over the sound |
-| `driftline-10` | Lofoten, standing water, black peaks behind | **two towers on stilts in the water**, joined by a covered link | black timber (rorbu) | sauna in one tower, ladder into the sea |
+| `meridian-05` | Atacama, a rock escarpment already in shadow, salt pan running out below | **three parts, not a bar** — a solid mass pressed into the escarpment, a living wing standing three metres behind its own roof plane, and a walled court between them with one end open toward the camera; a narrow stair tower to the roof terrace is the only vertical against the ridge. Rooflines stay dead-straight dark lines against the ridge's textured base rather than against sky | pale sand-cast concrete (site sand) + rammed earth, timber slat pergola, sliding timber shutters | the shaded court itself — striped pergola shadow across stone, water channel, hammock — with the black plunge pool at the rock · **no fire** |
+| `hollow-cedar-07` | a cut terrace in standing bamboo, the valley wall of stems rising behind, stems only at the frame edges | **one long low pavilion under a single deep-eaved roof, lifted a metre on slender cedar posts** so a hard shadow line runs beneath it, a continuous engawa the full length, and the roof reaching well past the engawa's outer edge — the one horizontal that bamboo's vertical grain cannot compete with | dark-stained cedar walls and rain shutters, pale timber engawa deck, paper screens | the cedar tub at the far end under the same eave, fed by a bamboo pipe from the spring · **no fire — the paper screens are the warm light** |
+| `kaldbak-09` | Faroese clifftop above a sound, cropped sunless grass, sea and far headland beyond | **the only pitch in the twelve** — a steep turf roof running down almost to the grass on the windward side, standing up on the sheltered side into a tall gable that faces the camera. A triangle, which nothing else in the catalog is. Its assigned silhouette used to be "long and low, roof flying out over a terrace", which is Hollow Cedar's building on another material | turf roof merging with the hill, **tarred black boards and white-painted window frames** on the gable, dry stone base | the hot tub on a terrace held inside a curved bank of earth — the wind wall is the luxury, because without it nobody sits outside |
+| `driftline-10` | Lofoten, a sheltered inlet, black peaks on both sides, a thin band of afterglow between them, wet rock and seaweed along the bottom of the frame | **the whole house floats** — a broad timber platform carrying a long single-storey house with a low pitched roof and deep overhang, glazed along its entire length, and a separate sauna at the far end of the deck. Took four attempts; see the note below | weathered silver-grey timber, tall sliding glass, warm-lined interior visible through it | **the deck itself** — a sunken hot pool steaming in the boards, a ladder over the edge into the black sea, and light from the long glazed face lying across the deck in bars · **no aurora, ever** — it is stock photography, it wrecks the palette, and it out-glows the windows |
 
 ### One thing per interior, and it is never books and a stove again
 
@@ -260,16 +260,126 @@ One surface and one idea per house, so no two rooms repeat:
 | `quiet-fern-06` | charcoal lime plaster, dark concrete floor | a dark room built for looking up — bed under glass, red reading light |
 | `whitehour-08` | board-formed concrete, wool | steam coming off the pool, seen from inside |
 | `rimefall-02` | lime-washed white, pale ash | the courtyard, walled on all sides |
-| `meridian-05` | rammed earth, unlined | one slot of light across a dark room, and depth |
+| `meridian-05` | rammed earth, unlined | light through shutters — the court read in stripes across a dark deep room |
 | `hollow-cedar-07` | paper screens, tatami, unfinished cedar | water, and light through paper |
-| `kaldbak-09` | dry stone and turf, dark boards | one deep window seat cut into a thick wall |
-| `driftline-10` | tarred boards, glulam | the sea directly beneath the floor |
+| `kaldbak-09` | **a contemporary pale-ash insertion standing inside the old stone shell** | one deep window seat cut into a thick wall |
+| `driftline-10` | warm-lined timber and glulam, tall glass | the sea directly beneath the floor, through a glazed panel in it — **and it must not be a fourth interior that simply looks out of a window**, which Meridian, Hollow Cedar and Kaldbak already are |
+
+### Make a house, not a cabin — and stop optimising for difference
+
+Driftline took four exteriors, and the corrections went: *a robot · a shed you'd keep tools
+in · a shed with a window · at least a bit like a house.* Reading them together, the failure
+was never the silhouette. **All four were one small box.** Every house that has passed the
+gate is substantial and has more than one part: Meridian is a mass, a wing, a court and a
+pool; Hollow Cedar is a long house with a veranda its whole length and a bath house; Kaldbak
+is a two-storey gable with a loft, a terrace and a tub. The seed says four guests and two
+bedrooms for $355 a night, and a 25 m² box does not answer that.
+
+**Every accepted house also has exactly one outdoor room** — the shaded court, the engawa,
+the turf-banked terrace, and now the deck with the sunken pool. That is the thing being
+rented. Design it before the building.
+
+The other half is a correction to how this file had been read. The spec's warnings about
+sameness led to three Driftline attempts that spent their whole budget on *not resembling
+Sparv*, and produced buildings nobody would book. **The owner has never once rejected a house
+for looking like another house.** Every rejection in nine houses has been for looking cheap,
+small, industrial or poor. Kinship between two houses in different biomes, materials and
+light costs far less than one frame that fails the gate. Prefer desirable over distinct.
+
+### Find the building type before you invent the silhouette
+
+Meridian, Hollow Cedar and Kaldbak were each researched first — a real climate, a real
+vernacular, real named buildings — and each was accepted on the first generation. Driftline
+was not. Its climate was researched and its history was researched, and then the *form* was
+invented from an argument about variety: "nothing in the twelve is vertical, so make it
+vertical." The result was two glowing slatted shafts on poles, and the owner's reaction was
+that it looked like a robot, not a house.
+
+**Wanting a silhouette the catalog does not have yet is a reason to go looking, not a reason
+to draw.** The differentiation argument tells you what to search for; it cannot tell you what
+a building looks like. When the search was finally done, the region answered in one line —
+LOGG ARKITEKTER on the Vipp Lofoten Guesthouse describe rorbuer as *"one-storey structures
+raised on stilts above the tide"* — and the single phrase that had wrecked the frame was our
+own "three storeys of height".
+
+The second thing the search returned was the fix for the lantern. Naust V (Koreo + Kolab)
+puts translucent panels behind **some** of its pine slats and not others, so the building
+looks entirely wooden by day and **parts** of the walls and roof glow at night. A uniform
+glowing screen over a whole envelope is a machine; a familiar dark volume with patches of it
+alight is a building. **Partial is what makes it architecture.**
+
+### The corner rule applies indoors too
+
+"Show the corner, not the elevation" was written for exteriors, to stop a volume flattening
+into a decal on the landscape. It took Kaldbak's second interior to notice that **an interior
+shot square-on to a wall fails in exactly the same way** — it stops being a photograph of a
+room and becomes a frontal view of one wall, balanced like a furniture catalogue. Everything
+in that frame was right except where the camera stood.
+
+Stand in a corner and look diagonally, so two surfaces converge and the floor runs away from
+the camera into something — a stair, a doorway, another space. It costs nothing, and it is
+the difference between a room and an elevation. It also matters for the specific idea here:
+**a deep reveal only reads as a thick wall when seen at an angle.** Square on, all you see is
+a tunnel.
+
+### Vernacular outside is desire. Vernacular inside is poverty.
+
+Kaldbak's first interior was rejected in one line — *"what village is this, I wouldn't go
+there for $200, it looks like 1843 when people shat in a bucket indoors"* — and the prompt
+that produced it had asked, in good faith, for exposed dry-stone walls, rough rafters, a
+plain timber ladder and wide dark boards. Every one of those is historically correct for the
+Faroes, and together they build a croft, not a stay.
+
+**The exterior can be as vernacular as you like** — a turf roof and tarred boards read as
+expensive and rooted from thirty metres. **The interior cannot**, because that is the frame
+where the guest is imagining paying to sleep, and rough stone at arm's length reads as
+hardship rather than heritage. There is nothing in a museum interior that says anybody
+designed it or spent money on it.
+
+The fix is not to modernise the whole house. It is the **old shell with a clearly
+contemporary insertion inside it** — the contrast is stronger than either alone, and it is
+what Scandinavian practice actually does with these envelopes. Keep the thick wall, the deep
+reveal, the small white-framed window; line them in something precise and pale. The
+architectural idea survives; only the finish quality changes.
+
+Check any interior against this before writing it: **name the thing in the room that cost
+money.** If nothing in the frame answers, the room will read as poverty however beautiful the
+light is.
 
 **Interior views** (`[THE VIEW]`), in the same order: black water and spruce · deep snow
 and pines · open sea breaking on rock · dripping moss and tree ferns · the tarn at eye
 level · the gorge below through rain · steam and ochre hills · the courtyard and flat
-snow beyond · the salt pan under stars · bamboo stems · the sound below · the fjord
-going dark.
+snow beyond · the walled court through half-open shutters, salt pan beyond · the engawa with rain
+falling past the eave, bamboo beyond it · the sound below · the fjord going dark.
+
+## Design the day before you design the house
+
+Meridian 05 is the only house the owner rejected outright, and the verdict was not about
+photography: *no privacy anywhere, no second room, one bed in a house that sleeps four, and
+what is there to do here at midday?* Every one of those is an **architecture** failure that
+the prompt then faithfully photographed. The table above was asked to carry the whole
+building on four columns — setting, silhouette, material, luxury object — and four columns
+cannot say where the door is.
+
+So before the prompt, answer four questions in writing:
+
+1. **Where does the sun go, hour by hour, and where do you sit at the worst hour?** In the
+   Atacama that hour is 12:00–16:00 and every real operator answers it the same way — Awasi
+   Atacama gives each suite a *private walled courtyard with shade and a fire pit*; Amangiri
+   is described by its own architects as "a calibrated sequence of exposure and refuge".
+   The house has to contain the refuge, and the refuge has to be visible in the picture.
+2. **Where is the door, and what do you walk through to reach it?** Nothing has said
+   "somebody lives here" more cheaply, and the model never draws one unless it is named.
+3. **What can be closed?** Shutters, screens, curtains, a wall. A house with no way to shut
+   the world out is a pavilion, and a pavilion is what "it looks like AI" keeps describing.
+   A **half-drawn** shutter is the best sign-of-use available to us: it is a large form that
+   survives the catalog card, and it records a decision a person made about the sun.
+4. **Where does the glass sit relative to the sun?** Glass facing the desert directly is
+   what makes a concrete box. Glass held back in the shade of a deep overhang, behind
+   shutters, inside a court — that is a house.
+
+The same four questions are unanswered for `hollow-cedar-07`, `kaldbak-09` and
+`driftline-10`. Answer them before writing those prompts, not after the frame comes back.
 
 ---
 
@@ -481,17 +591,47 @@ below, and against the other houses already done, not on its own. Then run
 **2 · That file is now canonical.** Save it as `exterior.jpg`. It is never regenerated,
 and every other view descends from it. This is the law that costs the most to break.
 
-**3 · Portrait hero — by EDIT.** Attach the canonical file, ask for 9:16, forbid any
-change to the building: *"Keep this exact building unchanged — same roofline, same stone
-chimney, same window layout, same lit interior. Do not redesign or move the house."* Then
-say what to extend. Every detail page hero is full-bleed portrait, so all twelve need
-one. Save as `exterior-portrait.jpg`.
+**3 · Portrait hero — the aspect-ratio control, with no prompt at all.** Open the canonical
+file in ChatGPT and use the **`Aspect ratio` control at the top of the viewer** to set 9:16.
+It outpaints on its own. **Write nothing.**
+
+This replaces the old instruction, which was to write a text edit with a long preserve-list.
+The owner found the better method by accident and the reasoning holds: a text edit is a
+prompt the model has to *interpret*, and every interpretation is a chance for the building
+to drift — the failure this whole phase is built to prevent. A control has nothing to
+interpret. Meridian's portrait came back with the tower, the shutters, the hammock, the
+steps and the pool pixel-identical, and at a true 0.5628 — the text route has never once
+returned the ratio it was asked for.
+
+It also removes the ratio check that used to be needed here. Keep that check for any
+*other* edit; it is the control, not editing in general, that is trustworthy.
+
+What the control decides for you is the composition — where the house lands vertically and
+how much of the width it keeps. Measure it rather than trusting it: the warm mass must land
+inside the shipped range of **0.37–0.46 of frame height up from the bottom**, because the
+detail-page scrim is 0.9 black at the bottom and 0.56 at 30%. Below 0.37 the lit window is
+being dimmed by more than the catalog has ever accepted. Meridian landed at 0.404; Quiet
+Fern, the lowest shipped, is 0.372. Save as `exterior-portrait.jpg`.
 
 **4 · Interior — by REFERENCE, not edit.** Attach the canonical exterior as a reference
 in a normal message. An interior is a new camera position, not a transformation of the
-facade, and asking for an edit produces a facade with furniture in front of it. Use the
-interior paragraph above, and point at what is visible through the glass — the house's
-entry in the interior-views list. Save as `interior.jpg`.
+facade. Use the interior paragraph above, and point at what is visible through the glass —
+the house's entry in the interior-views list. Save as `interior.jpg`.
+
+The reason given here used to be that an edit "produces a facade with furniture in front of
+it". Meridian tested that directly and it is not what happens — the edit returned a real
+room, correctly lit, with the right walls and the right materials. **What it got wrong was
+the site.** It invented a courtyard that does not match the canonical one, and put a body of
+water directly outside the living room when the plunge pool belongs at the far end of the
+house under the rock. An edit is anchored to the facade's pixels and cannot see round the
+corner, so it fills in the rest of the property from imagination. On a page where the visitor
+walks exterior → interior, that is the expensive kind of wrong, and nobody notices it unless
+they go looking.
+
+**And place anything seen through the glass relative to the building, never relative to the
+camera.** Meridian's first interior prompt asked for a water channel "just outside" the
+glass. The model supplied water just outside the glass, exactly as asked, and it read as the
+plunge pool in the wrong place.
 
 **Check the aspect ratio of anything an edit returns.** An edit does not have to give
 back the shape it was given: Moss Verse's boulder-clearing edit came back at 4:3 from a
