@@ -101,13 +101,27 @@ byte for byte, and then reports whether the house is complete:
 | `exterior-1536.jpg` · `.webp` | `exterior.jpg` | The small rung of the hero `srcSet`. A phone would otherwise pull 667 KB to paint 375 CSS px. |
 | `exterior.webp` | `exterior.jpg` | 247 KB against the JPEG's 667 KB, same picture. |
 | `exterior-portrait.webp` | `exterior-portrait.jpg` | Same trade for the portrait hero. |
-| `interior-1536.jpg` · `.webp` · `interior.webp` | `interior.jpg` | The same three rungs for the full-bleed interior band on the detail page. |
+| `interior-1536.jpg` · `.webp` · `interior.webp` | `interior.jpg` | The same three rungs for the interior. |
 
 ## Video loops
 
-| Asset | Model | Prompt | Loop method | Duration |
-|---|---|---|---|---|
-| _(none yet)_ | | | | |
+**Nothing ships yet.** Three attempts are recorded here because each cost money or a day, and
+each closed a door somebody would otherwise open again.
+
+| attempt | model | cost | why it is not in the catalog |
+|---|---|---|---|
+| full-frame loop, 6 s → 5 s | fal.ai `veo3.1/lite/image-to-video`, 1080p, no audio, seeds 1102 and 2244 | $0.60 | **Rejected by the owner.** A full-frame repainter changed **50.9 % of the frame by more than 6/255**, the bounding box of the >24 set was the entire frame, and the suspended flue's column peaked at **249/255** — so the pipe swayed and the sparks crossed in front of it. Seed 1102 also put falling snow over the whole frame, indoors included, when the prompt asked for snow beyond the glass. |
+| masked video inpainting | fal.ai `ltx-2.3-quality/inpaint`, 1536×1024, 121 frames | $0.46 | **Both halves of its contract failed.** Its schema promises "white regions are regenerated; black regions are preserved from the source video"; measured against the frozen source, **64 % of the pixels outside the mask moved by more than 2/255, peak 180**. And the fire it generated inside the mask was **worse than the photograph's own** — the branching tongues collapsed into one pale column and the logs lost their embers. Request and result kept in `public/lab/takes/`. |
+| the hearth patch | the seed-2244 veo take, its fire only, composited over the untouched still | $0 (reuses the take above) | **The one that measures clean, and is awaiting the owner's eye.** 490×410, 5 s seamless, 430 KB. Mode 0 against mode 4: flue pipe, ceiling, mezzanine, table and far window all deviate by **0/255**; 1.5 % of the frame changes and its bounding box is the hearth. Lives in `public/lab/` until it is chosen. |
+
+**Prices, verified 2026-08-22.** The whole `ltx-2.3-quality` family bills **$0.0024075 per
+megapixel** of generated video, counted as width × height × frames. So $0.46 at 1536×1024×121,
+**$1.83 at the photograph's native 3072×2048**, $2.42 at 4K. `veo3.1/lite` bills per second:
+$0.05/s at 1080p without audio. The estimate this project carried until August — Seedance at
+$0.022/s — no longer exists; check the live catalogue rather than any note, including this one.
+
+**The rule that came out of all three:** name ONE moving thing and state that everything else is
+still. Ask for two and the model applies the second to the whole frame.
 
 ## Ambient beds
 
@@ -122,6 +136,11 @@ byte for byte, and then reports whether the house is complete:
 - **No people, cars, roads, signage or power lines** in any image. See the prompt
   README for why each one matters.
 - **One warm light source per frame**, from inside the house. Everything else is cold.
+- **One moving thing per loop**, and say in the prompt that everything else is motionless.
+  Ask for two and the model applies the second one to the whole frame.
+- **A generative model never gets the whole frame.** Whatever it returns is composited back
+  through a mask over the untouched photograph, so the geometry it cannot help deforming is
+  geometry it never touches.
 - Every file is referenced by a **media key**, never a URL — `src/lib/media.ts`
   resolves it, which is what makes the eventual move to Cloudflare R2 a one-line change.
 - If a non-generated asset is ever used, its licence and source URL go in this file
