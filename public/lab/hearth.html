@@ -91,6 +91,16 @@
     mask-image: radial-gradient(ellipse 46% 46% at 50% 50%, #000 58%, transparent 100%);
   }
 
+  /* No mask, deliberately. patch.py composites its output against the plate
+     before encoding, so outside the fire this rectangle already IS the
+     photograph; feathering it would only eat the corners of the flame. */
+  #patch5 {
+    position: absolute;
+    display: none;
+    object-fit: fill;
+    pointer-events: none;
+  }
+
   /* The site's own grain: same filter, opacity and blend mode as
      src/components/film-grain.tsx. */
   #grain {
@@ -149,6 +159,7 @@
        over the hearth, with the photograph composited into everything outside
        the flame before encoding, so the rectangle has nothing to give away. -->
   <video id="patch" muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"></video>
+  <video id="patch5" muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"></video>
 
   <svg id="grain" aria-hidden="true">
     <filter id="gf">
@@ -396,6 +407,13 @@ void main(){
   const [PW, PH] = meta.photo;
   const PATCH = meta.firePatch ? rect4(meta.firePatch.rect) : null;
 
+  // The cropped take's patch ships as its own file so a re-run overwrites one
+  // thing and nothing else. Absent, mode 5 simply is not offered.
+  const crop = await fetch("/lab/fire-patch-crop.json")
+    .then((r) => (r.ok ? r.json() : null))
+    .catch(() => null);
+  const PATCH5 = crop ? rect4(crop.rect) : null;
+
   const slot = document.getElementById("slot");
   const photo = document.getElementById("photo");
   const breathEl = document.getElementById("breath");
@@ -404,6 +422,7 @@ void main(){
   const emberEl = document.getElementById("embers");
   const snowEl = document.getElementById("snow");
   const patchEl = document.getElementById("patch");
+  const patch5El = document.getElementById("patch5");
   const grain = document.getElementById("grain");
   const ft = document.getElementById("ft");
   const hud = document.getElementById("hud");
@@ -519,6 +538,12 @@ void main(){
     patchEl.src = meta.firePatch.src;
     patchEl.play().catch(() => {});
   }
+  // Both patches play from the start and are only shown or hidden, so flicking
+  // between 4 and 5 compares two fires rather than two loading states.
+  if (PATCH5) {
+    patch5El.src = crop.src;
+    patch5El.play().catch(() => {});
+  }
 
   const glF = ctxOf(warpEl), glE = ctxOf(emberEl), glG = ctxOf(glassEl), glS = ctxOf(snowEl);
   if (!glF || !glE || !glG || !glS) {
@@ -577,6 +602,7 @@ void main(){
     place(emberEl, HR, c);
     place(glassEl, GR, c);
     if (PATCH) place(patchEl, PATCH, c);
+    if (PATCH5) place(patch5El, PATCH5, c);
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     snowEl.width = Math.round(c.W * dpr);
     snowEl.height = Math.round(c.H * dpr);
@@ -619,6 +645,7 @@ void main(){
     // Mode 4 is the model's fire instead of the shader's, so the shader's
     // flame and embers are off and only the light still breathes.
     const patchOn = S.mode === 4;
+    const patch5On = S.mode === 5;
     const fireOn = S.mode === 1 || S.mode === 3;
     const weatherOn = S.mode === 2 || S.mode === 3;
     const alive = S.mode > 0;
@@ -627,8 +654,9 @@ void main(){
     const snowOn = weatherOn && S.flakes > 0;
 
     const b = breathe(t);
-    breathEl.style.opacity = (fireOn || patchOn ? b * S.breath : 0).toFixed(4);
+    breathEl.style.opacity = (fireOn || patchOn || patch5On ? b * S.breath : 0).toFixed(4);
     patchEl.style.display = patchOn ? "block" : "none";
+    patch5El.style.display = patch5On ? "block" : "none";
     grain.style.display = S.grain && alive ? "" : "none";
     warpEl.style.display = fireOn ? "" : "none";
     emberEl.style.display = emberOn ? "" : "none";
@@ -724,6 +752,7 @@ void main(){
     "2 · за склом — падає сніг, гойдаються крони, кімната нерухома",
     "3 · разом",
     "4 · вогонь із моделі — латка 490×410 поверх фотографії",
+    "5 · вогонь із моделі, згенерований кропом — нативна роздільність, вугілля в полінах",
   ];
 
   function draw() {
@@ -731,7 +760,7 @@ void main(){
     hud.innerHTML = `
       <div id="mode"><b>${MODES[S.mode]}</b></div>
       <hr>
-      <kbd>0</kbd><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> режим &nbsp;
+      <kbd>0</kbd><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> режим &nbsp;
       <kbd>H</kbd> сховати це &nbsp;
       <kbd>G</kbd> зерно плівки ${flag(S.grain)}<br>
       <kbd>C</kbd> заборона міняти композицію ${flag(S.clamp)}
@@ -756,7 +785,7 @@ void main(){
 
   addEventListener("keydown", (e) => {
     const k = e.key;
-    if ("01234".includes(k)) S.mode = +k;
+    if ("012345".includes(k)) S.mode = +k;
     else if (k === "c" || k === "C") S.clamp = !S.clamp;
     else if (k === "g" || k === "G") S.grain = !S.grain;
     else if (k === "t" || k === "T") S.trees = !S.trees;

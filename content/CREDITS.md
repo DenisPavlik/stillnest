@@ -123,6 +123,39 @@ $0.022/s — no longer exists; check the live catalogue rather than any note, in
 **The rule that came out of all three:** name ONE moving thing and state that everything else is
 still. Ask for two and the model applies the second to the whole frame.
 
+
+### 2026-08-28 — the full-frame bake-off
+
+The owner overruled the masked-composite route: *"давай краще ми цю картинку оживимо
+цілком"*. Thirteen full-frame takes on `blackwater-11/interior.jpg` followed. Everything
+below is `public/lab/animate/`, which is **git-ignored** — the scripts are committed, the
+100 MB they produced is not. Rebuild any row with `animate.py`.
+
+| Take | Endpoint | $ | What it settled |
+|---|---|---|---|
+| Kling o3 4K, 5 s | `kling-video/o3/4k/image-to-video` | 2.10 | Rock-steady (room 0.8 % >6/255, drift 0.996) but **21 % less fine detail than the source photograph**. fal's own copy calls this endpoint *"tuned for expressive, stylized animation — anime, cel-shaded, painterly"*. Wrong model for a photograph. |
+| veo 3.1 4K, 4 s | `veo3.1/image-to-video` | 1.60 | Stable (room 1.8 %, drift 0.993) and **46 % MORE detail than the source** — which is not fidelity: Google documents Veo's 4K as a standalone upscaling pass, so the extra acutance is invented. Cropped 3:2 → 16:9 by itself, losing 192 px top and 161 px bottom, because its `aspect_ratio` enum has no 3:2. |
+| veo 3.1 4K, 8 s | `veo3.1/image-to-video` | 3.20 | **The duration finding.** Same image, same prompt, 8 s instead of 4: room motion 1.8 % → **59.1 %**, drift correlation 0.993 → **0.605**, a continuous dolly through the whole clip. For Veo, duration is a creative instruction, not a length. |
+| veo 3.1 fast 4K, 4 s | `veo3.1/fast/image-to-video` | 1.20 | First take with the rewritten prompt. Room 1.8 % → **0.7 %**, and **snow and branches appeared for the first time** (window regions 22.9 % / 21.3 %, against 0 before). But the flue column moved: peak **153/255**. |
+| veo 3.1 4K, 4 s, first frame = last frame | `veo3.1/first-last-frame-to-video` | 1.60 | **The best of the expensive takes.** Same image at both ends. Flue peak 153 → **37**, room 0.7 %, snow present, and **no boomerang** — mirror-correlation of the fire 0.955 against a random-pair 0.956, so the motion does not reverse. Loop seam 1.62/255 against a mid-clip frame-to-frame floor of 0.39: a short crossfade closes it. |
+| Kling v3 4K, 5 s, `cfg_scale 0.8` | `kling-video/v3/4k/image-to-video` | 2.10 | **The most stable thing measured all day** — room **0.3 %**, flue peak **14**, floor and armchairs peak 8 and 9, drift 0.995, and snow/branches present. But detail **20 % below source** — statistically identical to the anime endpoint's 21 %. The softness is Kling's latent VAE, not the endpoint's styling tune. That hypothesis cost $2.10 and was wrong. |
+| seven-model 720p sweep | Wan 2.6 · Wan 3.0 Prime · LTX 2.5 pro · Hailuo 2.3 pro · Luma Ray v3.2 · Grok Imagine 1.5 · Minimax H3-max | 3.61 | Run after realising **resolution was the wrong first filter** — the interior band paints 2560×1080, so 1080p is nearly native and the earlier 4K-only shortlist was self-imposed. All seven moved the window far harder (41–100 %) than Veo or Kling (0–23 %). Best balance **Grok 1.5**: window 75.1 %, room 19.9 %, drift 0.993. Hailuo repainted the room into daylight (room 97.1 %, drift 0.345). **LTX 2.5 is the only endpoint found with a real camera lock — `camera_motion` is an enum and one value is `static`** — though at 0.787 drift it helps rather than pins. |
+
+**Snow put into the still instead of into the video**, `public/lab/snow/`, also git-ignored:
+
+| Asset | Model | $ | Notes |
+|---|---|---|---|
+| three snow variants + one control | `fal-ai/nano-banana-pro/edit` at 4K ×3, `bytedance/seedream/v5/pro/edit` ×1 | 0.97 | The owner's diagnosis, and the best idea of the session: **the fire animated in all thirteen takes because it is on the photograph; the snow failed in all of them because it is not.** So edit the approved still. nano-banana-pro returns **5056×3392**, larger than the 3072×2048 source. `heavy` bleaches dusk into daylight haze and is unusable; `light` and `medium` hold the mood. The prompt fence did **not** hold numerically — room regions changed 20 %, fire up to 54 % — so this is a re-render that resembles the original, not a surgical edit. Awaiting the owner's eye at `/lab/snow.html`. |
+
+**Prices, read from each model's own page on 2026-08-28** — they move monthly, so re-read
+rather than trusting this table. Kling o3/4k and v3/4k both $0.42/s. veo 3.1 at 4K
+$0.40/s without audio, fast tier $0.30/s. LTX 2.3 quality $0.0024075/megapixel.
+720p sweep, per second: Wan 2.6 $0.10, LTX 2.5 pro $0.12, Wan 3.0 $0.14, Grok $0.14,
+Minimax H3-max $0.04; Hailuo 2.3 ~$0.49 and Luma Ray $0.30 per generation.
+nano-banana-pro/edit $0.15 per image, doubled at 4K.
+
+**Phase total to date: $18.72.**
+
 ## Ambient beds
 
 | Asset | Model | Prompt | Duration |
@@ -136,11 +169,22 @@ still. Ask for two and the model applies the second to the whole frame.
 - **No people, cars, roads, signage or power lines** in any image. See the prompt
   README for why each one matters.
 - **One warm light source per frame**, from inside the house. Everything else is cold.
-- **One moving thing per loop**, and say in the prompt that everything else is motionless.
-  Ask for two and the model applies the second one to the whole frame.
-- **A generative model never gets the whole frame.** Whatever it returns is composited back
-  through a mask over the untouched photograph, so the geometry it cannot help deforming is
-  geometry it never touches.
+- **Never use a negation particle in a video prompt.** `no`, `not`, `don't`, `without` are
+  poison — CLIP-family encoders bind negation at chance level, and "A not B" embeds nearer
+  A+B than A−B, so a prohibition reads as a request. Positively-asserted stillness is fine
+  and is what these models are captioned with: "the walls and furniture remain still" works,
+  "nothing else moves" does not. Prohibitions go in `negative_prompt`, as **bare nouns**.
+- **Describe motion only.** The model can already see the room; re-describing it is
+  documented by Google as redundant and as a cause of *reduced* motion. A prompt that opened
+  by describing the timber and the glass is why the snow never appeared.
+- **Four moving things is fine** once the two rules above are followed — fire, snow, branches
+  and lamp glow all arrived together on 28 August. The older "one moving thing per loop" rule
+  was a workaround for a badly-written prompt, not a property of the models.
+- **A still that will be animated must already contain everything that will move** — snow in
+  the air, steam off water, embers in the logs. These models move what they can see and
+  invent badly what they cannot; inventing is how snow ends up inside the living room.
+  *(Supersedes "a generative model never gets the whole frame", which the owner overruled on
+  28 August in favour of animating the whole photograph.)*
 - Every file is referenced by a **media key**, never a URL — `src/lib/media.ts`
   resolves it, which is what makes the eventual move to Cloudflare R2 a one-line change.
 - If a non-generated asset is ever used, its licence and source URL go in this file

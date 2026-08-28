@@ -26,10 +26,29 @@ PRICE
         3072x2048 x 121 frames = 762 MP = $1.83      <- the native-resolution final
         3840x2160 x 121 frames = 1004 MP = $2.42
 
-    Dimensions must be multiples of 32. Both rungs above already are.
+    Dimensions must be multiples of 32. All three rungs above already are.
+
+THE CROP, AND WHY IT IS THE CHEAP ROW ABOVE
+
+    --crop takes a square of N native pixels centred on the mask's white region
+    and sends THAT, at its own size, as the whole take. Two things follow.
+
+    Cost: the room is no longer paid for. 1024x1024 x 121 = 127 MP = $0.31.
+
+    Resolution: because the crop is sent at its own size, one sent pixel is one
+    photograph pixel. The fire comes back at the photograph's NATIVE density --
+    which the full frame only reaches at 3072 wide, for $1.83. Six times less
+    money for the same pixels on the only subject that survives the composite.
+
+    It is also the one remaining answer to "the flue swayed": at 1536 the model
+    was handed the pipe and asked not to move it. Cropped, the pipe is not in
+    the picture at all.
+
+        1024x1024 x 121 frames = 127 MP = $0.31      <- native fire, cropped
 
 USAGE
         export $(grep '^FAL_KEY=' .env)
+        python3 public/lab/falrun.py blackwater-11 --crop 1024
         python3 public/lab/falrun.py blackwater-11 --width 1536 --prompt-file p.txt
         python3 public/lab/falrun.py blackwater-11 --width 3072 --seed 41 --yes
 
@@ -79,9 +98,21 @@ DEFAULT_PROMPT = (
     "photography at dusk. Nothing else in the room moves."
 )
 
+# The full frame's prompt spends half its words telling the model to leave a room
+# alone. Cropped, there is no room to mention, and the words are better spent on
+# what the mask newly allows: the bed of logs.
+CROP_PROMPT = (
+    "Close on a log fire burning in a round steel basin. The flames lean, rise and "
+    "settle at a steady height; embers pulse and fade deep orange along the logs; a "
+    "few small sparks lift off the flame and die out just above it. The logs lie "
+    "still and keep their shape. The fire keeps the same height and the same spread "
+    "from the first frame to the last. Quiet, cinematic, low-light photography at dusk."
+)
+
 NEGATIVE = (
     "camera movement, camera shake, zoom, pan, tilt, parallax, "
     "growing flames, flames spreading, smoke filling the frame, "
+    "logs rolling, logs shifting, logs collapsing, the basin moving, "
     "falling snow, particles in the foreground, floating dust, white specks, "
     "people, hands, animals, text, watermark, "
     "exposure change, colour shift, brightness pulsing, strobing, flicker, "
@@ -91,6 +122,39 @@ NEGATIVE = (
 
 def run(cmd: list[str]) -> None:
     subprocess.run(cmd, check=True, capture_output=True)
+
+
+def crop_around_mask(mask_path: Path, size: int) -> tuple[int, int, int, int]:
+    """A square of `size` native pixels centred on the mask's white region.
+
+    The take is composited back through this same mask, so every pixel the model
+    draws outside the white region is thrown away regardless. Feeding it the room
+    buys nothing and hands it geometry to break.
+    """
+    import numpy as np
+    from PIL import Image
+
+    a = np.array(Image.open(mask_path).convert("L"))
+    ph, pw = a.shape
+    ys, xs = np.where(a > 127)
+    if not len(xs):
+        sys.exit(f"{mask_path.name} has no white region to centre a crop on")
+    if size % 32:
+        sys.exit(f"--crop must be a multiple of 32; {size} is not")
+    if size > min(pw, ph):
+        sys.exit(f"--crop {size} does not fit inside a {pw}x{ph} photograph")
+    mw, mh = xs.max() - xs.min() + 1, ys.max() - ys.min() + 1
+    if mw > size or mh > size:
+        sys.exit(f"--crop {size} is smaller than the mask's own {mw}x{mh} white region")
+
+    # Centred on the mask, then slid back inside the frame. Clamping rather than
+    # padding keeps the 1:1 pixel mapping the whole point depends on.
+    cx, cy = (xs.min() + xs.max()) // 2, (ys.min() + ys.max()) // 2
+    x0 = min(max(int(cx) - size // 2, 0), pw - size)
+    y0 = min(max(int(cy) - size // 2, 0), ph - size)
+    print(f"crop {size}x{size} at ({x0},{y0}) — mask {mw}x{mh} sits at "
+          f"({xs.min() - x0},{ys.min() - y0}) inside it")
+    return (x0, y0, x0 + size, y0 + size)
 
 
 def freeze(source: Path, out: Path, w: int, h: int, frames: int, fps: int, gray: bool) -> None:
@@ -167,8 +231,17 @@ def wait(request_id: str, key: str) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("slug")
-    ap.add_argument("--width", type=int, default=1536,
-                    help="multiple of 32; height follows the 3:2 source")
+    ap.add_argument("--width", type=int, default=None,
+                    help="multiple of 32; height follows the source aspect. "
+                         "Defaults to 1536 full-frame, or to --crop when cropping")
+    ap.add_argument("--crop", type=int, default=None,
+                    help="send only a square of N native px centred on the mask "
+                         "(multiple of 32; 1024 is native-resolution fire for $0.31)")
+    ap.add_argument("--mask", type=Path, default=None,
+                    help="the mask actually sent to the model. Sized like the photograph "
+                         "it is cropped to match; sized like the crop it is used as authored. "
+                         "Defaults to genmask-<slug>-<crop>.png when cropping, "
+                         "else inpaint-mask.png")
     ap.add_argument("--frames", type=int, default=121)
     ap.add_argument("--fps", type=int, default=24)
     ap.add_argument("--seed", type=int, default=1101)
@@ -186,15 +259,34 @@ def main() -> None:
         sys.exit("FAL_KEY is not set — run: export $(grep '^FAL_KEY=' .env)")
 
     still = REPO / "public" / "stays" / args.slug / "interior.jpg"
-    mask = LAB / "inpaint-mask.png"
-    for p in (still, mask):
+    # The anchor: it fixes WHERE the crop sits, and it is the frame genmask.py
+    # authors in, so the two cannot drift apart.
+    anchor = LAB / "inpaint-mask.png"
+    for p in (still, anchor):
         if not p.exists():
             sys.exit(f"missing {p}")
 
+    crop = crop_around_mask(anchor, args.crop) if args.crop else None
+
+    mask = args.mask
+    if mask is None and crop:
+        cand = LAB / f"genmask-{args.slug}-{args.crop}.png"
+        mask = cand if cand.exists() else anchor
+    elif mask is None:
+        mask = anchor
+    if not mask.exists():
+        sys.exit(f"missing {mask}")
+    print(f"mask: {mask.name}")
+
+    if args.width is None:
+        args.width = args.crop if crop else 1536
     if args.width % 32:
         sys.exit(f"--width must be a multiple of 32; {args.width} is not")
-    height = round(args.width * 2 / 3)
-    height -= height % 32
+    if crop:
+        height = args.width          # the crop is square, so the take is too
+    else:
+        height = round(args.width * 2 / 3)
+        height -= height % 32
     megapixels = args.width * height * args.frames / 1_000_000
     cost = megapixels * PRICE_PER_MP
 
@@ -207,19 +299,49 @@ def main() -> None:
         if input("spend it? [y/N] ").strip().lower() != "y":
             sys.exit("nothing spent")
 
-    out = LAB / "takes" / f"{args.slug}-{args.width}-{args.seed}"
+    name = f"{args.slug}-crop{args.crop}-{args.width}-{args.seed}" if crop \
+        else f"{args.slug}-{args.width}-{args.seed}"
+    out = LAB / "takes" / name
     out.mkdir(parents=True, exist_ok=True)
+
+    src, msk = still, mask
+    if crop:
+        from PIL import Image
+
+        src, msk = out / "crop-source.png", out / "crop-mask.png"
+        Image.open(still).convert("RGB").crop(crop).save(src)
+        mi = Image.open(mask).convert("L")
+        # Sized like the crop it was authored in the crop's frame; sized like the
+        # photograph it has to be cut down to match. Anything else is a mistake
+        # worth stopping on rather than resampling into something plausible.
+        if mi.size == (args.crop, args.crop):
+            mi.save(msk)
+        elif mi.size == Image.open(still).size:
+            mi.crop(crop).save(msk)
+        else:
+            sys.exit(f"{mask.name} is {mi.size}; expected the crop {(args.crop, args.crop)} "
+                     f"or the photograph {Image.open(still).size}")
+        # The composite has to put the result back exactly where it came from,
+        # and "exactly" is not something to re-derive later from memory.
+        (out / "crop.json").write_text(json.dumps({
+            "rect": list(crop), "size": args.crop, "photo": list(Image.open(still).size),
+            "still": str(still.relative_to(REPO)), "mask": str(mask.relative_to(REPO)),
+            "anchor": str(anchor.relative_to(REPO)),
+        }, indent=2))
 
     print("building the frozen source and the mask...")
     src_mp4, mask_mp4 = out / "source.mp4", out / "mask.mp4"
-    freeze(still, src_mp4, args.width, height, args.frames, args.fps, gray=False)
-    freeze(mask, mask_mp4, args.width, height, args.frames, args.fps, gray=True)
+    freeze(src, src_mp4, args.width, height, args.frames, args.fps, gray=False)
+    freeze(msk, mask_mp4, args.width, height, args.frames, args.fps, gray=True)
 
     print("uploading...")
     src_url = upload(src_mp4, "video/mp4", key)
     mask_url = upload(mask_mp4, "video/mp4", key)
 
-    prompt = args.prompt_file.read_text().strip() if args.prompt_file else DEFAULT_PROMPT
+    if args.prompt_file:
+        prompt = args.prompt_file.read_text().strip()
+    else:
+        prompt = CROP_PROMPT if crop else DEFAULT_PROMPT
     body = {
         "video_url": src_url,
         "mask_video_url": mask_url,
