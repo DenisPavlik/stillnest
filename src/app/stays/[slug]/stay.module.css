@@ -61,45 +61,77 @@
 }
 
 /* ============================== INSIDE ==============================
-   The interior photograph, full width. It is a sibling of the sections
-   rather than a child of one, so it can ignore `--max` without a `100vw`
-   trick — `100vw` counts the scrollbar and is how a page gains twenty
-   pixels of sideways scroll on a desktop and nowhere else.
+   The interior photograph, the full width of the page and the full height
+   of the screen. It is a sibling of the sections rather than a child of
+   one, so it can ignore `--max` without a `100vw` trick — `100vw` counts
+   the scrollbar and is how a page gains twenty pixels of sideways scroll
+   on a desktop and nowhere else.
+
+   It used to be a 21:9 band, which on a 2560x1080 ultrawide happens to be
+   the whole screen and on every other display is a letterbox. Full height
+   is what was actually wanted, so it is now what is asked for.
  * ==================================================================== */
 
 .inside {
+  position: relative;
   width: 100%;
   margin: 0;
   padding: 0;
 }
 
 .insideMedia {
-  position: relative;
   display: block;
   width: 100%;
-  /* Wider than the source's 3:2 on purpose: a band, not a second hero. The
-     crop takes the top and bottom, which here is more forest and more
-     water — the two things there is most of. */
-  aspect-ratio: 21 / 9;
+  height: 100svh;
+  /* Keep the floor, lose the ceiling. This slot is as wide as the screen —
+     on a 2560x1080 ultrawide that is 2.37 against the picture's 1.5, so most
+     of the height goes. Centred, the crop takes it off the bottom and cuts
+     the fire in half, which on the one section built around a lit fire is
+     the wrong half to lose. Anchored to the bottom it costs the top of the
+     ceiling instead, and every interior in the catalog has its subject low:
+     the stove, the hearth, the table, the floor. */
+  --still-position: center bottom;
+  /* Never much taller than 4:3. The picture is 3:2, and a slot taller than
+     it is crops a landscape photograph by throwing away its width, which is
+     a geometry problem no crop can fix. */
+  max-height: calc(100vw / 1.35);
 }
 
+/* Over the picture, bottom left, on its own gradient — at a band's height
+   the caption sat underneath and was the next thing read; at full height
+   that strip would be pushed off the bottom of the screen and the room
+   would stop being the whole of it. */
 .insideNote {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: flex-start;
   width: 100%;
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: 0.9rem var(--gutter) 0;
-  color: var(--haze);
+  padding: 4rem var(--gutter) clamp(1rem, 2.2vw, 1.9rem);
+  background: linear-gradient(
+    to top,
+    rgba(6, 10, 7, 0.66) 0%,
+    rgba(6, 10, 7, 0.34) 46%,
+    rgba(6, 10, 7, 0) 100%
+  );
+  color: var(--linen);
   font-family: var(--font-mono);
   font-size: 0.625rem;
   font-weight: 300;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  pointer-events: none;
 }
 
 @media (max-width: 720px) {
-  /* A 21:9 band on a phone is a 160px letterbox. Squarer, so the room is
-     actually a room. */
+  /* A full-height slot on a phone is a 0.46 ratio, and there is no
+     portrait crop of the interiors to art-direct into it. Squarer, so the
+     room is still a room. */
   .insideMedia {
+    height: auto;
+    max-height: none;
     aspect-ratio: 4 / 3;
   }
 }

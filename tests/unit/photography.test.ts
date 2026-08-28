@@ -20,7 +20,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { PHOTOGRAPHED, stillSources } from "@/lib/media";
+import { ANIMATED, PHOTOGRAPHED, stillSources } from "@/lib/media";
 
 const PUBLIC = join(process.cwd(), "public");
 
@@ -66,5 +66,30 @@ describe.skipIf(!local)("every photographed house has the files the catalog asks
     const missing = [...new Set(wanted)].filter((url) => !existsSync(join(PUBLIC, url)));
 
     expect(missing, `${slug} is in PHOTOGRAPHED but these files do not exist`).toEqual([]);
+  });
+});
+
+/**
+ * The same trap one layer up. `ANIMATED` is a second hand-kept set, and a slug
+ * in it with no loop on disk is worse than a missing photograph: `<video>` with
+ * two dead <source> elements fails silently, so the still simply never fades and
+ * the house looks finished. Nothing in a build, a typecheck or a lint notices.
+ */
+describe.skipIf(!local)("every animated house has its loop", () => {
+  it.each([...ANIMATED])("%s", (slug) => {
+    const wanted = [
+      `stays/${slug}/interior-loop.mp4`,
+      `stays/${slug}/interior-loop.webm`,
+    ];
+
+    const missing = wanted.filter((url) => !existsSync(join(PUBLIC, url)));
+
+    expect(missing, `${slug} is in ANIMATED but these files do not exist`).toEqual([]);
+  });
+
+  // A loop can only fade in over a still, so animating a house the catalog does
+  // not have a photograph for is a set that cannot render.
+  it("only animates houses that are photographed", () => {
+    expect([...ANIMATED].filter((slug) => !PHOTOGRAPHED.has(slug))).toEqual([]);
   });
 });

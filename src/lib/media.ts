@@ -57,6 +57,25 @@ export function hasPhotography(slug: string): boolean {
 }
 
 /**
+ * Houses whose interior has a video loop behind it.
+ *
+ * Hand-kept for the same reason `PHOTOGRAPHED` is, and separate from it because
+ * the two do not advance together: a house has its photograph the day it is
+ * generated, and its loop only once a clip has been generated from that exact
+ * frame, made seamless, and judged worth the megabyte. A slug in here promises
+ * `stays/<slug>/interior-loop.webm` and `.mp4` both exist.
+ *
+ * Nothing breaks when a slug is missing — `<LivingStill>` simply shows the
+ * still, which is what a metered connection and a reduced-motion visitor get
+ * regardless. **Add a slug here in the same commit as its files.**
+ */
+export const ANIMATED: ReadonlySet<string> = new Set<string>([]);
+
+export function hasLoop(slug: string): boolean {
+  return ANIMATED.has(slug);
+}
+
+/**
  * The rungs a still is published at, widest last.
  *
  * 3072 exists because the hero is full-bleed and an ultrawide monitor asks for

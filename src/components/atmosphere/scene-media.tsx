@@ -2,9 +2,9 @@
 
 import { useRef, useState, type ReactNode } from "react";
 
-import { prefersReducedMotion } from "@/components/motion/prefers-reduced";
 import { mediaUrl } from "@/lib/media";
-import { makeClientFlag } from "@/lib/use-client-flag";
+
+import { useMayLoadVideo } from "./media-gate";
 
 /**
  * A living scene: a still that is always there, and a loop that arrives if the
@@ -39,26 +39,6 @@ interface SceneMediaProps {
   /** Rendered above the media — scrims, type, instruments. */
   children?: ReactNode;
 }
-
-/**
- * Computed once on the client. The server always answers "do not load video",
- * which is also the correct fallback if nothing else ever runs.
- */
-const useMayLoadVideo = makeClientFlag(() => {
-  if (prefersReducedMotion()) return false;
-
-  const nav = navigator as Navigator & {
-    connection?: { saveData?: boolean; effectiveType?: string };
-  };
-  const c = nav.connection;
-  if (!c) return true;
-  if (c.saveData) return false;
-  return !(
-    c.effectiveType === "slow-2g" ||
-    c.effectiveType === "2g" ||
-    c.effectiveType === "3g"
-  );
-});
 
 export function SceneMedia({ poster, video, alt, className, children }: SceneMediaProps) {
   const ref = useRef<HTMLVideoElement>(null);

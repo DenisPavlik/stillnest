@@ -27,18 +27,6 @@ WHAT IT WRITES, PER HOUSE
     `<portraitBase>.jpg` and `.webp` on `max-aspect-ratio: 1/1`, and at 1400 wide
     it is already below the narrow rung — a 1536 portrait would be an upscale.
 
-WHY THESE QUALITY NUMBERS
-    JPEG 88 and WebP 82 (method 6) are not taste. They are the settings that
-    reproduce Hollowmoss 04 — the house that was judged by eye and accepted — to
-    within a kilobyte on every one of its seven derived files. The catalog has to
-    look like one photographer's work, and that includes its compression.
-
-WHY LANCZOS, AND WHY FROM THE 3072
-    Every rung is resampled from the upscaled canonical file, never from the raw
-    1536 the model produced. AuraSR's output downsampled with Lanczos is visibly
-    cleaner than the model's own 1536, because the downsample averages away the
-    upscaler's tile artefacts.
-
 NO NEW DEPENDENCIES
     stdlib + Pillow, same as scripts/upscale.py, for the same reason:
     `pyproject.toml` and `api/requirements.txt` are held identical by

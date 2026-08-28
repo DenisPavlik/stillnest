@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { AmenityIcon } from "@/components/amenity-icon";
+import { LivingStill } from "@/components/atmosphere/living-still";
 import { FilmGrain } from "@/components/film-grain";
 import { Reveal } from "@/components/motion/reveal";
 import { hashSeed } from "@/components/scene/geometry";
@@ -20,7 +21,7 @@ import {
 } from "@/components/solitude/readings";
 import { StayCard } from "@/components/stay-card";
 import { allStaySlugs, featuredStays, getStayBySlug } from "@/lib/db/queries";
-import { hasPhotography } from "@/lib/media";
+import { hasLoop, hasPhotography } from "@/lib/media";
 import {
   bedroomsWord,
   capitalise,
@@ -238,22 +239,36 @@ export default async function StayPage({
       </section>
 
       {/* ============================= INSIDE =============================
-          The one full-bleed moment on the page, and it earns the width: the
+          The one full-bleed moment on the page, and it earns the screen: the
           survey above it is instruments and numbers, and this is the first
           thing that answers "yes, but what is it like to be in there".
 
           It sits before the description rather than after on purpose — you
           look, then you read. Only rendered where a real interior exists;
           there is no generated stand-in for a room, and inventing one would
-          be a picture of a house nobody surveyed. */}
+          be a picture of a house nobody surveyed.
+
+          It takes the whole viewport, not a band, and the difference is the
+          point: at 21:9 it was a band on every display except an ultrawide,
+          where it happened to fill the screen exactly. Filling the screen is
+          the effect that was wanted, so it is now asked for directly. Where
+          the house has a loop, this is also where the room starts moving. */}
       {photographed && interior ? (
         <Reveal as="figure" className={s.inside} distance={18}>
-          <Still
+          <LivingStill
             className={s.insideMedia}
             base={`stays/${stay.slug}/interior`}
+            loop={hasLoop(stay.slug) ? `stays/${stay.slug}/interior-loop` : undefined}
             alt={`Inside ${stay.name}: a wood stove burning is the only light in a spare timber room, and ${biomeSetting(stay.biome)} going dark beyond the glass.`}
           />
-          <figcaption className={s.insideNote}>{interior.caption ?? "The stove, lit"}</figcaption>
+
+          {/* Over the picture rather than under it. At a band's height a
+              caption below was the next thing you read; at full height it
+              would be an orphan strip pushed off the bottom of the screen,
+              and the room would stop being the whole screen. */}
+          <figcaption className={s.insideNote}>
+            {interior.caption ?? "The stove, lit"}
+          </figcaption>
         </Reveal>
       ) : null}
 
