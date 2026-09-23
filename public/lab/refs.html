@@ -1,0 +1,176 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stillnest — стіна референсів</title>
+
+<!-- Real photographs of real places, gathered so the catalog re-shoot is aimed at
+     something he pointed at rather than something I described. Click to keep a
+     frame; the selection survives a reload. Nothing here ships — public/lab/ is
+     deleted before any release. -->
+
+<style>
+  :root { --spruce:#0d1310; --ember:#ff9d4d; --moss:#7d9c7f; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { background:var(--spruce); color:#e8e4dc;
+    font:13px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  body { padding:56px 10px 120px; }
+
+  #bar { position:fixed; inset:0 0 auto 0; z-index:20; display:flex; gap:6px;
+    align-items:center; flex-wrap:wrap; padding:8px 12px;
+    background:rgba(6,10,8,.92); border-bottom:1px solid rgba(232,228,220,.12);
+    backdrop-filter:blur(8px); }
+  #bar button { font:inherit; color:#b9b3a8; background:transparent; cursor:pointer;
+    border:1px solid rgba(232,228,220,.16); border-radius:999px; padding:3px 10px; }
+  #bar button:hover { color:#f3efe6; border-color:rgba(232,228,220,.4); }
+  #bar button.on { color:var(--spruce); background:var(--moss); border-color:var(--moss); }
+  #count { margin-left:auto; color:#8b8378; }
+  #count b { color:var(--ember); }
+
+  #wall { columns:4 380px; column-gap:10px; }
+  figure { break-inside:avoid; margin:0 0 10px; position:relative; cursor:pointer; }
+  figure img { display:block; width:100%; border-radius:6px;
+    border:2px solid transparent; background:#161d19; }
+  figure.pick img { border-color:var(--ember); }
+  figure .id { position:absolute; left:8px; top:8px; padding:1px 7px; border-radius:999px;
+    background:rgba(6,10,8,.78); color:#b9b3a8; font-size:11px; }
+  figure.pick .id { background:var(--ember); color:#1a0e04; font-weight:700; }
+  figure .tag { position:absolute; right:8px; bottom:8px; padding:1px 7px; border-radius:999px;
+    background:rgba(6,10,8,.72); color:#8b8378; font-size:11px; opacity:0; }
+  figure:hover .tag { opacity:1; }
+  body.picked-only figure:not(.pick) { display:none; }
+
+  #big { position:fixed; inset:0; z-index:30; background:rgba(4,7,6,.97);
+    display:none; align-items:center; justify-content:center; padding:24px; }
+  #big.on { display:flex; }
+  #big img { max-width:100%; max-height:100%; object-fit:contain; }
+  #big .meta { position:fixed; left:16px; bottom:16px; color:#8b8378; max-width:70ch; }
+  #big .meta a { color:var(--moss); }
+
+  #help { position:fixed; left:12px; bottom:12px; z-index:20; max-width:64ch;
+    background:rgba(6,10,8,.9); border:1px solid rgba(232,228,220,.14);
+    border-radius:8px; padding:10px 12px; backdrop-filter:blur(6px); }
+  kbd { display:inline-block; min-width:1.5em; text-align:center;
+    background:rgba(232,228,220,.1); border:1px solid rgba(232,228,220,.2);
+    border-bottom-width:2px; border-radius:4px; padding:0 4px; margin-right:2px; }
+  #out { position:fixed; right:12px; bottom:12px; z-index:20; max-width:46ch;
+    background:rgba(6,10,8,.9); border:1px solid rgba(232,228,220,.14);
+    border-radius:8px; padding:10px 12px; color:var(--ember); display:none;
+    word-break:break-all; }
+</style>
+
+<div id="bar"></div>
+<div id="wall">завантаження…</div>
+<div id="big"><img alt=""><div class="meta"></div></div>
+<div id="help">
+  <b>тицяй у фото, які подобаються</b> — рамка стає помаранчевою.<br>
+  <kbd>F</kbd> лише обрані &nbsp; <kbd>C</kbd> список номерів &nbsp;
+  <kbd>Esc</kbd> закрити велике &nbsp; <kbd>H</kbd> сховати це<br>
+  <span style="color:#8b8378">довгий клік / <kbd>Shift</kbd>+клік — на весь екран</span>
+</div>
+<div id="out"></div>
+
+<script>
+(async () => {
+  const wall = document.getElementById("wall");
+  const bar = document.getElementById("bar");
+  const big = document.getElementById("big");
+  const out = document.getElementById("out");
+  const KEY = "stillnest-refs-pick";
+
+  const man = await fetch("/lab/refs/pool.json?v=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null);
+  if (!man) { wall.textContent = "немає /lab/refs/pool.json — спершу refs.py fetch"; return; }
+
+  const pick = new Set(JSON.parse(localStorage.getItem(KEY) || "[]"));
+  const save = () => localStorage.setItem(KEY, JSON.stringify([...pick]));
+
+  // Tag prefix is the family: int- інтер'єри, ext- екстер'єри, op- оператори, …
+  const FAMILY = { int: "інтер'єри", ext: "екстер'єри", op: "оператори", ph: "архітектурне фото", bnb: "airbnb", ryokan: "рьокан" };
+  const families = [...new Set(man.items.map(i => i.tag.split("-")[0]))];
+
+  wall.innerHTML = "";
+  const figs = man.items.map((it, i) => {
+    const f = document.createElement("figure");
+    f.dataset.fam = it.tag.split("-")[0];
+    f.dataset.core = it.core ? "1" : "0";
+    f.innerHTML = `<img loading="lazy" src="/lab/refs/${it.file}" alt="">` +
+      `<span class="id">${i}</span><span class="tag">${it.tag}</span>`;
+    if (pick.has(i)) f.classList.add("pick");
+    f.addEventListener("click", (e) => {
+      if (e.shiftKey) return show(i);
+      f.classList.toggle("pick");
+      pick.has(i) ? pick.delete(i) : pick.add(i);
+      save(); count();
+    });
+    let t;
+    f.addEventListener("pointerdown", () => { t = setTimeout(() => show(i), 420); });
+    f.addEventListener("pointerup", () => clearTimeout(t));
+    f.addEventListener("pointerleave", () => clearTimeout(t));
+    wall.append(f);
+    return f;
+  });
+
+  function show(i) {
+    const it = man.items[i];
+    big.querySelector("img").src = `/lab/refs/${it.file}`;
+    big.querySelector(".meta").innerHTML =
+      `<b>${i}</b> · ${it.tag} · ${it.w}×${it.h}<br>` +
+      `<a href="${it.src}" target="_blank" rel="noreferrer">${it.src.slice(0, 100)}</a>`;
+    big.classList.add("on");
+  }
+  big.addEventListener("click", () => big.classList.remove("on"));
+
+  // Default view is the pre-cull: 414 frames came back from the harvest and most of
+  // them are blog filler, jacuzzi kitsch or AI stock. "добірка" is what survived.
+  let fam = "core";
+  const chip = (label, on, fn) => {
+    const b = document.createElement("button");
+    b.textContent = label;
+    b.className = on ? "on" : "";
+    b.onclick = fn;
+    bar.append(b);
+    return b;
+  };
+  function bars() {
+    bar.innerHTML = "";
+    const nCore = man.items.filter(i => i.core).length;
+    chip(`добірка ${nCore}`, fam === "core", () => { fam = "core"; apply(); });
+    chip(`усе ${man.items.length}`, fam === null, () => { fam = null; apply(); });
+    families.forEach(f => chip(FAMILY[f] || f, fam === f, () => { fam = f; apply(); }));
+    const c = document.createElement("span");
+    c.id = "count";
+    bar.append(c);
+    count();
+  }
+  function apply() {
+    figs.forEach(f => {
+      const on = fam === null || (fam === "core" ? f.dataset.core === "1" : f.dataset.fam === fam);
+      f.style.display = on ? "" : "none";
+    });
+    bars();
+  }
+  function count() {
+    const c = document.getElementById("count");
+    if (c) c.innerHTML = `обрано <b>${pick.size}</b> з ${man.items.length}`;
+  }
+
+  addEventListener("keydown", (e) => {
+    const k = e.key.toLowerCase();
+    if (k === "escape") big.classList.remove("on");
+    else if (k === "f") document.body.classList.toggle("picked-only");
+    else if (k === "c") {
+      const list = [...pick].sort((a, b) => a - b).join(" ");
+      out.style.display = list ? "block" : "none";
+      out.textContent = list ? `обрані: ${list}` : "";
+      navigator.clipboard?.writeText(list).catch(() => {});
+    }
+    else if (k === "h") {
+      const h = document.getElementById("help");
+      h.style.display = h.style.display === "none" ? "" : "none";
+    }
+    else return;
+    e.preventDefault();
+  });
+
+  apply();   // bars() alone would paint the chips but leave all 414 visible
+})();
+</script>

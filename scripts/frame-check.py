@@ -62,6 +62,25 @@ QUANTILE = 0.002
 # above it.
 SKY_BAND = 0.35
 
+# Houses shot in daylight, declared rather than detected.
+#
+# The rule above — the lit window must not lose to the sky — is a DUSK rule. In
+# hard desert daylight the sky IS the brightest thing in the frame and that is
+# correct, not a fault. An automatic test was tried first and does not work: a
+# daylight Atacama living room measures a median luminance of 0.30 against 0.31
+# for a dusk bamboo room, so brightness cannot separate them. What can is the
+# weather table in `content/prompts/README.md`, where every house's light is
+# assigned on purpose — so this list mirrors it, and a house moves onto it the
+# same day its weather is decided.
+DAYLIGHT = {
+    "meridian-05",     # hard clear daylight, sharp shadows
+    "quiet-fern-06",   # clear dawn, fast cloud
+    "hollowmoss-04",   # morning mist, low sun
+    "whitehour-08",    # cold clear morning, frost
+    "kaldbak-09",      # fog with breaks of sun
+    "driftline-10",    # clear golden evening
+}
+
 
 def load(path: Path) -> Image.Image:
     im = Image.open(path).convert("RGB")
@@ -77,7 +96,7 @@ def centroid(values: list[float], w: int, h: int) -> tuple[float, float, float]:
     return x, y, sum(values[i] for i in top) / n
 
 
-def check(path: Path) -> tuple[bool, str]:
+def check(path: Path, daylight: bool = False) -> tuple[bool, str]:
     im = load(path)
     w, h = im.size
     # tobytes rather than getdata(): getdata is deprecated in Pillow 14, and a
@@ -100,12 +119,14 @@ def check(path: Path) -> tuple[bool, str]:
     peak_is_sky = by < SKY_BAND
     warm_leads = wl >= bl - 8  # within a hair of the brightest mass
 
-    ok = warm_leads or not peak_is_sky
+    ok = warm_leads or not peak_is_sky or daylight
     note = (
         f"warm core ({wx:.2f}, {wy:.2f}) L={wl / 255:.2f}   "
         f"bright peak ({bx:.2f}, {by:.2f}) L={bl / 255:.2f}   "
     )
-    if ok:
+    if daylight and peak_is_sky and not warm_leads:
+        note += "daylight house — sky rule does not apply"
+    elif ok:
         note += "ok"
     else:
         note += "FAIL — the sky is brighter than the lit window"
@@ -138,7 +159,7 @@ def main() -> None:
         if not source.exists():
             print(f"{label:16} no such file: {source}")
             continue
-        ok, note = check(source)
+        ok, note = check(source, daylight=label.split('/')[0] in DAYLIGHT)
         failures += not ok
         print(f"{label:16} {note}")
 

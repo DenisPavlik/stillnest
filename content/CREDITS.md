@@ -67,6 +67,341 @@ re-running a prompt produces a different house every time. See the rule in
 Hollowmoss's canonical frame was itself the ~51.8% exterior, kept out of the repo and
 superseded by its own zoom-out edit.
 
+### 2026-09-21 — the re-shoot begins: hollow-cedar-07
+
+The owner rejected the whole first catalog as cold — the cause and the rewritten rules
+are in `content/prompts/README.md`. Every house is being re-shot under them, by API this
+time (`public/lab/cosy.py`, `fal-ai/nano-banana-pro` at 4K, $0.30 an image) rather than
+by hand in ChatGPT, which also moves the masters from 3072×2048 to **5056×3392**.
+
+`hollow-cedar-07` is the first, and it set the method the other eleven follow:
+
+| File | Take | $ | How |
+|---|---|---|---|
+| `interior.jpg` | `fresh-corner-clean` then `edit-dark` | 0.60 | Composition first, weather second. The room was generated from the corner — the owner's "не вистачає чогось" turned out to be the camera, not the furniture — and then a **weather-only edit** darkened the grove beyond the screens without touching anything indoors. |
+| `exterior.jpg` | `fresh-ext-water` | 0.30 | One of four views offered; he chose the house seen across the stream, doubled in the water. |
+| `exterior-portrait.jpg` | `edit-portrait` from the chosen exterior | 0.30 | A **reframe**, never a second prompt — 9:16 with the frame extended up into the canopy and down into the stream. Asking twice for the same house gives two houses. |
+
+Everything else under `public/stays/hollow-cedar-07/` is `scripts/derive.py`.
+
+**House total $1.20; round trip including the rejected options $6.30.** The waste was
+options: eighteen interiors were shown where five would have done, and the owner said so
+— *"я вже заїбався обирати … давай три варіанти"*. **Three per scene from here.**
+
+Four things this house established, all of which transfer:
+
+1. **The camera, not the contents, is what makes a room feel enterable.** Corner, sitting
+   height, something warm near the lens, a second space visible past the first.
+2. **`fresh` always returns a different building; `edit` genuinely holds one.** Saying "the
+   same picture with a darker outside" about a fresh generation is wrong and confusing —
+   only the edit route can say that truthfully.
+3. **Lived-in is not worn-out.** Asked for "dented" and "just used", the model returned
+   stained tatami and a frayed quilt. The positive phrasing plus bare nouns in the
+   negative list fixed it in one pass.
+4. **Pin the manifest order.** He judges by calling out numbers, and an alphabetical sort
+   renumbered his shortlist the moment a variant was added.
+
+### 2026-09-21 — moss-verse-01
+
+Second house of the re-shoot, and the first run at three-per-scene. Its listing already
+carried `reading-room` and `outdoor-bath` and "the sound of water finding its way down",
+so the house was written as the library and its motion is water; the seed row needed no
+change.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-hearth` | 0.30 | Chosen over `fresh-library` on a recommendation, and the argument was animation, not taste: hearth carries **four** moving things — fire, rain, steam off the tub, candles — where library carried two, and the fire is the one element that animated in all thirteen paid video takes. |
+| `exterior.jpg` | `fresh-ext-cedars-dark` | 0.60 | He picked the cedars framing over the three-quarter view *because* the three-quarter view repeated hollow-cedar's silhouette. The first cedars take then failed `frame-check.py` — a gap of pale sky read 0.88 against lit windows at 0.50 — so it was regenerated with the canopy closed. **$0.30 of avoidable waste: run frame-check before the portrait, not after.** |
+| `exterior-portrait.jpg` | `edit-portrait`, cropped | 0.30 | Reframe of the canonical exterior. The **first** reframe (of the since-replaced exterior) seamed visibly at 10.8% height, Δ12 brightness — a detectable band. `cosy.py`'s install step now measures the row-to-row brightness step and crops below any seam over Δ8 in the top quarter. |
+
+**House total $1.20; round trip $2.70.**
+
+Two rules came out of it, both now in `content/prompts/README.md`:
+
+1. **Read the previous house's prompt before writing the next one's.** moss-verse inherited
+   hollow-cedar's silhouette because its paragraph was written from it, and the owner saw
+   it before the check did.
+2. **Run `frame-check.py` on the chosen exterior before deriving the portrait.** The
+   portrait is made from the exterior, so a failed exterior costs two images, not one.
+
+### 2026-09-21 — blackwater-11
+
+Third house. Its seed row was fixed earlier the same day — 2 guests/1 bedroom raised to
+**4/2** because the shipped photograph already showed a mezzanine and a long table, and
+the owner's wood-fired tub swapped for a **sauna** on his own objection: *"якщо це десь
+особняк в зимі, яка там нахуй вода в басейні? Вона просто застигне."*
+
+Silhouette chosen deliberately against the two houses before it — **two stacked volumes,
+a black timber upper cantilevered over a concrete base**, not another long low house on
+posts. That rule went into the charter the same day after he caught moss-verse repeating
+hollow-cedar.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-hall` | 1.20 | Three offered — `mezzanine`, `table`, `sauna` — and he ranked the first two above the third, then asked for one frame carrying both. `hall` is that frame: mezzanine, laid table, kitchen and stove together. **His observation on `sauna` is now a composition rule**: a frame reads oddly full-bleed when its content sits low, because the site's interior band is ~2.37:1 against the photograph's 1.5:1 and throws away ~37% of the height. `hall` is composed to keep everything in the middle band. |
+| `exterior.jpg` | `fresh-ext-clearing-dark` | 0.60 | He picked the clearing view; the first take failed `frame-check.py` on sky at 0.82 against a 0.28 warm core, so it was re-run with the sky explicitly darkened. **The check ran before the portrait this time** — the ordering moss-verse paid for. |
+| `exterior-portrait.jpg` | `edit-portrait` | 0.30 | Clean reframe, no seam (Δ4.6 at 56%, which is the roofline). |
+
+**House total $1.20; round trip $2.70.**
+
+This is the house whose thirteen video takes failed on snow that was not in the
+photograph. **All five candidate frames carry falling snow in the air**, plus fire in the
+stove and steam off the sauna — so when 9b resumes, there is something in frame to move.
+
+### 2026-09-21 — tidebreak-03
+
+Fourth house, and the first with no trees in it. Silhouette against the three before:
+**three terraces stepping down the basalt**, the shape that passed his gate the first
+time round — not posts, not a cantilever, not a long low house. The charter's three
+depths of green are moss on lava, tussock grass and sea thrift, because the Westfjords
+have nothing taller.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-coffee` | 0.90 | Three offered: `storm`, `coffee`, `bath`. He cut `bath` himself and correctly — *"це не дуже інтер'єр, бо це половина екстер'єру"* — and could not separate the other two. **The metrics could not either**: warm pixels 43% vs 37%, top-left quadrant 0.29 vs 0.32 luminance. Decided on content: the listing's last line is "So is the coffee", and `coffee` is the only frame where the weather actually *happens*. |
+| `exterior.jpg` | `fresh-ext-terraces` | 0.90 | He liked all three and asked me to choose. `terraces` is the only one where the building's own idea reads — it steps *down*, and the listing says "there is no beach here and no way down". |
+| `exterior-portrait.jpg` | `edit-portrait` | 0.30 | Clean; the Δ7.5 step at 48.7% is the roofline, below the crop threshold. |
+
+**House total $1.20; round trip $2.10** — the cheapest yet, because nothing had to be
+re-run for frame-check: all six candidates passed on the first attempt, since the
+"sky darker than the lit windows" clause is now written into the shared house paragraph
+rather than added after a failure.
+
+**The finding, and it is his:** three of the first four houses came back under rain.
+Weather is the cheapest way to make a frame atmospheric, so every prompt reaches for it,
+and the result is a catalog with one mood. It is also a credibility problem for
+`meridian-05`, whose listing says the gravel has not seen rain since 1997. Weather is now
+**rationed per house in a table in `content/prompts/README.md`** — rain and
+snow-in-the-air are spent, and the remaining eight get mist, clear night, dawn, frost,
+blue hour, hard daylight, fog and golden evening.
+
+### 2026-09-21 — meridian-05
+
+Fifth house, and the first shot in daylight — the weather table exists precisely so this
+one could be. Rain here would contradict its own listing, which says the gravel has not
+seen rain since 1997.
+
+The listing did most of the art direction by itself: concrete cast with the sand it
+stands on, pressed into an escarpment; the living room set three metres behind its own
+roof so the glass never meets the sun; a walled court roofed in timber slats where "the
+light arrives in stripes"; a channel of water along one wall; a stair to the roof and a
+telescope. Silhouette against the four before it: a low walled-court mass, not posts, a
+cantilever or terraces.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-court` | 0.90 | Three offered: `stripes`, `court`, `bedroom`. He cut `bedroom` ("лише спальня") and chose the court on the project's actual gate — *"прям хочеться там полежати, покупатись"*. |
+| `exterior.jpg` | `fresh-ext-stair` | 0.90 | Chosen for carrying three things at once: the roof stair and telescope (this house has Bortle 1, the darkest sky in the catalog), the slat screen throwing stripes, and the plain running out to the horizon, which is what 88 km of solitude looks like. `ext-plain` was flagged to him as **borderline aerial** rather than quietly offered — the charter bans drone shots because they read as real-estate marketing. |
+| `exterior-portrait.jpg` | `edit-portrait` | 0.30 | Clean. |
+
+**House total $1.20; round trip $2.10.**
+
+**`scripts/frame-check.py` changed here, and in the honest direction.** `fresh-court`
+failed its sky rule, and the rule was wrong rather than the image: in hard desert
+daylight the sky *is* the brightest thing, correctly. Detecting daylight automatically
+was tried first and does not work — a daylight Atacama living room measures a median
+luminance of **0.30** against **0.31** for a dusk bamboo room, so brightness cannot
+separate them. So daylight houses are **declared** in a `DAYLIGHT` set that mirrors the
+charter's weather table, and such a frame now prints *"daylight house — sky rule does not
+apply"* instead of silently passing. The four dusk houses re-measured identically after
+the change.
+
+### 2026-09-22 — hollowmoss-04
+
+Sixth house, taken out of order because **its exterior is the home page**, full-bleed —
+the first thing any visitor sees. The listing fixes it *low*, so the silhouette could not
+be a tower; it comes instead from the charter's unused option, **two volumes joined by a
+glazed link**, the smaller one the sauna from its own amenities, standing over black
+water on stilts.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-reading` | 0.90 | Chosen because it makes the `reading-room` in its amenities literal, shows the glazed link from inside, and carries four moving things: fire, mist on the water, sun shafts, reflection. |
+| `exterior.jpg` | `fresh-ext-water` | 0.90 | Chosen **by measurement**, because this frame has to survive the home hero's ~2.37:1 band against the photograph's 1.49:1 — 18.5% of the height is cut top and bottom. Warm pixels start at 42% of height here, against 21% for `ext-clearing` and **8%** for `ext-link`, whose sun glow — the reason that frame exists — sits in the part the band throws away. |
+| `exterior-portrait.jpg` | `edit-portrait`, third attempt | 0.90 | See below. |
+
+**House total $1.20; round trip $2.70**, of which $0.60 was the portrait bug.
+
+**The portrait prompt had been broken since hollow-cedar and nobody noticed.** It was
+written for that house and hardcoded *"extend upward into the bamboo canopy and the rain
+above the roof"* — so bamboo and rain were being requested for **every** house's portrait.
+In the desert the model ignored it; at hollowmoss it obeyed, and painted rain into a calm
+misty morning that the listing calls standing water, with mirror-still reflection directly
+above the raindrops. The other four shipped portraits were audited and are clean.
+
+Two fixes, both in `public/lab/cosy.py`:
+
+1. The portrait prompt is now **house-agnostic**, with `--weather` naming what the air
+   actually holds. "The same weather" is not enough — a reframe fills empty air with
+   weather unless the air is described.
+2. The second attempt then invented a **second, larger reflection of the same house**
+   below a fallen log, because "extend downward into whatever lies in front of the
+   building" is too open an instruction over water. `--foreground` now says what the near
+   ground is made of, and the prompt asks for the building reflected *exactly once*.
+
+### 2026-09-22 — whitehour-08
+
+Seventh house. Its listing names its own silhouette — *"a long low curve of concrete and
+glass following the slope"* — which is a shape nothing else in the catalog has. Weather
+per the table: cold clear morning with frost, declared daylight in `frame-check.py`. Its
+motion is geothermal steam, the strongest moving element available to any of the twelve.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-pool` | 1.20 | Three offered. He cut two on the same fault and named it better than the prompt did: **repeated furniture**. `curve` put the same sofa twice along one wall; `wall` came back an unbroken run of seat-cushion-seat-cushion — *"якийсь кінотеатр … я не хочу там проводити час"*. Asked for a long room and a list of contents, the model tiles. |
+| `exterior.jpg` | `fresh-ext-arc` | 0.90 | Chosen over the closer pool view because **in that one the curve does not read** — the house looks straight, and the curve is the only thing distinguishing it from the rest of the catalog. |
+| `exterior-portrait.jpg` | `edit-portrait`, second attempt | 0.60 | See below. |
+
+**House total $1.20; round trip $3.00.**
+
+Three rules came out of it, all now in `content/prompts/README.md` or `cosy.py`:
+
+1. **A prohibition does not undo an invited point of view.** The first `curve` take came
+   back with the occupant's own knees across the bottom of the frame, in dark trousers,
+   with a mug and an open book beside them — while the negative list said *no people*.
+   *"Shot from the corner at sitting height"* plus *"left ten minutes ago"* describes a
+   first-person view, and the model supplied the person whose view it is. The fix is
+   positive and belongs in the scene: state the room is unoccupied and the nearest seat
+   empty. **`frame-check.py` measures light, not people — nothing catches this but
+   looking.**
+2. **A long room makes the model repeat the furniture.** Name each piece once and give
+   each a different job.
+3. **`--foreground` has to insist the ground is solid.** For the second time, the
+   downward extension invented a full second reflection of the house in water that is
+   not there. Naming a few materials is not enough when the source already contains
+   water; the string must say the ground is solid the whole way down and the water
+   appears exactly once.
+
+### 2026-09-22 — sparv-04
+
+Eighth house, and the **only night house in the catalog** — weather per the table: clear
+cold night with stars, so rain and snowfall stay spent and this one gets aurora instead.
+Silhouette: a **tower**, three floors stacked with the top one glazed. Five guests over
+two bedrooms is what makes stacking credible, and Bortle 2 is what makes the glazed top
+worth having.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-top` | 0.90 | The glazed top floor under stars and aurora. Chosen because it is the only one of the three with a moving element other than fire, and because the tower's whole point is what the top floor is for. |
+| `exterior.jpg` | `fresh-ext-tarn` | 0.90 | Shot from out on the ice, the window light drawn in a long streak across the frozen surface. That streak does the Solitude Index's job without the number. |
+| `exterior-portrait.jpg` | `edit-portrait` | 0.30 | Clean first time — `--weather` and `--foreground` both carried the whitehour wording, which is the first portrait since those were added to need no second attempt. |
+
+**House total $1.20; round trip $2.10.** All six candidates passed `frame-check.py` first
+time, including under aurora, because the shared house paragraph now states outright that
+the lit windows must be brighter than the sky *and* than the aurora.
+
+### 2026-09-22 — quiet-fern-06
+
+Ninth house. Its seed row had already been repaired in an earlier session — 2 guests
+raised to 4 and *"the house is small"* struck out, because that wording drew capsules
+every time. The silhouette now comes straight out of the listing: two wings splayed on
+one concrete plinth with **a continuous spine of glass along the whole ridge**, so the
+roof itself is glazed. Weather per the table: clear dawn with fast cloud, which for this
+house is also its motion — the sky is what moves.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-ridge` | 0.90 | `horizon` was cut for contradicting the listing rather than for looking wrong: its ceiling came back solid timber, and the text printed beside it says the ridge is glazed the whole length. `bed` was a bedroom only — the same objection he made at meridian. |
+| `exterior.jpg` | `fresh-ext-spine` | 0.90 | The only one of three where it reads at a glance that the entire roof is glass, which is what the chosen interior is about. `ext-moor` sells the solitude better but puts mountains on a horizon the listing says nothing breaks. |
+| `exterior-portrait.jpg` | `edit-portrait` from `ext-moor`, **cropped** | 0.90 | Four reframes, four mirrors. See below. |
+
+**House total $1.20; round trip $3.60** — the most expensive since the first house, and all
+of it in the portrait.
+
+**The reframe mirrors when the source has nothing below the building.** `ext-spine` ends
+at the plinth edge, so asked to extend downward the model duplicated the house instead of
+inventing ground — four times, including once floating upside down over dry moorland with
+no water at all. What finally worked cost nothing: **crop the mirror away.** A 9:16 window
+cut above the mirror line keeps the whole house and the real foreground.
+
+**One of those four was my own fault and is worth writing down.** The foreground argument
+said *"with no water anywhere in it"* — a negation, in a project whose first prompt rule
+is that a prohibition reads as a request. It painted a mirror lake. The rule applies to
+the strings we pass to prompts, not only to the prompts themselves.
+
+### 2026-09-22 — rimefall-02
+
+Tenth house. **Its seed row was repaired first**, for the third time in this phase and the
+same reason: it read *"Inside: one room, one stove, one window the size of the wall"* at 3
+guests and one bedroom, and that wording draws capsules, which fail the owner's gate every
+time. Now 4 guests / 2 bedrooms, and the sentence keeps its rhythm without making one room
+the whole house — *"one great room under a single span … Two sleeping rooms are cut into
+the bank behind, out of the wind."*
+
+Silhouette: the charter's last unused option that suits a plateau — **a pitched span that
+reaches nearly to the ground on the windward side and flies out over a sheltered terrace
+on the lee**, which is also simply how you build in that wind. Weather per the table: clear
+blue hour after snowfall. Snowfall itself is spent, so the motion here is woodsmoke, sauna
+steam and spindrift.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-span` | 0.90 | The great room under the span, with the wall-sized window and the stove at the middle — the listing's own three features in one frame. `floor` was the most original picture in the catalog (shot from the warm stone floor itself, making *"a floor warm enough to sit on"* literal) but shows too little of the room; `bank` was a bedroom only. |
+| `exterior.jpg` | `fresh-ext-drift` | 0.90 | The only one where the idea reads: the roof runs down into the drift, the building becomes part of the landform, and the bank windows glow at snow level — exactly the sentence just added to the listing. |
+| `exterior-portrait.jpg` | `edit-portrait` | 0.30 | Clean first time. `ext-drift` already carries deep snow below the house, so the reframe had ground to continue instead of a house to mirror. |
+
+**House total $1.20; round trip $2.10.** All six candidates passed `frame-check.py` first
+time.
+
+### 2026-09-22 — kaldbak-09
+
+Eleventh house. Its listing needed no rewriting — it is nearly a prompt already — but one
+data fix was owed: the description has a tub on the terrace and `amenities` did not carry
+`outdoor-bath`. Added. Weather per the table: rolling fog with breaks of sun, declared
+daylight in `frame-check.py`; the motion is fog, grass in wind and steam off the tub.
+
+Silhouette straight from the text: a **turf roof sloping to the grass on the weather side,
+rising to a tall gable of tarred black boards with white frames on the lee**, and a terrace
+inside a curved bank of earth.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-gable` | 0.90 | The tall room under the black gable. `seat` is the listing's own signature — the window seat cut into a wall you could not reach across — and was the close second. |
+| `exterior.jpg` | `fresh-ext-cliff` | 0.90 | **Chosen because it was the only one of three without a defect**, not because it was the prettiest. Both others were cropped and inspected at 1:1 before anything was recommended: `ext-turf` has a whole neighbouring farmstead on the far slope — a dark building, a white shed and a track to them — in a catalog that sells kilometres to the nearest dwelling; `ext-sound` came back with a **moulded white acrylic spa tub**, steps and all, where a wood-fired tub belongs. |
+| `exterior-portrait.jpg` | `edit-portrait` | 0.30 | Clean first time. |
+
+**House total $1.20; round trip $2.10.**
+
+**The lesson is about looking, not about prompting.** Neither fault would have been caught
+by `frame-check.py`, which measures light; both were caught by cropping the suspicious
+patch and enlarging it. A generated frame that is beautiful at a glance can still carry a
+neighbour's roof or a garden-centre spa in it.
+
+### 2026-09-22 — driftline-10, and the catalog closes
+
+Twelfth and last. `outdoor-bath` was owed to its amenities, as at kaldbak: the
+description has a sunken pool cut into the deck and the list did not carry it. Silhouette:
+the only one in the catalog that **floats** — a low timber deck on the water carrying a
+long glazed room at one end, a sauna at the other, a sunken pool between them and a
+covered walkway to the rock.
+
+| File | Take | $ | Note |
+|---|---|---|---|
+| `interior.jpg` | `fresh-long` | 0.90 | I recommended `pool` for carrying the pool, sauna and boat at once; he asked instead what would *move* in each and whether the house could be read at all, and on that question `long` wins — water on **both** sides of the frame, the boat rocking at the left glass, fire and candles. His question was the better test. |
+| `exterior.jpg` | `fresh-ext-plan` | 1.20 | The whole platform legible end to end. He then said the house looked like a hut — correctly: the shared paragraph asked for 30% of frame width, the catalog's figure for a house standing *in* a landscape, and never described the bedroom volume. A larger version was generated (`ext-plan-big`, five glazed bays plus a second volume, 50% of width) and he stayed with the original anyway. |
+| `exterior-portrait.jpg` | `edit-portrait` | 0.30 | Clean first time. |
+
+**House total $1.20; round trip $2.70.**
+
+---
+
+## The re-shoot, closed
+
+Twelve houses, 36 published files, all re-shot between 2026-09-21 and 2026-09-22 against
+the rewritten charter. Masters moved from 3072×2048 to **5056×3392**. `frame-check.py`
+passes on all twelve. Twelve silhouettes, no two alike: veranda on posts · mono-pitch on
+posts over a stream · stacked cantilever · three terraces down basalt · walled court in an
+escarpment · two volumes and a glazed link · a long curve · a tower · two wings under a
+glass spine · a span into a drift · a turf roof to the grass · a floating deck.
+
+**Spend: $36.00 of a $50 ceiling — $14.40 on the twelve published files and $21.60 on
+options, corrections and the two prompt bugs.** The first house alone cost $5.10 of that;
+the last nine averaged $2.50, after the rule that three candidates per scene is the limit.
+
+Everything left for phase 9b — twelve interior loops at roughly $1.50 each on the cheap
+720p endpoints — fits in the remaining $14 only just. Raise the ceiling deliberately or
+animate the best six to eight; do not let it drift.
+
 ### Rejected, and why — kept so nobody regenerates them
 
 | Attempt | Why it was cut |

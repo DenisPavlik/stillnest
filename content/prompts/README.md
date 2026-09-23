@@ -11,29 +11,182 @@ mood board.
 
 ---
 
-## The five rules every prompt carries
+## What this file got wrong, and how we know
+
+The first twelve houses obeyed every rule below in its earlier form and the owner's
+verdict on the finished catalog was that it has no warmth in it at all — *"холодний AI
+vibe … там взагалі незатишно"*. The cause was not the model and not the resolution. It
+was three sentences in this file, which between them **forbade cosiness**: one warm
+light source, a room that is *spare*, and *nothing switched on*.
+
+It was settled on **2026-09-14** against a wall of 414 real photographs at
+`/lab/refs.html`, from which he marked 48 and singled out 18 as *"я б там хотів
+опинитись"*. What those 48 contain is what the rules below now say. Two findings ran
+through them:
+
+- **He rejected the entire cold-glass-box family.** Juvet, Manshausen, Woodnest, PAN —
+  the most architecturally famous frames on the wall, and he picked none of them except
+  one foggy A-frame lit by three glass globes. **That family is the register our twelve
+  houses are already in.** Architectural perfection is not the target and never was.
+- **The biggest single category in his picks is water you can get into** — steaming
+  onsen, soaking tub, plunge pool: 13 of 48. We have zero. It is also, conveniently,
+  the best moving element a still can carry.
+
+## The seven rules every prompt carries
 
 These are not stylistic preferences. Break one and the image is unusable.
 
 1. **No people. Ever.** Not a silhouette, not a figure in a window, not a footprint in
    snow. The product is the absence of other people; a human in frame contradicts the
    entire proposition.
+   **And the rule applies to the strings we write ourselves.** On 2026-09-22 a portrait
+   reframe was told the foreground held *"no water anywhere in it"* — a negation, in a
+   file whose first rule is that a prohibition reads as a request. It painted a mirror
+   lake. Positive descriptions only, in prompts and in the arguments passed to them.
+
+   **A long room makes the model repeat the furniture.** Two whitehour-08 frames came
+   back with the same sofa placed twice along one wall, and a third with an unbroken
+   run of seat-cushion-seat-cushion the owner called *"якийсь кінотеатр … я не хочу там
+   проводити час"*. Asked for a long space and a list of things to put in it, the model
+   tiles. Name the furniture **once each and give each piece a different job** — a sofa,
+   then a dining table, then a window seat — and say the run is broken by them.
+
+   **A prohibition does not undo an invited point of view.** On 2026-09-22 a
+   whitehour-08 frame came back with the occupant's own knees across the bottom of the
+   picture, in dark trousers, a mug and an open book beside them — while the prompt's
+   negative list said *no people*. The cause was the composition: *"shot from the corner
+   at sitting height"* plus *"lived in and left ten minutes ago"* together describe a
+   first-person view, and the model supplied the person whose view it is. The fix is
+   positive and belongs in the scene, not the negative list: **state that the room is
+   unoccupied and that the seat nearest the camera is empty.** `frame-check.py` measures
+   light, not people, so nothing catches this but looking.
+
 2. **No cars, no roads, no signage, no power lines.** Anything that implies easy
    arrival destroys the solitude figure printed next to the picture.
-3. **One warm light source, from inside the house.** Everything else in the frame is
-   cold. That contrast *is* the brand — the palette has exactly one warm token
-   (`--ember`) and it means "lit or live".
+3. **Warm light comes from several small sources, never from one.** This reverses the
+   old rule, which was written for exteriors — one lit window against a dark forest —
+   and then wrongly carried indoors, where it left every room lit like an architectural
+   survey. Count them in his picks: a stove *and* a hanging lantern *and* candles on the
+   sill (272); three lit glass globes (176); a string of bulbs along the ridge (228);
+   six pendants over a long table (287); two pendants and an under-shelf glow (200);
+   stone lanterns at the water (316, 326). **Three to six visible warm sources per
+   interior**, of at least two kinds — flame and filament — at different heights and
+   different distances from the camera. That layering is what reads as *lived in*
+   rather than *lit*.
 
-   **Fire is not that source everywhere.** A burning hearth is right for forest, snow,
-   highland and coast, where the cold outside is the thing the warmth answers. In
-   bamboo and desert it is wrong — nobody lights a fire in a bamboo valley, and a
-   stove in the high desert reads as imported. There the warm source is lamplight:
-   light through paper screens and low lanterns in bamboo, a deep warm wash from the
-   back of the room in desert. The rule is one warm light from inside; fire is only
-   one way of supplying it.
+   Outside, the rule survives as *one warm **thing**, not one warm **bulb***: the house
+   is the only warm object in a cold landscape, but it may glow from several windows at
+   once and carry a lantern, a firepit or a string of bulbs on its deck. Every exterior
+   he marked does exactly that (22, 76, 94, 240, 345). What must stay dark is everything
+   that is not the house.
 4. **Locked-off camera, eye level, no drone.** Aerial shots read as real-estate
-   marketing. We are standing there, on foot, at dusk, the way the survey was taken.
-5. **Dusk or blue hour.** Never midday. Never a bright blue sky.
+   marketing. We are standing there, on foot, the way the survey was taken.
+5. **Dusk for exteriors. Interiors dusk or night. Water and green may be dawn or
+   overcast day.** The old blanket "never midday, never a blue sky" cost us the entire
+   daylight half of his taste — the bamboo courtyard, the onsen in morning mist, the
+   soaking tub above a green valley are all daylight frames and they are among the ones
+   he reacted hardest to. Direct hard midday sun and a cloudless blue sky are still out;
+   soft overcast, mist and low dawn are in.
+6. **The living layer is mandatory, and it is not decoration.** "No people" removed the
+   people; it was never meant to remove the evidence that people exist. Every interior
+   carries, visibly:
+
+   - **soft goods** — a throw thrown, not folded; piled cushions; a sheepskin over a
+     bench; a patterned rug (kilim, not beige);
+   - **something just used** — a mug with steam still coming off it, an open book face
+     down, a board game mid-way, a laid table, a towel on a hook, boots by the door;
+   - **something alive** — a plant, cut branches in a jug, dried herbs hanging, stacked
+     firewood indoors, ceramics with real food in them.
+
+   Hollow Cedar is the proof inside our own catalog: it is the only one of the twelve
+   with a teapot, a cup and an open book, and it is the only one that reads as warm.
+
+   **Lived-in is not worn-out, and the model will confuse the two.** Asked for "dented",
+   "rumpled" and "just used", nano-banana-pro returned stained tatami and a frayed,
+   patched quilt, and the owner's objection was immediate and correct: *"подертий пол і
+   диван … люди будуть платити, а там порвана підлога"*. A stay that costs $330 a night
+   is **immaculate and unstraightened** — a thrown throw, yes; a threadbare one, never.
+   Say it positively in the prompt ("everything clean, new and well kept, recently used
+   but undamaged") and put the failure modes in the negative list as bare nouns: stain,
+   tear, patch, fray, scuff, peeling, mould.
+7. **Every frame must already contain the thing that will move.** Steam standing off
+   water, flame, rain on glass, snow in the air, mist between trunks, a curtain at an
+   open window, leaves on a branch. The video model moves what it can see and invents
+   badly what it cannot — thirteen paid takes established this, and the full reasoning
+   is in `content/CREDITS.md`. Authoring a still without its motion is what made the
+   whole of Phase 9a need doing twice. **Name the moving element before writing the
+   prompt, not after.**
+
+## Warm water is a first-class subject — where it is credible
+
+Thirteen of his forty-eight picks are water somebody can get into, and it carries three
+things at once: it is the strongest single desire signal on the wall, it is warmth made
+visible in cold air, and **steam is the one element every video model animated
+convincingly on the first attempt**.
+
+**But it is biome-conditional, and the owner overruled a blanket version of this rule on
+2026-09-14:** *"якщо це десь особняк в зимі, яка там нахуй вода в басейні? Вона просто
+застигне. Можна якусь сауну."* An open pool in a Finnish November is not luxury, it is a
+block of ice, and a visitor who has ever been cold knows it instantly.
+
+| Biome | What the warm water is |
+|---|---|
+| snow, highland | **a sauna** — glowing window, steam escaping the door, a bucket and a ladle. Never an open pool. |
+| forest (temperate), coast | a wood-fired hot tub or a soaking barrel on the deck, steaming |
+| bamboo | an open-air stone or timber bath in the court, the most literal onsen reading |
+| desert | a plunge pool, cut into shade — the one place cold water is the luxury |
+
+Whatever it is, it goes in the photograph **and** in that house's `amenities` in
+`scripts/seed.ts` (`sauna`, `outdoor-bath`), because a tub that exists only in the
+picture is a lie the booking page tells. Fix the seed row first — the listing is what
+decides what gets drawn.
+
+## The weather is a catalog-level variable, and it has to be rationed
+
+Three of the first four houses re-shot came back under rain, and the owner called it
+before anyone counted: *"я не хочу, щоб скрізь у нас були дощі … можна десь іноді просто
+сонячна погода."* Weather is the easiest way to make a frame atmospheric, which is
+exactly why every prompt reaches for it, and twelve atmospheric frames in the same
+weather stop being atmospheric and start being a filter.
+
+It is also a credibility problem in at least one case: **meridian-05's listing says the
+gravel has not seen rain since 1997.**
+
+Assigned, one per house, and to be checked against this table before writing a prompt:
+
+| House | Weather | What moves |
+|---|---|---|
+| `hollow-cedar-07` ✅ | heavy rain, late dusk | rain, steam off the tub, bamboo |
+| `moss-verse-01` ✅ | steady rain, late dusk | rain, fire, stream, steam |
+| `blackwater-11` ✅ | falling snow, late dusk | **falling snow**, fire, sauna steam |
+| `tidebreak-03` ✅ | storm and driving rain, dusk | surf, spray, rain on glass |
+| `hollowmoss-04` | morning mist, low sun through spruce | mist drifting, chimney smoke |
+| `sparv-04` | clear cold night, stars | fire, smoke, aurora |
+| `quiet-fern-06` | clear dawn, fast cloud | **the sky itself**, through the glass roof |
+| `whitehour-08` | cold clear morning, frost | **geothermal steam off the ground** |
+| `rimefall-02` | clear blue hour after snowfall, still air | steam, smoke, loose snow |
+| `meridian-05` | hard clear daylight, sharp shadows | shadows, heat shimmer, plunge pool |
+| `kaldbak-09` | fog rolling, breaks of sun | fog, turf grass in wind |
+| `driftline-10` | clear golden evening, calm fjord | water, steam off the tub |
+
+Rain is spent. Snow-in-the-air is spent. Neither is available again, and a house whose
+motion would otherwise be weather has to find it in water, fire, mist or light instead.
+
+## Nature is the subject the house sits in, and it must be green
+
+Restated by the owner on 2026-09-14, and it is the reason the current catalog feels
+sterile as much as the lighting is: *"не просто якийсь типу камінь, річка, а дерева,
+багато зелені, кущі, трава … стати майже одним цілим разом з природою."*
+
+Rock, snow and water alone read as a location scout's photograph. What he marked is
+**layered, living green**: undergrowth, ferns, moss on trunks, bushes against the deck,
+grass growing up to the step, bamboo, cut branches indoors, plants in the room (236, 240,
+319, 322, 335, 337, 341, 342, 345, 284).
+
+So every frame carries **at least three depths of vegetation** — something growing in the
+near foreground below the floor line, something at the building's edge, and the mass
+behind it. A snow house is not exempt: spruce boughs, exposed juniper, moss under the
+snow line, and branches brought inside.
 
 ## The house is the subject, but it is never alone in the frame
 
@@ -104,6 +257,14 @@ Two traps found the expensive way:
 - **Do not strip the fittings.** Blackwater's first attempt forbade balconies, railings
   and visible hardware, and came back a shed. Decks, rails, steps and terraces are what
   say somebody lives here.
+
+**Read the previous house's prompt before writing the next one's.** This rule existed
+from the start and was broken anyway on 2026-09-21: moss-verse-01's shared paragraph was
+written from hollow-cedar-07's, so it inherited *long house · deep eave · veranda the
+whole length · tub at one end*, and the owner spotted it immediately — *"вона схожа на
+наш попередній дім, сама структура дому дуже схожа"*. The variables that make two houses
+look like two houses are in the **first clause**: roof form, how it meets the ground, how
+many volumes. Change those on purpose, per house, and write down what each one is.
 
 The gate is not whether the image obeys this file. **The gate is whether the owner would
 rent the house.** Everything above is only how to get there faster.
@@ -176,11 +337,12 @@ The camera stands on the near side, closer than a wide landscape shot —
 the house occupies about 30% of the image width and is clearly the subject,
 positioned [PLACEMENT]. The landscape still rises well above the roofline
 on both sides and fills the frame behind it, so the house remains
-surrounded rather than isolated. One warm amber light glows from inside
-the windows —
-it is the only warm light in the picture; everything else is cold and
-desaturated. [FOREGROUND ELEMENT]. Heavy atmospheric haze, deep shadows,
-muted [PALETTE] tones.
+surrounded rather than isolated. Warm amber light glows
+from several windows at once, and one small warm source sits outside on
+the deck — a lantern, a firepit, or a string of bulbs. The house is the
+only warm object in the picture; the landscape around it is cold and
+desaturated. [MOVING ELEMENT] is visible in the air. [FOREGROUND ELEMENT].
+Heavy atmospheric haze, deep shadows, muted [PALETTE] tones.
 
 Shot on a 50mm lens at eye level from ground level, static camera, natural
 light only. Cinematic, restrained, quiet. Fine film grain.
@@ -192,11 +354,15 @@ Not aerial, not a drone shot, not brightly lit, not a blue sky.
 For the **interior** scene of each house, swap the first paragraph for:
 
 ```
-The interior of a small off-grid house at dusk, seen from inside one room.
-A wood stove burning is the only light source, throwing warm amber onto
-timber walls and a plain floor. Through a large window: [THE VIEW], cold and
-almost dark. No people, nothing switched on, no screens. The room is spare —
-a chair, a shelf of books, one blanket.
+The interior of a small off-grid house at dusk, seen from inside one room,
+lived in and left ten minutes ago. Warm amber light comes from [WARM
+SOURCES] — several small sources at different heights, flame and filament
+together — pooling on honey-toned timber, a patterned rug and deep soft
+seating. A throw lies thrown across the arm of the sofa, cushions are piled
+and dented, [SOMETHING JUST USED] sits on the low table, and [SOMETHING
+ALIVE] stands nearby. Through a full-height window: [THE VIEW], cold and
+blue against the warmth inside, with [MOVING ELEMENT] visible through the
+glass. No people, no televisions, no phones.
 ```
 
 ---
