@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Кнопка «нагору» — три варіанти</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=DM+Mono:wght@300;400&family=Instrument+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --spruce: #090e0a; --peat: #0f1611; --linen: #e6ece4; --haze: #7e9084;
+    --lichen: #93b382; --ember: #e9a85e; --hair: rgba(147,179,130,.15);
+    --mono: "DM Mono", ui-monospace, monospace; --display: "Cormorant Garamond", serif;
+    --p: 0; /* scroll progress 0..1, set from JS */
+  }
+  html, body { margin: 0; background: var(--spruce); color: var(--linen); font-family: "Instrument Sans", sans-serif; }
+  .page { min-height: 520vh; background:
+      linear-gradient(to bottom, rgba(9,14,10,.15), rgba(9,14,10,.85) 60vh, var(--spruce) 100vh),
+      url("../stays/kaldbak-09/interior-1536.webp") top center / 100% 100vh no-repeat; }
+  .intro { padding: 12vh 8vw 0; max-width: 46rem; }
+  .intro p { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--lichen); }
+  .intro h1 { font-family: var(--display); font-weight: 300; font-size: clamp(40px, 5vw, 76px); margin: .2em 0; }
+  .intro span { color: var(--haze); font-size: 15px; line-height: 1.6; }
+  .filler { padding: 8vh 8vw; max-width: 44rem; color: var(--haze); line-height: 1.8; }
+
+  /* the three stand side by side, each over its own label */
+  .stand { position: fixed; bottom: 28px; left: 0; right: 0; display: flex; justify-content: flex-end; gap: 7vw; padding-right: 5vw; align-items: flex-end; pointer-events: none; }
+  .slot { display: grid; justify-items: center; gap: 14px; pointer-events: auto; }
+  .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--haze); text-align: center; }
+  .tag b { display: block; color: var(--linen); font-weight: 400; margin-bottom: 4px; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+  /* ---- 1 · ВИСОТОМІР: a hairline rule, the ember dot climbs as you go down ---- */
+  .alt { display: grid; justify-items: center; gap: 10px; color: var(--haze); transition: color .3s; }
+  .alt .rule { position: relative; width: 1px; height: 110px; background: linear-gradient(var(--hair), rgba(147,179,130,.35)); }
+  .alt .rule::before, .alt .rule::after { content: ""; position: absolute; left: -3px; width: 7px; height: 1px; background: rgba(147,179,130,.45); }
+  .alt .rule::before { top: 0; } .alt .rule::after { bottom: 0; }
+  .alt .tick { position: absolute; left: -2px; width: 5px; height: 1px; background: rgba(147,179,130,.22); }
+  .alt .dot { position: absolute; left: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--ember);
+    box-shadow: 0 0 10px rgba(233,168,94,.6); top: calc(var(--p) * (110px - 7px)); transition: top .15s linear; }
+  .alt .read { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; writing-mode: vertical-rl; transform: rotate(180deg); }
+  .alt .read em { font-style: normal; color: var(--ember); }
+  .alt:hover { color: var(--linen); }
+  .alt:hover .dot { top: 0; transition: top .6s cubic-bezier(.2,.8,.2,1); }
+
+  /* ---- 2 · КІЛЬЦЕ: a hairline circle that fills with ember, a serif arrow ---- */
+  .ring { position: relative; width: 58px; height: 58px; display: grid; place-items: center; border-radius: 50%;
+    background: rgba(9,14,10,.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .ring .track { fill: none; stroke: rgba(230,236,228,.14); stroke-width: 1; }
+  .ring .fill { fill: none; stroke: var(--ember); stroke-width: 1.2; stroke-linecap: round;
+    stroke-dasharray: 169.6; stroke-dashoffset: calc(169.6 * (1 - var(--p))); transition: stroke-dashoffset .15s linear; }
+  .ring .arrow { font-family: var(--display); font-size: 26px; font-weight: 300; line-height: 1; color: var(--linen); transform: translateY(-1px); transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+  .ring:hover .arrow { transform: translateY(-5px); }
+  .ring:hover .track { stroke: rgba(233,168,94,.35); }
+
+  /* ---- 3 · ПІДЙОМ: no box at all — words on a hairline, like the site's captions ---- */
+  .rise { display: flex; align-items: center; gap: 14px; color: rgba(230,236,228,.7); font-family: var(--mono); font-size: 11px;
+    letter-spacing: .2em; text-transform: uppercase; padding: 10px 0; transition: color .3s; }
+  .rise .line { position: relative; width: 56px; height: 1px; background: rgba(230,236,228,.2); overflow: hidden; }
+  .rise .line i { position: absolute; inset: 0; background: var(--ember); transform-origin: left; transform: scaleX(var(--p)); transition: transform .15s linear; }
+  .rise .up { color: var(--ember); font-size: 13px; transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+  .rise .pct { color: var(--haze); font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: right; }
+  .rise:hover { color: var(--linen); }
+  .rise:hover .up { transform: translateY(-4px); }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="intro">
+    <p>Kaldbak 09 · Streymoy, Faroe Islands</p>
+    <h1>Прокрути вниз.</h1>
+    <span>Три кнопки внизу — кожна показує, наскільки глибоко ти прокрутив, і по кліку повертає нагору. Обери ту, що пасує сайту.</span>
+  </div>
+  <div class="filler" id="filler"></div>
+</div>
+
+<div class="stand">
+  <div class="slot">
+    <button class="alt" aria-label="Back to top" onclick="toTop()">
+      <span class="rule" id="ticks"><span class="dot"></span></span>
+      <span class="read"><em>↑</em> Top</span>
+    </button>
+    <div class="tag"><b>1 · Висотомір</b>шкала, точка повзе</div>
+  </div>
+
+  <div class="slot">
+    <button class="ring" aria-label="Back to top" onclick="toTop()">
+      <svg viewBox="0 0 58 58"><circle class="track" cx="29" cy="29" r="27"/><circle class="fill" cx="29" cy="29" r="27"/></svg>
+      <span class="arrow">↑</span>
+    </button>
+    <div class="tag"><b>2 · Кільце</b>заповнюється бурштином</div>
+  </div>
+
+  <div class="slot">
+    <button class="rise" aria-label="Back to top" onclick="toTop()">
+      <span class="up">↑</span><span>Back to the top</span><span class="line"><i></i></span><span class="pct" id="pct">0%</span>
+    </button>
+    <div class="tag"><b>3 · Підйом</b>без рамки, лише напис</div>
+  </div>
+</div>
+
+<script>
+  const filler = document.getElementById("filler");
+  const para = "Sixty metres of black cliff between the doorstep and a sea that nobody has ever swum in. The turf roof is not decoration — it is the only thing that has ever held here. Wind is constant and becomes, after about a day, indistinguishable from silence. ";
+  for (let i = 0; i < 14; i++) { const p = document.createElement("p"); p.textContent = para.repeat(2); filler.append(p); }
+  const ticks = document.getElementById("ticks");
+  for (let i = 1; i < 8; i++) { const t = document.createElement("span"); t.className = "tick"; t.style.top = (i * 110 / 8) + "px"; ticks.append(t); }
+  const pct = document.getElementById("pct");
+  function update() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? Math.min(1, scrollY / max) : 0;
+    document.documentElement.style.setProperty("--p", p.toFixed(4));
+    pct.textContent = Math.round(p * 100) + "%";
+  }
+  addEventListener("scroll", update, { passive: true }); update();
+  function toTop() { scrollTo({ top: 0, behavior: "smooth" }); }
+</script>
+</body>
+</html>

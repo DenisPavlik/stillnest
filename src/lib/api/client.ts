@@ -11,17 +11,25 @@ import "server-only";
 import type {
   AvailabilityRequest,
   AvailabilityResponse,
+  CalendarResponse,
   HealthResponse,
   SearchRequest,
   SearchResponse,
 } from "./contracts";
 import {
   availabilityResponseSchema,
+  calendarResponseSchema,
   healthResponseSchema,
   searchResponseSchema,
 } from "./contracts";
 
 const BASE = process.env.PYTHON_API_URL ?? "http://127.0.0.1:8000";
+
+/**
+ * Long enough for a cold Python function plus an embedding round trip, short
+ * enough that a visitor never waits on a service that is not coming back.
+ */
+const REQUEST_TIMEOUT_MS = 8_000;
 
 class PythonApiError extends Error {
   constructor(
@@ -41,6 +49,13 @@ async function call<T>(
   const secret = process.env.INTERNAL_API_SECRET;
   if (!secret) throw new Error("INTERNAL_API_SECRET is not set");
 
+  /**
+   * A refused connection fails instantly; a *wedged* one does not fail at all.
+   * Without a deadline, one unhealthy instance of the Python service would hold
+   * a page render open until the platform's own timeout — the visitor sees a
+   * spinner rather than the catalog, which is strictly worse than the honest
+   * "search is offline" fallback the callers already handle.
+   */
   const response = await fetch(`${BASE}/api/py${path}`, {
     ...init,
     headers: {
@@ -49,6 +64,7 @@ async function call<T>(
       ...init?.headers,
     },
     cache: "no-store",
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
 
   if (!response.ok) {
@@ -70,6 +86,20 @@ export function checkAvailability(
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+/**
+ * Per-night availability and price for one month, for the date picker.
+ *
+ * `propertyId` may be a uuid or a slug — the page usually has the slug, and the
+ * response echoes back the canonical uuid. `month` is "YYYY-MM".
+ */
+export function fetchCalendar(
+  propertyId: string,
+  month: string,
+): Promise<CalendarResponse> {
+  const path = `/calendar/${encodeURIComponent(propertyId)}?month=${encodeURIComponent(month)}`;
+  return call(path, calendarResponseSchema);
 }
 
 export function searchSemantic(payload: SearchRequest): Promise<SearchResponse> {

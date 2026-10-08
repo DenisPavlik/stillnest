@@ -43,7 +43,35 @@ class AvailabilityResponse(BaseModel):
     total_cents: int = 0
     min_nights: int = 1
     reasons: list[str] = []
-    """Why it is unavailable — 'booked', 'blocked', 'min_nights', 'past_date'."""
+    """Why it is unavailable. The values are `availability.Reason`, which is the
+    one place they are defined: 'inverted', 'past', 'min_nights', 'capacity',
+    'booked', 'blocked'. An unavailable range is a normal answer, not an error —
+    the prices are still filled in so the UI can show what it would have cost."""
+
+
+class CalendarDay(BaseModel):
+    """One night in the picker."""
+
+    night: date
+    available: bool
+    price_cents: int
+    """What this single night costs — a seasonal rule applies per night."""
+    min_nights: int
+    """The minimum a stay *starting* on this night would be held to."""
+    rule_label: str | None = None
+    reason: str | None = None
+    """Why it is not available — 'past', 'booked' or 'blocked'; null when it is."""
+
+
+class CalendarResponse(BaseModel):
+    property_id: str
+    """The canonical uuid — the request may have arrived with a slug."""
+    slug: str
+    month: str
+    """Echoed back as 'YYYY-MM'."""
+    base_price_cents: int
+    min_nights: int
+    days: list[CalendarDay] = []
 
 
 class SearchFilters(BaseModel):

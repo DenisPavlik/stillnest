@@ -1,0 +1,69 @@
+.stack {
+  max-width: 54rem;
+}
+
+.split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(18px, 3vw, 48px);
+  padding-bottom: clamp(24px, 3vw, 40px);
+  border-bottom: 1px solid var(--hair);
+}
+
+/* the kicker draws its own rule — a measurement mark, not a label chip */
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 clamp(20px, 2.6vw, 34px);
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.kicker::before {
+  content: "";
+  width: clamp(24px, 4vw, 52px);
+  height: 1px;
+  background: var(--lichen);
+  opacity: 0.6;
+}
+
+.title {
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4.4vw, 3.5rem);
+  font-weight: 300;
+  line-height: 1.06;
+  letter-spacing: -0.014em;
+  text-wrap: balance;
+}
+
+/* a second clause, set as a breath rather than a sentence */
+.title em {
+  display: block;
+  color: var(--haze);
+  font-style: italic;
+}
+
+.lede {
+  max-width: 34rem;
+  margin: clamp(18px, 2.2vw, 28px) 0 0;
+  color: var(--ink-2);
+  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
+  line-height: 1.62;
+}
+
+.aside {
+  max-width: 24rem;
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}

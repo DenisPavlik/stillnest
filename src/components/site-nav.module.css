@@ -1,0 +1,112 @@
+/* The nav is a hairline and three things on it. It has to survive sitting
+   over a photograph, so every colour here is either ink or the moss fill —
+   nothing depends on the background behind it. */
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 4vw, 48px);
+  padding-bottom: clamp(14px, 1.6vw, 20px);
+  border-bottom: 1px solid rgba(230, 236, 228, 0.14);
+}
+
+/* "bar" placement: no hero behind, so the nav brings the page measure and
+   the padding the hero frame would otherwise have given it. */
+.bar {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  background: var(--spruce);
+}
+
+.bar .nav {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding-top: clamp(18px, 2.4vw, 30px);
+  padding-right: var(--gutter);
+  padding-left: var(--gutter);
+}
+
+.wordmark {
+  flex: none;
+  margin-right: auto;
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.2vw, 1.95rem);
+  font-weight: 300;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+}
+
+.navLinks {
+  display: flex;
+  gap: clamp(20px, 2.6vw, 40px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navLink {
+  position: relative;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: color 220ms ease;
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -6px 0;
+  height: 1px;
+  background: var(--lichen);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.navLink:hover {
+  color: var(--linen);
+}
+
+.navLink:hover::after {
+  transform: scaleX(1);
+}
+
+.reserve {
+  flex: none;
+  padding: 0.6rem 1.15rem;
+  border: 1px solid rgba(147, 179, 130, 0.34);
+  border-radius: 2px;
+  background: var(--moss);
+  color: #eaf1e6;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition:
+    background-color 240ms ease,
+    border-color 240ms ease;
+}
+
+.reserve:hover {
+  background: #40603f;
+  border-color: rgba(147, 179, 130, 0.6);
+}
+
+@media (max-width: 680px) {
+  /* Below this the links would crowd the wordmark, so the row keeps the
+     wordmark and Reserve and hands the rest to <MobileMenu>, whose trigger
+     appears at exactly this width. The two breakpoints are one decision —
+     move one and the site loses its navigation. */
+  .navLinks {
+    display: none;
+  }
+
+  /* The menu trigger sits after the wordmark in the DOM but Reserve is the
+     primary action and belongs on the outside edge, so it is ordered last
+     rather than reordered in the markup. */
+  .reserve {
+    order: 1;
+  }
+}

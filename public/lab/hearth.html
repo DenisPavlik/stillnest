@@ -1,0 +1,820 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bake-off — the living hearth · Blackwater 11</title>
+
+<!--
+  ====================================================================
+  BAKE-OFF. Not part of the site. Delete public/lab/ before a release.
+
+  The rule the whole page is built on: THE PHOTOGRAPH IS NEVER TOUCHED.
+  It is a plain <img>, resampled by the browser exactly as it is on the
+  real page, and it is what you see in mode 0. Every other mode adds
+  layers over it and removes nothing.
+
+  Second round. The owner's verdict on the first:
+    · breathing light alone  — "I see no difference, just brighter"
+    · flame warp, no embers  — "the fire looks strange"
+    · warp + embers          — "much better"              <- kept
+    · snow beyond the glass  — right idea, "badly made"   <- rebuilt
+    · the sound              — "wind indoors; in here it should be
+                                shelter"                  <- rebuilt
+
+  So the light is no longer a mode of its own, it is a component of the
+  fire. The weather is rebuilt as depth-layered points on the GPU, with
+  the canopy allowed to move. And nothing in the sound is below 340 Hz.
+  ====================================================================
+-->
+
+<style>
+  :root { --spruce:#0b110c; --linen:#ece7dd; --haze:#8d968a; }
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    background: var(--spruce);
+    color: var(--linen);
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+
+  /* Copied from stay.module.css .inside / .insideMedia, so this is the
+     shipped geometry rather than a demo's geometry. */
+  .slot {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    height: 100svh;
+    max-height: calc(100vw / 1.35);
+    margin: 0;
+    overflow: hidden;
+    background: var(--spruce);
+  }
+
+  .photo, .breath {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center bottom;
+  }
+
+  /* Firelight. Only ever ADDS: a fire flares up from its ember baseline,
+     and a layer that cannot subtract cannot darken the picture that was
+     approved. Its own pixels are the photograph's warm content, so
+     anything cold in the frame is black here and cannot move at all. */
+  .breath { mix-blend-mode: plus-lighter; opacity: 0; pointer-events: none; }
+
+  /* Every canvas is a TILE at the photograph's native resolution for the
+     rectangle it covers, scaled down by CSS. The shaders therefore sample
+     1:1 and the BROWSER does the resample — the full-frame prototype
+     measured 14% softer than the still for want of exactly this. */
+  #glass, #warp, #embers, #snow {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  /* Additive, so neither layer can ever darken the photograph. */
+  #embers, #snow { mix-blend-mode: plus-lighter; }
+
+  #snow { inset: 0; width: 100%; height: 100%; }
+
+  /* The patch is opaque — mp4 has no alpha — so its edge is feathered in CSS
+     instead. Any difference between the JPEG and the H.264 at the border is
+     then hidden in a gradient rather than printed as a rectangle. */
+  #patch {
+    position: absolute;
+    display: none;
+    object-fit: fill;
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(ellipse 46% 46% at 50% 50%, #000 58%, transparent 100%);
+    mask-image: radial-gradient(ellipse 46% 46% at 50% 50%, #000 58%, transparent 100%);
+  }
+
+  /* No mask, deliberately. patch.py composites its output against the plate
+     before encoding, so outside the fire this rectangle already IS the
+     photograph; feathering it would only eat the corners of the flame. */
+  #patch5 {
+    position: absolute;
+    display: none;
+    object-fit: fill;
+    pointer-events: none;
+  }
+
+  /* The site's own grain: same filter, opacity and blend mode as
+     src/components/film-grain.tsx. */
+  #grain {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.26;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .caption {
+    position: absolute;
+    right: 0; bottom: 0; left: 0;
+    padding: 4rem 2rem clamp(1rem, 2.2vw, 1.9rem);
+    background: linear-gradient(to top, rgba(6,10,7,.66), rgba(6,10,7,.34) 46%, rgba(6,10,7,0));
+    color: var(--linen);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .625rem; font-weight: 300; letter-spacing: .16em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  #hud {
+    position: fixed; top: 0; left: 0; z-index: 10;
+    max-width: 27rem;
+    padding: .9rem 1.1rem;
+    background: rgba(6,10,7,.82);
+    border-bottom-right-radius: .4rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px; line-height: 1.8; color: var(--haze);
+    backdrop-filter: blur(6px);
+  }
+  #hud b { color: var(--linen); font-weight: 600; }
+  #hud .on { color: #d8b878; }
+  #hud .off { color: #4c5a4d; }
+  #hud kbd {
+    display: inline-block; min-width: 1.1em; padding: 0 .25em;
+    background: #1b241c; border-radius: 3px; color: var(--linen); text-align: center;
+  }
+  #hud hr { border: 0; border-top: 1px solid #1e281f; margin: .6rem 0; }
+  #mode { color: var(--linen); font-size: 12px; }
+</style>
+
+<figure class="slot" id="slot">
+  <!-- Mode 0 IS this element, alone. Everything must beat it or nothing ships. -->
+  <img class="photo" id="photo" src="/stays/blackwater-11/interior.jpg" alt="Inside Blackwater 11">
+  <img class="breath" id="breath" src="/lab/breath.png" alt="" aria-hidden="true">
+  <canvas id="glass"></canvas>
+  <canvas id="warp"></canvas>
+  <canvas id="embers"></canvas>
+  <canvas id="snow"></canvas>
+
+  <!-- Mode 4: the model's fire, and ONLY the model's fire. A 490x410 patch
+       over the hearth, with the photograph composited into everything outside
+       the flame before encoding, so the rectangle has nothing to give away. -->
+  <video id="patch" muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"></video>
+  <video id="patch5" muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"></video>
+
+  <svg id="grain" aria-hidden="true">
+    <filter id="gf">
+      <feTurbulence id="ft" type="fractalNoise" baseFrequency="0.82" numOctaves="4" stitchTiles="stitch" seed="1"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#gf)"/>
+  </svg>
+
+  <figcaption class="caption">The stove, lit</figcaption>
+  <!-- the caption stays English: it is site copy, not lab UI -->
+</figure>
+
+<div id="hud"></div>
+
+<!-- ============ shared: a full-screen triangle ============ -->
+<script type="x-shader" id="vsQuad">#version 300 es
+in vec2 p; out vec2 tuv;
+void main(){ gl_Position = vec4(p, 0., 1.); vec2 t = p*.5+.5; tuv = vec2(t.x, 1.-t.y); }
+</script>
+
+<!-- ============ shared: noise, spliced into each shader ============ -->
+<script type="x-shader" id="libNoise">
+float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float h1(float n){ return fract(sin(n*78.233)*43758.5453); }
+float n2(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),f.x), mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x), f.y); }
+float fbm(vec2 p){ float s=0., a=.5; for(int i=0;i<5;i++){ s+=a*n2(p); p*=2.03; a*=.5; } return s; }
+float flick(float t){ return fbm(vec2(t,0.))*.65 + fbm(vec2(t*3.1,7.))*.25 + fbm(vec2(t*11.,3.))*.10; }
+</script>
+
+<!-- ============ the flame ============ -->
+<script type="x-shader" id="fsFlame">#version 300 es
+precision highp float;
+in vec2 tuv; out vec4 o;
+uniform sampler2D uTile;
+uniform float uT, uWarp, uClamp, uHeadroom, uDither;
+uniform vec4 uRect;
+uniform vec2 uFlame;
+//__NOISE__
+void main(){
+  vec2 puv = uRect.xy + tuv * uRect.zw;
+  vec3 base = texture(uTile, tuv).rgb;
+
+  /* The flame picks ITSELF out of the frame: fire is the only thing here
+     whose red massively exceeds its blue. Nothing is painted — the
+     photograph's own pixels are re-sampled a little to one side. */
+  float warm = clamp((base.r - base.b) * 2.2, 0., 1.);
+  float lum  = dot(base, vec3(.299, .587, .114));
+  float sel  = smoothstep(.18, .55, warm) * smoothstep(.10, .35, lum);
+  sel *= smoothstep(.075, .0, length((puv - uFlame) * vec2(2.4, 1.0)));
+
+  /* `sel` is the coverage AND the alpha. Where it is zero this fragment is
+     fully transparent and the untouched <img> is what shows — which is why
+     the tile's own JPEG re-encode cannot print a rectangle across the
+     ceiling, and why 99.8% of the frame is literally the photograph. */
+  vec3 col = base;
+  float a = 0.;
+
+  if (sel > .001) {
+    float t = uT * .9;
+    float up = clamp((uFlame.y + .012 - puv.y) * 26., 0., 1.);   // 0 at the fuel, 1 at the tip
+    vec2 q = puv * vec2(150., 70.);
+    float nx = fbm(q + vec2(0., -t*3.4)) - .5;
+    float ny = fbm(q*1.7 + vec2(11., -t*5.1)) - .5;
+    vec2 d = vec2(nx*1.5, ny*1.0 - .25) * uWarp * (.25 + up*1.5) * sel;
+    col = texture(uTile, tuv + d / uRect.zw).rgb;
+
+    float pulse = 1.0 + (flick(t*1.7) - .5) * .55;
+    pulse = mix(pulse, min(pulse, 1.0), uClamp);
+    col *= pulse;
+
+    /* THE COMPOSITION CLAMP. Displacing pixels is not enough on its own:
+       `sel` is soft, so a pixel of faint glow just above the tip has small
+       but non-zero coverage, and the warp will happily carry the bright
+       core into it — measured, the flame grew 48 px taller that way. So cap
+       each pixel against what the photograph had AT THAT PIXEL. Brightness
+       stays free to move around inside the silhouette it already had; it
+       cannot leave it. */
+    float Lb = dot(base, vec3(.299, .587, .114));
+    float Lc = dot(col,  vec3(.299, .587, .114));
+    col *= mix(1.0, min(1.0, (Lb * uHeadroom) / max(Lc, 1e-4)), uClamp);
+
+    a = sel * .95;
+  }
+
+  if (a > .001) col += (h(gl_FragCoord.xy + uT) - h(gl_FragCoord.yx - uT)) * uDither / 255.;
+  o = vec4(col, a);
+}
+</script>
+
+<!-- ============ embers ============ -->
+<script type="x-shader" id="vsEmber">#version 300 es
+uniform float uT, uCount, uPx, uGain, uFan;
+uniform vec2 uFlame; uniform vec4 uRect; uniform sampler2D uOcc;
+out float vA; out float vHeat;
+//__NOISE__
+void main(){
+  float id = float(gl_VertexID);
+  float speed = .055 + h1(id)*.075;
+  float life  = 1.0/speed;
+  float seed  = floor(uT/life + h1(id+9.));
+  float age   = fract(uT/life + h1(id+9.));
+  vec2 p = uFlame + vec2((h1(seed*13.+id) - .5)*.024, .006);
+  p.y -= age * (.10 + h1(id+3.)*.14) * (1. - age*.35);
+  /* A lateral velocity at birth, not a drift that only builds with age. A
+     spark rising straight out of this fire goes behind the hood and stays
+     there — correct, and invisible. Fanning them is what makes the
+     occlusion legible: the plume is there below the rim and gone above it. */
+  p.x += (h1(id + 21.) - .5) * uFan * age
+       + (n2(vec2(id*3.7, uT*.5 + age*2.)) - .5) * .020 * age
+       + sin(uT*.7 + id) * .0015;
+
+  vec2 t = (p - uRect.xy) / uRect.zw;
+  gl_Position = vec4(t.x*2.-1., 1.-t.y*2., 0., 1.);
+  gl_PointSize = (2.2 + h1(id+5.)*4.2) * uPx;
+
+  /* THE WHOLE POINT. The ember reads the occluder silhouette at its own
+     position, in the VERTEX shader, and multiplies its alpha by what it
+     finds. An ember behind the flue is not drawn dimly — it is not drawn.
+     One texture fetch buys exact depth for the one camera position this
+     photograph will ever have. */
+  vA = (1. - texture(uOcc, t).r)
+     * smoothstep(1., .40, age) * smoothstep(0., .05, age)
+     * (.35 + h1(id+7.)*.65) * uGain * step(id, uCount - .5);
+  vHeat = 1. - age;
+}
+</script>
+
+<script type="x-shader" id="fsEmber">#version 300 es
+precision highp float; in float vA; in float vHeat; out vec4 o;
+void main(){
+  float m = smoothstep(.5, .05, length(gl_PointCoord - .5));
+  o = vec4(mix(vec3(1., .28, .06), vec3(1., .78, .42), vHeat) * m * vA, m * vA);
+}
+</script>
+
+<!-- ============ the canopy ============ -->
+<script type="x-shader" id="fsGlass">#version 300 es
+precision highp float;
+in vec2 tuv; out vec4 o;
+uniform sampler2D uWin, uWinMask;
+uniform float uT, uSway;
+uniform vec4 uRect;
+//__NOISE__
+void main(){
+  vec2 puv = uRect.xy + tuv * uRect.zw;
+  float mask = texture(uWinMask, tuv).r;
+
+  /* Only the crowns move. Amplitude ramps to zero by v≈0.66 so the deck,
+     the railing and the lying snow stay exactly where the photographer left
+     them — a trunk does not sway, a crown does. The mezzanine rail is not
+     handled here but in the mask: the visible frame starts at v≈0.37, so
+     the rail IS the top of it and no height ramp can exclude it. */
+  float hf = smoothstep(.66, .10, puv.y);
+
+  /* Alpha is the mask AND how much this pixel actually moves.
+     The mask half keeps mullions, the flue and every warm interior surface
+     transparent, so the untouched <img> shows through them. The hf half is
+     the one that had to be measured: a canvas that covers a pixel it does
+     not move still replaces it with the TILE's pixel, and the tile is a
+     separate JPEG pass — that alone changed 2% of the frame, including the
+     deck and the hood, for no motion at all. Where nothing moves, draw
+     nothing. */
+  float a = smoothstep(.10, .40, mask) * smoothstep(.02, .30, hf);
+  if (a < .002) { o = vec4(0.); return; }
+
+  /* Two slow bands so neighbouring trees are not in phase: one across the
+     frame, one up it. Both slow on purpose — this has to stay barely
+     perceptible, or it stops being weather and becomes an effect. */
+  float s = (fbm(vec2(puv.x * 5.5, uT * .085)) - .5) * 1.6
+          + (fbm(vec2(puv.y * 3.0 + 9., uT * .13)) - .5) * .7;
+
+  float dx = s * uSway * hf * a;
+  o = vec4(texture(uWin, tuv + vec2(dx / uRect.z, 0.)).rgb, a);
+}
+</script>
+
+<!-- ============ the snow ============ -->
+<script type="x-shader" id="vsSnow">#version 300 es
+/* One attribute, three numbers per flake: the column it falls down, its
+   phase, and its depth. The column is drawn on the CPU from the mask's own
+   column weights — sprinkling flakes uniformly and letting the mask kill
+   them threw away 94% of them, which is why the first snow read as a dozen
+   specks. Now nearly all of them fall where there is glass to fall past. */
+in vec3 aSeed;   // u, phase, depth
+uniform float uT, uCount, uPx, uWind, uGain;
+uniform vec4 uMap;      // ox, dW, oy, dH — the cover transform, in device px
+uniform vec2 uRes;      // canvas size in device px
+uniform sampler2D uMask;
+out float vA; out float vD;
+//__NOISE__
+void main(){
+  float id = float(gl_VertexID);
+
+  /* Depth is the whole difference between "specks" and "snow falling". A
+     near flake is bigger, faster, brighter and wanders more; a far one is a
+     slow dim dot. One number drives all four, which is why the first
+     version — every flake identical — read as dirt on the glass. */
+  float d = aSeed.z;
+  float speed = mix(.018, .085, d*d);
+  float v = fract(aSeed.y + uT * speed);
+  float u = aSeed.x;
+
+  /* One wind for the whole fall plus each flake's own wander. Purely
+     vertical tracks read as rain; a shared drift is what makes it snow. */
+  u += uWind * (0.35 + d)
+     + (n2(vec2(id * 1.7, uT * .35 + v * 1.2)) - .5) * mix(.006, .030, d)
+     + sin(uT * (.3 + h1(id+5.)*.5) + id) * mix(.0008, .004, d);
+  u = fract(u);
+
+  vec2 px = vec2(uMap.x + u * uMap.y, uMap.z + v * uMap.w);
+  gl_Position = vec4(px.x / uRes.x * 2. - 1., 1. - px.y / uRes.y * 2., 0., 1.);
+  gl_PointSize = mix(1.0, 3.6, d*d) * uPx;
+
+  /* Gated by the window mask at the flake's own position. Mullions, the
+     flue and every warm interior surface are zero in that mask, so a flake
+     crossing one is simply not drawn — the occlusion costs one fetch, and
+     no second mask had to be authored for it. */
+  float m = smoothstep(.20, .52, texture(uMask, vec2(u, v)).r);
+  vA = m * mix(.08, .40, d) * uGain * step(id, uCount - .5);
+  vD = d;
+}
+</script>
+
+<script type="x-shader" id="fsSnow">#version 300 es
+precision highp float; in float vA; in float vD; out vec4 o;
+void main(){
+  /* Softer at the near end: a flake that close is out of focus, and a hard
+     dot is the tell that gives away every cheap snow layer. */
+  float m = smoothstep(.5, mix(.24, .02, vD), length(gl_PointCoord - .5));
+  o = vec4(mix(vec3(.72, .80, .92), vec3(.93, .96, 1.0), vD) * m * vA, m * vA);
+}
+</script>
+
+<script>
+(async function () {
+  "use strict";
+
+  const meta = await fetch("/lab/hearth.json").then((r) => r.json());
+  const rect4 = (r) => [r[0], r[1], r[2] - r[0], r[3] - r[1]];
+  const HR = rect4(meta.rect);
+  const GR = rect4(meta.windowRect);
+  const FLAME = meta.flame;
+  const [PW, PH] = meta.photo;
+  const PATCH = meta.firePatch ? rect4(meta.firePatch.rect) : null;
+
+  // The cropped take's patch ships as its own file so a re-run overwrites one
+  // thing and nothing else. Absent, mode 5 simply is not offered.
+  const crop = await fetch("/lab/fire-patch-crop.json")
+    .then((r) => (r.ok ? r.json() : null))
+    .catch(() => null);
+  const PATCH5 = crop ? rect4(crop.rect) : null;
+
+  const slot = document.getElementById("slot");
+  const photo = document.getElementById("photo");
+  const breathEl = document.getElementById("breath");
+  const glassEl = document.getElementById("glass");
+  const warpEl = document.getElementById("warp");
+  const emberEl = document.getElementById("embers");
+  const snowEl = document.getElementById("snow");
+  const patchEl = document.getElementById("patch");
+  const patch5El = document.getElementById("patch5");
+  const grain = document.getElementById("grain");
+  const ft = document.getElementById("ft");
+  const hud = document.getElementById("hud");
+
+  const S = {
+    mode: 1,
+    clamp: true,
+    headroom: 1.10,
+    warp: 0.0055,
+    breath: 0.55,
+    embers: 28,
+    emberGain: 1.6,
+    fan: 0.20,
+    flakes: 3600,
+    snowGain: 1.4,
+    sway: 0.0009,
+    trees: true,
+    grain: true,
+    fps: 0,
+  };
+
+  /* ------------------------------------------------------- GL plumbing */
+  const NOISE = document.getElementById("libNoise").textContent.trim();
+  const srcOf = (id) =>
+    document.getElementById(id).textContent.trim().replace("//__NOISE__", NOISE);
+
+  const ctxOf = (el) =>
+    el.getContext("webgl2", { antialias: false, alpha: true, premultipliedAlpha: false });
+
+  function program(ctx, vsId, fsId) {
+    const p = ctx.createProgram();
+    for (const [type, id] of [[ctx.VERTEX_SHADER, vsId], [ctx.FRAGMENT_SHADER, fsId]]) {
+      const sh = ctx.createShader(type);
+      ctx.shaderSource(sh, srcOf(id));
+      ctx.compileShader(sh);
+      if (!ctx.getShaderParameter(sh, ctx.COMPILE_STATUS)) {
+        throw new Error(id + ": " + ctx.getShaderInfoLog(sh));
+      }
+      ctx.attachShader(p, sh);
+    }
+    ctx.linkProgram(p);
+    if (!ctx.getProgramParameter(p, ctx.LINK_STATUS)) throw new Error(ctx.getProgramInfoLog(p));
+    return p;
+  }
+
+  function fullscreenTri(ctx, prog) {
+    const b = ctx.createBuffer();
+    ctx.bindBuffer(ctx.ARRAY_BUFFER, b);
+    ctx.bufferData(ctx.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), ctx.STATIC_DRAW);
+    const a = ctx.getAttribLocation(prog, "p");
+    ctx.enableVertexAttribArray(a);
+    ctx.vertexAttribPointer(a, 2, ctx.FLOAT, false, 0, 0);
+  }
+
+  function loadTex(ctx, url, unit) {
+    return new Promise((res, rej) => {
+      const img = new Image();
+      img.onload = () => {
+        const tx = ctx.createTexture();
+        ctx.activeTexture(ctx.TEXTURE0 + unit);
+        ctx.bindTexture(ctx.TEXTURE_2D, tx);
+        ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA8, img.width, img.height, 0,
+                       ctx.RGBA, ctx.UNSIGNED_BYTE, img);
+        ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.LINEAR);
+        ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MAG_FILTER, ctx.LINEAR);
+        ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.CLAMP_TO_EDGE);
+        ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.CLAMP_TO_EDGE);
+        res([img.width, img.height]);
+      };
+      img.onerror = () => rej(new Error("missing " + url));
+      img.src = url;
+    });
+  }
+
+  /* Read the mask once on the CPU and turn it into a column distribution, so
+     a flake can be BORN where there is glass instead of being killed after
+     the fact. Inverse-CDF sampling: column weight is how much of that column
+     the mask lets through. */
+  async function snowSeeds(count) {
+    const img = new Image();
+    img.src = "/lab/window-mask.png";
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+    const off = document.createElement("canvas");
+    off.width = img.width; off.height = img.height;
+    const o = off.getContext("2d", { willReadFrequently: true });
+    o.drawImage(img, 0, 0);
+    const px = o.getImageData(0, 0, img.width, img.height).data;
+
+    const cols = new Float64Array(img.width);
+    for (let x = 0; x < img.width; x++) {
+      let s = 0;
+      for (let y = 0; y < img.height; y += 3) s += px[(y * img.width + x) * 4];
+      cols[x] = s;
+    }
+    const cdf = new Float64Array(img.width);
+    let run = 0;
+    for (let x = 0; x < img.width; x++) { run += cols[x]; cdf[x] = run; }
+    const total = run || 1;
+
+    const seeds = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const r = Math.random() * total;
+      let lo = 0, hi = img.width - 1;
+      while (lo < hi) { const mid = (lo + hi) >> 1; if (cdf[mid] < r) lo = mid + 1; else hi = mid; }
+      seeds[i * 3] = (lo + Math.random()) / img.width;
+      seeds[i * 3 + 1] = Math.random();
+      seeds[i * 3 + 2] = Math.random();
+    }
+    return seeds;
+  }
+
+  if (PATCH) {
+    patchEl.src = meta.firePatch.src;
+    patchEl.play().catch(() => {});
+  }
+  // Both patches play from the start and are only shown or hidden, so flicking
+  // between 4 and 5 compares two fires rather than two loading states.
+  if (PATCH5) {
+    patch5El.src = crop.src;
+    patch5El.play().catch(() => {});
+  }
+
+  const glF = ctxOf(warpEl), glE = ctxOf(emberEl), glG = ctxOf(glassEl), glS = ctxOf(snowEl);
+  if (!glF || !glE || !glG || !glS) {
+    hud.textContent = "no WebGL2 in this browser — mode 0 only";
+    return;
+  }
+
+  const pFlame = program(glF, "vsQuad", "fsFlame");
+  const pEmber = program(glE, "vsEmber", "fsEmber");
+  const pGlass = program(glG, "vsQuad", "fsGlass");
+  const pSnow = program(glS, "vsSnow", "fsSnow");
+  fullscreenTri(glF, pFlame);
+  fullscreenTri(glG, pGlass);
+
+  const [hearthW, hearthH] = await loadTex(glF, "/lab/hearth-tile.jpg", 0);
+  await loadTex(glE, "/lab/occ-tile.png", 0);
+  const [glassW, glassH] = await loadTex(glG, "/lab/window-tile.jpg", 0);
+  await loadTex(glG, "/lab/window-mask-tile.png", 1);
+  await loadTex(glS, "/lab/window-mask.png", 0);
+
+  const SNOW_MAX = 9000;
+  {
+    const seeds = await snowSeeds(SNOW_MAX);
+    const b = glS.createBuffer();
+    glS.bindBuffer(glS.ARRAY_BUFFER, b);
+    glS.bufferData(glS.ARRAY_BUFFER, seeds, glS.STATIC_DRAW);
+    const a = glS.getAttribLocation(pSnow, "aSeed");
+    glS.enableVertexAttribArray(a);
+    glS.vertexAttribPointer(a, 3, glS.FLOAT, false, 0, 0);
+  }
+
+  /* Backing stores at the photograph's own resolution for the rectangle each
+     one covers. CSS scales them down; the shaders never minify. */
+  warpEl.width = emberEl.width = hearthW;
+  warpEl.height = emberEl.height = hearthH;
+  glassEl.width = glassW;
+  glassEl.height = glassH;
+
+  /* --------------------------------------------------- cover geometry */
+  function cover() {
+    const W = slot.clientWidth, H = slot.clientHeight;
+    const s = Math.max(W / PW, H / PH);
+    const dW = PW * s, dH = PH * s;
+    return { W, H, dW, dH, ox: (W - dW) / 2, oy: H - dH };   // bottom-anchored
+  }
+  function place(el, rect, c) {
+    el.style.left = c.ox + rect[0] * c.dW + "px";
+    el.style.top = c.oy + rect[1] * c.dH + "px";
+    el.style.width = rect[2] * c.dW + "px";
+    el.style.height = rect[3] * c.dH + "px";
+  }
+  let dpr = 1;
+  function layout() {
+    const c = cover();
+    place(warpEl, HR, c);
+    place(emberEl, HR, c);
+    place(glassEl, GR, c);
+    if (PATCH) place(patchEl, PATCH, c);
+    if (PATCH5) place(patch5El, PATCH5, c);
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    snowEl.width = Math.round(c.W * dpr);
+    snowEl.height = Math.round(c.H * dpr);
+  }
+  addEventListener("resize", layout);
+
+  /* ---------------------------------------------------------- one curve
+     The firelight and the flame's own pulse are both this number, so the
+     room brightens on the same beat the fire does. */
+  const hash = (n) => (Math.sin(n * 127.1) * 43758.5453) % 1;
+  function vnoise(t) {
+    const i = Math.floor(t), f = t - i, s = f * f * (3 - 2 * f);
+    const a = Math.abs(hash(i)), b = Math.abs(hash(i + 1));
+    return a + (b - a) * s;
+  }
+  const flicker = (t) =>
+    (vnoise(t * 0.55) - 0.5) * 1.4 + (vnoise(t * 2.6) - 0.5) * 0.5;
+
+  /* The light layer can only add, so the ± curve has to be rectified — and a
+     hard max(0,x) sits at exactly zero 52% of the time, which reads as a
+     lamp flicking rather than a fire. A softplus is smooth at the knee: the
+     low points reach 0.006 without ever touching zero. */
+  const SOFT_K = 4;
+  const breathe = (t) => Math.log1p(Math.exp(SOFT_K * flicker(t))) / SOFT_K;
+
+  /* The sound is GONE, not disabled. Two attempts, both wrong: a pink-noise
+     bed read as wind indoors, and the crackle-only version read as noise
+     rather than as a hearth. The owner stopped the work, and a dead branch
+     left in a lab is a branch someone re-enables by accident. */
+
+  /* ------------------------------------------------------------- the frame */
+  const U = (ctx, p, n) => ctx.getUniformLocation(p, n);
+  let t0 = performance.now(), frames = 0, lastFps = t0, lastSeed = 0;
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const t = (now - t0) / 1000;
+    const c = cover();
+
+    // Mode 4 is the model's fire instead of the shader's, so the shader's
+    // flame and embers are off and only the light still breathes.
+    const patchOn = S.mode === 4;
+    const patch5On = S.mode === 5;
+    const fireOn = S.mode === 1 || S.mode === 3;
+    const weatherOn = S.mode === 2 || S.mode === 3;
+    const alive = S.mode > 0;
+    const treesOn = weatherOn && S.trees && S.sway > 0;
+    const emberOn = fireOn && S.embers > 0;
+    const snowOn = weatherOn && S.flakes > 0;
+
+    const b = breathe(t);
+    breathEl.style.opacity = (fireOn || patchOn || patch5On ? b * S.breath : 0).toFixed(4);
+    patchEl.style.display = patchOn ? "block" : "none";
+    patch5El.style.display = patch5On ? "block" : "none";
+    grain.style.display = S.grain && alive ? "" : "none";
+    warpEl.style.display = fireOn ? "" : "none";
+    emberEl.style.display = emberOn ? "" : "none";
+    glassEl.style.display = treesOn ? "" : "none";
+    snowEl.style.display = snowOn ? "" : "none";
+
+    if (S.grain && alive && now - lastSeed > 110) {   // ~9 Hz: film, not television
+      ft.setAttribute("seed", String((Math.random() * 1000) | 0));
+      lastSeed = now;
+    }
+
+    if (fireOn) {
+      glF.viewport(0, 0, warpEl.width, warpEl.height);
+      glF.clearColor(0, 0, 0, 0); glF.clear(glF.COLOR_BUFFER_BIT);
+      glF.useProgram(pFlame);
+      glF.uniform1i(U(glF, pFlame, "uTile"), 0);
+      glF.uniform4fv(U(glF, pFlame, "uRect"), HR);
+      glF.uniform2fv(U(glF, pFlame, "uFlame"), FLAME);
+      glF.uniform1f(U(glF, pFlame, "uT"), t);
+      glF.uniform1f(U(glF, pFlame, "uWarp"), S.warp);
+      glF.uniform1f(U(glF, pFlame, "uClamp"), S.clamp ? 1 : 0);
+      glF.uniform1f(U(glF, pFlame, "uHeadroom"), S.headroom);
+      glF.uniform1f(U(glF, pFlame, "uDither"), 1);
+      glF.disable(glF.BLEND);
+      glF.drawArrays(glF.TRIANGLES, 0, 3);
+    }
+
+    if (emberOn) {
+      glE.viewport(0, 0, emberEl.width, emberEl.height);
+      glE.clearColor(0, 0, 0, 0); glE.clear(glE.COLOR_BUFFER_BIT);
+      glE.useProgram(pEmber);
+      glE.uniform1i(U(glE, pEmber, "uOcc"), 0);
+      glE.uniform4fv(U(glE, pEmber, "uRect"), HR);
+      glE.uniform2fv(U(glE, pEmber, "uFlame"), FLAME);
+      glE.uniform1f(U(glE, pEmber, "uT"), t);
+      glE.uniform1f(U(glE, pEmber, "uCount"), S.embers);
+      glE.uniform1f(U(glE, pEmber, "uPx"), emberEl.width / 900);
+      glE.uniform1f(U(glE, pEmber, "uGain"), S.emberGain);
+      glE.uniform1f(U(glE, pEmber, "uFan"), S.fan);
+      glE.enable(glE.BLEND);
+      glE.blendFunc(glE.SRC_ALPHA, glE.ONE);
+      glE.drawArrays(glE.POINTS, 0, S.embers);
+    }
+
+    if (treesOn) {
+      glG.viewport(0, 0, glassEl.width, glassEl.height);
+      glG.clearColor(0, 0, 0, 0); glG.clear(glG.COLOR_BUFFER_BIT);
+      glG.useProgram(pGlass);
+      glG.uniform1i(U(glG, pGlass, "uWin"), 0);
+      glG.uniform1i(U(glG, pGlass, "uWinMask"), 1);
+      glG.uniform4fv(U(glG, pGlass, "uRect"), GR);
+      glG.uniform1f(U(glG, pGlass, "uT"), t);
+      glG.uniform1f(U(glG, pGlass, "uSway"), S.sway);
+      glG.disable(glG.BLEND);
+      glG.drawArrays(glG.TRIANGLES, 0, 3);
+    }
+
+    if (snowOn) {
+      glS.viewport(0, 0, snowEl.width, snowEl.height);
+      glS.clearColor(0, 0, 0, 0); glS.clear(glS.COLOR_BUFFER_BIT);
+      glS.useProgram(pSnow);
+      glS.uniform1i(U(glS, pSnow, "uMask"), 0);
+      glS.uniform1f(U(glS, pSnow, "uT"), t);
+      glS.uniform1f(U(glS, pSnow, "uCount"), S.flakes);
+      glS.uniform1f(U(glS, pSnow, "uPx"), dpr);
+      glS.uniform1f(U(glS, pSnow, "uGain"), S.snowGain);
+      // One slow wind for the whole fall, shared by every flake.
+      glS.uniform1f(U(glS, pSnow, "uWind"),
+        Math.sin(t * 0.11) * 0.014 + Math.sin(t * 0.31 + 1.7) * 0.005);
+      glS.uniform4f(U(glS, pSnow, "uMap"),
+        c.ox * dpr, c.dW * dpr, c.oy * dpr, c.dH * dpr);
+      glS.uniform2f(U(glS, pSnow, "uRes"), snowEl.width, snowEl.height);
+      glS.enable(glS.BLEND);
+      glS.blendFunc(glS.SRC_ALPHA, glS.ONE);
+      glS.drawArrays(glS.POINTS, 0, S.flakes);
+    }
+
+    frames++;
+    if (now - lastFps > 500) {
+      S.fps = frames * 1000 / (now - lastFps);
+      frames = 0; lastFps = now;
+      draw();
+    }
+  }
+
+  /* --------------------------------------------------------------- the HUD */
+  /* The readout is in Ukrainian because it is the owner who reads it, and a
+     control he cannot name is a control he cannot judge. The code and its
+     comments stay in English, as everything in this repo does. */
+  const MODES = [
+    "0 · фотографія, недоторкана — контроль",
+    "1 · вогонь — зміщене полум'я, іскри за трубою, дихання світла",
+    "2 · за склом — падає сніг, гойдаються крони, кімната нерухома",
+    "3 · разом",
+    "4 · вогонь із моделі — латка 490×410 поверх фотографії",
+    "5 · вогонь із моделі, згенерований кропом — нативна роздільність, вугілля в полінах",
+  ];
+
+  function draw() {
+    const flag = (on) => on ? '<span class="on">увімк</span>' : '<span class="off">вимк</span>';
+    hud.innerHTML = `
+      <div id="mode"><b>${MODES[S.mode]}</b></div>
+      <hr>
+      <kbd>0</kbd><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd> режим &nbsp;
+      <kbd>H</kbd> сховати це &nbsp;
+      <kbd>G</kbd> зерно плівки ${flag(S.grain)}<br>
+      <kbd>C</kbd> заборона міняти композицію ${flag(S.clamp)}
+        ${S.clamp ? "— полум'я може тільки пригасати" : "— полум'ю дозволено рости"}
+      <hr>
+      <b>вогонь</b>&nbsp;
+      <kbd>[</kbd><kbd>]</kbd> скільки іскор <b>${S.embers}</b> &nbsp;
+      <kbd>;</kbd><kbd>'</kbd> яскравість іскор <b>${S.emberGain.toFixed(1)}</b><br>
+      <kbd>9</kbd><kbd>8</kbd> як широко іскри розлітаються <b>${S.fan.toFixed(2)}</b> &nbsp;
+      <kbd>-</kbd><kbd>=</kbd> наскільки ворушиться полум'я <b>${S.warp.toFixed(4)}</b><br>
+      <kbd>,</kbd><kbd>.</kbd> сила дихання світла <b>${S.breath.toFixed(2)}</b>
+      <hr>
+      <b>за склом</b>&nbsp;
+      <kbd>o</kbd><kbd>p</kbd> скільки сніжинок <b>${S.flakes}</b> &nbsp;
+      <kbd>n</kbd><kbd>m</kbd> яскравість снігу <b>${S.snowGain.toFixed(2)}</b><br>
+      <kbd>T</kbd> гойдання крон ${flag(S.trees)} &nbsp;
+      <kbd>j</kbd><kbd>k</kbd> розмах гойдання <b>${(S.sway * PW).toFixed(1)} px</b>
+      <hr>
+      ${S.fps.toFixed(0)} fps · сама фотографія не перемальовується жодного разу
+    `;
+  }
+
+  addEventListener("keydown", (e) => {
+    const k = e.key;
+    if ("012345".includes(k)) S.mode = +k;
+    else if (k === "c" || k === "C") S.clamp = !S.clamp;
+    else if (k === "g" || k === "G") S.grain = !S.grain;
+    else if (k === "t" || k === "T") S.trees = !S.trees;
+    else if (k === "h" || k === "H") hud.style.display = hud.style.display === "none" ? "" : "none";
+    else if (k === "[") S.embers = Math.max(0, S.embers - 4);
+    else if (k === "]") S.embers = Math.min(160, S.embers + 4);
+    else if (k === ";") S.emberGain = Math.max(0, S.emberGain - 0.2);
+    else if (k === "'") S.emberGain = Math.min(6, S.emberGain + 0.2);
+    else if (k === "9") S.fan = Math.max(0, S.fan - 0.02);
+    else if (k === "8") S.fan = Math.min(0.6, S.fan + 0.02);
+    else if (k === "-") S.warp = Math.max(0, S.warp - 0.0005);
+    else if (k === "=") S.warp = Math.min(0.02, S.warp + 0.0005);
+    else if (k === ",") S.breath = Math.max(0, S.breath - 0.05);
+    else if (k === ".") S.breath = Math.min(2, S.breath + 0.05);
+    else if (k === "o") S.flakes = Math.max(0, S.flakes - 200);
+    else if (k === "p") S.flakes = Math.min(SNOW_MAX, S.flakes + 200);
+    else if (k === "n") S.snowGain = Math.max(0, S.snowGain - 0.1);
+    else if (k === "m") S.snowGain = Math.min(4, S.snowGain + 0.1);
+    else if (k === "j") S.sway = Math.max(0, S.sway - 0.0002);
+    else if (k === "k") S.sway = Math.min(0.006, S.sway + 0.0002);
+    else return;
+    e.preventDefault();
+    draw();
+  });
+
+  window.__S = S;
+  layout();
+  if (!photo.complete) photo.addEventListener("load", layout);
+  draw();
+  requestAnimationFrame(frame);
+})();
+</script>

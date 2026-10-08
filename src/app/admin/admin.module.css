@@ -1,0 +1,660 @@
+/* ==================================================================== *
+   THE LEDGER — an instrument panel, not a dashboard kit.
+
+   Same tokens as the survey on every house page: peat panels on spruce,
+   hairlines instead of boxes, mono for anything measured, the display
+   serif for the four or five words that are said rather than read. The
+   one warm colour is ember, and here it means exactly one thing: a night
+   somebody is spending in a house.
+ * ==================================================================== */
+
+.page {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 100svh;
+  overflow-x: clip;
+  background: var(--spruce);
+  color: var(--linen);
+  font-family: var(--font-sans);
+}
+
+.shell {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(40px, 5vw, 80px) var(--gutter) clamp(64px, 8vw, 128px);
+}
+
+/* ---- head ----------------------------------------------------------- */
+
+.head {
+  display: grid;
+  gap: 14px;
+  max-width: 52rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 4.8vw, 4.4rem);
+  font-weight: 300;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  margin: 4px 0 0;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+
+/* ---- the four numbers ---------------------------------------------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: clamp(32px, 4vw, 56px) 0 0;
+  background: var(--hair);
+  border: 1px solid var(--hair);
+}
+
+.stat {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: clamp(18px, 2vw, 28px);
+  background: var(--peat);
+}
+
+.stat dt {
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.stat dd {
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: clamp(2.2rem, 3.4vw, 3.2rem);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.stat dd small {
+  margin-left: 4px;
+  color: var(--haze);
+  font-size: 0.45em;
+}
+
+.stat dd.money {
+  color: var(--ember);
+}
+
+.stat span {
+  color: var(--haze);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* ---- section shell -------------------------------------------------- */
+
+.block {
+  padding-top: clamp(48px, 6vw, 88px);
+}
+
+.blockHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--hair);
+}
+
+.blockTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+  font-weight: 300;
+}
+
+.count,
+.legend {
+  margin: 0;
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend span {
+  display: inline-block;
+  width: 18px;
+  height: 8px;
+  margin-left: 10px;
+  border-radius: 2px;
+}
+
+.keyStay {
+  background: linear-gradient(90deg, #c9853f, var(--ember));
+}
+
+.keyClosed {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(147, 179, 130, 0.45) 0 2px,
+    transparent 2px 5px
+  );
+  outline: 1px solid rgba(147, 179, 130, 0.3);
+}
+
+.keyToday {
+  width: 1px !important;
+  height: 14px !important;
+  background: var(--ember);
+}
+
+/* ---- the season ----------------------------------------------------- */
+
+.calendarScroll {
+  overflow-x: auto;
+  margin-top: 18px;
+  border: 1px solid var(--hair);
+  background: var(--peat);
+}
+
+.calendar {
+  --house: 168px;
+  min-width: 1100px;
+}
+
+.calHead,
+.calRow {
+  display: grid;
+  grid-template-columns: var(--house) 1fr;
+}
+
+.calHead {
+  border-bottom: 1px solid var(--hair);
+}
+
+.calCorner {
+  border-right: 1px solid var(--hair);
+}
+
+.calDays {
+  display: grid;
+  grid-template-columns: repeat(var(--days), minmax(0, 1fr));
+}
+
+.calDay {
+  position: relative;
+  padding: 26px 0 8px;
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.calDay[data-weekend] {
+  background: rgba(230, 236, 228, 0.025);
+}
+
+.calDay[data-today] {
+  color: var(--ember);
+}
+
+.calDay em {
+  position: absolute;
+  top: 8px;
+  left: 4px;
+  color: var(--lichen);
+  font-style: normal;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.calRow + .calRow {
+  border-top: 1px solid var(--hair-soft);
+}
+
+.calHouse {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-right: 1px solid var(--hair);
+  color: var(--ink-2);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 200ms ease;
+}
+
+.calHouse:hover {
+  color: var(--linen);
+}
+
+.calTrack {
+  position: relative;
+  height: 46px;
+  /* Faint weekly rules, so a bar can be read against the calendar. */
+  background-image: linear-gradient(90deg, var(--hair-soft) 1px, transparent 1px);
+  background-size: calc(100% / var(--days) * 7) 100%;
+}
+
+.calStay,
+.calClosed {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+}
+
+.calStay {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 8px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(201, 133, 63, 0.92), rgba(233, 168, 94, 0.95));
+  box-shadow:
+    0 0 0 1px rgba(9, 14, 10, 0.6),
+    0 0 18px rgba(233, 168, 94, 0.18);
+  color: #1c130a;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* A stay that began before the window shows its cut edge rather than
+   pretending to start on the first visible day. */
+.calStay[data-cut-left] {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.calStay[data-held] {
+  background: rgba(233, 168, 94, 0.22);
+  color: var(--ember);
+  box-shadow: inset 0 0 0 1px rgba(233, 168, 94, 0.6);
+}
+
+.calStay b {
+  font-weight: 400;
+}
+
+.calClosed {
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(147, 179, 130, 0.32) 0 2px,
+    transparent 2px 6px
+  );
+  box-shadow: inset 0 0 0 1px rgba(147, 179, 130, 0.25);
+}
+
+.calNow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--ember);
+  opacity: 0.7;
+}
+
+/* ---- the ledger ----------------------------------------------------- */
+
+.tableScroll {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--hair);
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--hair-soft);
+  vertical-align: middle;
+}
+
+.table tbody tr:not(.group):hover td {
+  background: rgba(230, 236, 228, 0.025);
+}
+
+.table tr[data-cancelled] td {
+  color: var(--haze);
+}
+
+.table tr[data-cancelled] .total {
+  text-decoration: line-through;
+}
+
+.group td {
+  padding-top: 28px;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  text-align: right !important;
+}
+
+.guest {
+  display: block;
+  color: var(--linen);
+}
+
+.email {
+  display: block;
+  margin-top: 2px;
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+
+.houseLink {
+  color: var(--ink-2);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  text-decoration: none;
+}
+
+.houseLink:hover {
+  color: var(--linen);
+}
+
+.dates {
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.total {
+  color: var(--linen);
+  font-family: var(--font-mono);
+}
+
+.status {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status[data-status="here"] {
+  border-color: rgba(233, 168, 94, 0.55);
+  color: var(--ember);
+}
+
+.status[data-status="confirmed"] {
+  border-color: rgba(147, 179, 130, 0.4);
+  color: var(--lichen);
+}
+
+.status[data-status="cancelled"],
+.status[data-status="expired"] {
+  color: var(--haze);
+}
+
+/* ---- closures ------------------------------------------------------- */
+
+.closures {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: clamp(24px, 3vw, 48px);
+  margin-top: 18px;
+}
+
+.closureList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.closure {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hair-soft);
+}
+
+.closureHouse {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+.closureWhen {
+  margin: 4px 0 0;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.closureNote {
+  margin: 6px 0 0;
+  color: var(--haze);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.reason {
+  padding: 4px 10px;
+  border: 1px solid rgba(147, 179, 130, 0.3);
+  border-radius: 999px;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ghost {
+  padding: 6px 12px;
+  border: 1px solid rgba(230, 236, 228, 0.16);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition:
+    color 200ms ease,
+    border-color 200ms ease;
+}
+
+.ghost:hover {
+  color: var(--linen);
+  border-color: rgba(230, 236, 228, 0.4);
+}
+
+.closePanel {
+  align-self: start;
+  padding: clamp(20px, 2.2vw, 28px);
+  border: 1px solid var(--hair);
+  background: var(--peat);
+}
+
+.panelHead {
+  margin: 0 0 18px;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+.field span {
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--hair);
+  border-radius: 2px;
+  background: var(--spruce);
+  color: var(--linen);
+  font: inherit;
+  font-size: 0.875rem;
+  color-scheme: dark;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: 1px solid var(--lichen);
+  outline-offset: 0;
+}
+
+.formFoot {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.primary {
+  justify-self: start;
+  padding: 0.75rem 1.2rem;
+  border: 1px solid rgba(147, 179, 130, 0.34);
+  border-radius: 2px;
+  background: var(--moss);
+  color: #eaf1e6;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 220ms ease;
+}
+
+.primary:hover {
+  background: #40603f;
+}
+
+.primary:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.formOk,
+.formError {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.formOk {
+  color: var(--lichen);
+}
+
+.formError {
+  color: var(--ember);
+}
+
+/* ---- narrower screens ---------------------------------------------- */
+
+@media (max-width: 1080px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .closures {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .stat dd {
+    font-size: 1.75rem;
+  }
+
+  .form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .closure {
+    grid-template-columns: 1fr auto;
+  }
+
+  .closure form {
+    grid-column: 1 / -1;
+  }
+}

@@ -9,16 +9,34 @@ authenticated with INTERNAL_API_SECRET.
 """
 
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from datetime import date
 
+import asyncpg
 from fastapi import FastAPI, Header, HTTPException
 
+from stillnest import month as month_calendar
+from stillnest import repository
+from stillnest.availability import Reason, check
+from stillnest.embeddings import EmbeddingError, embed_one
+from stillnest.env import load_dotfiles
 from stillnest.models import (
     AvailabilityRequest,
     AvailabilityResponse,
+    CalendarResponse,
     HealthResponse,
+    NightPrice,
+    SearchHit,
     SearchRequest,
     SearchResponse,
 )
+from stillnest.pricing import quote
+from stillnest.repository import connection, load_property_text, store_embedding
+from stillnest.search import SearchFilters, semantic_search
+
+# Local runs only — a no-op on Vercel, where the platform injects env.
+load_dotfiles()
 
 app = FastAPI(
     title="Stillnest API",
@@ -36,6 +54,22 @@ def require_internal_secret(x_internal_secret: str | None) -> None:
         raise HTTPException(status_code=500, detail="INTERNAL_API_SECRET is not configured")
     if x_internal_secret != expected:
         raise HTTPException(status_code=401, detail="Unauthorized")
+
+
+@asynccontextmanager
+async def db() -> AsyncIterator[asyncpg.Connection]:
+    """One connection per request. This is the only place the endpoints touch it.
+
+    `today` is read here too — at the edge, once — and passed into the engine, so
+    the pure modules keep having no opinion about when they run.
+    """
+    try:
+        async with repository.connection() as conn:
+            yield conn
+    except RuntimeError as exc:  # DATABASE_URL missing — a deploy problem, not a bad request
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except OSError as exc:  # the database is unreachable; the request was fine
+        raise HTTPException(status_code=503, detail=f"Database unavailable: {exc}") from exc
 
 
 @app.get(f"{PREFIX}/health", response_model=HealthResponse)
@@ -56,22 +90,118 @@ async def availability(
 ) -> AvailabilityResponse:
     """Is this property free for these dates, and what does it cost?
 
-    TODO(Phase 4): apply availability_blocks, existing bookings, pricing_rules
-    and min_nights. Nightly breakdown, integer cents only.
+    **An unavailable range is a normal answer, not a failure.** It comes back
+    200 with `available: false` and populated `reasons`, because "those nights
+    are taken" is information the guest asked for. The only 404 is a property
+    that genuinely does not exist.
+
+    The prices are filled in even when the answer is no: a guest who picked one
+    night too few should see what the stay would cost once they fix it.
     """
     require_internal_secret(x_internal_secret)
-    raise HTTPException(status_code=501, detail="Not implemented until Phase 4")
+    today = date.today()
+
+    async with db() as conn:
+        facts = await repository.load_property(conn, payload.property_id)
+        if facts is None:
+            raise HTTPException(status_code=404, detail="Property not found")
+
+        if payload.check_out <= payload.check_in:
+            # No nights to price, and nothing else about the range is meaningful.
+            return AvailabilityResponse(
+                available=False,
+                min_nights=facts.min_nights,
+                reasons=[Reason.INVERTED.value],
+            )
+
+        rules = await repository.load_pricing_rules(
+            conn, facts.id, payload.check_in, payload.check_out
+        )
+        occupied = await repository.load_occupied(
+            conn, facts.id, payload.check_in, payload.check_out
+        )
+
+    priced = quote(
+        payload.check_in,
+        payload.check_out,
+        base_price_cents=facts.base_price_cents,
+        base_min_nights=facts.min_nights,
+        rules=rules,
+    )
+    # `priced.min_nights` is the rule-aware minimum, not the property's — a stay
+    # touching deep winter takes deep winter's minimum. Checking against the
+    # property's would quote a stay the season would refuse.
+    verdict = check(
+        payload.check_in,
+        payload.check_out,
+        today=today,
+        occupied=occupied,
+        min_nights=priced.min_nights,
+        guests=payload.guests,
+        capacity=facts.capacity,
+    )
+
+    return AvailabilityResponse(
+        available=verdict.available,
+        nights=[
+            NightPrice(
+                night=night.night,
+                price_cents=night.price_cents,
+                rule_label=night.rule_label,
+            )
+            for night in priced.nights
+        ],
+        subtotal_cents=priced.subtotal_cents,
+        fees_cents=priced.fees_cents,
+        total_cents=priced.total_cents,
+        min_nights=priced.min_nights,
+        reasons=[reason.value for reason in verdict.reasons],
+    )
 
 
-@app.get(f"{PREFIX}/calendar/{{property_id}}")
+@app.get(f"{PREFIX}/calendar/{{property_id}}", response_model=CalendarResponse)
 async def calendar(
     property_id: str,
     month: str,
     x_internal_secret: str | None = Header(default=None),
-) -> dict:
-    """Per-day availability + price for the date picker. TODO(Phase 4)."""
+) -> CalendarResponse:
+    """Per-night availability and price for one month, for the date picker.
+
+    `month` is "YYYY-MM". Bookings that straddle the month boundary are read in
+    full and clipped to the window, so the last day of a month is taken when the
+    stay starting on it runs into the next.
+    """
     require_internal_secret(x_internal_secret)
-    raise HTTPException(status_code=501, detail="Not implemented until Phase 4")
+
+    try:
+        month_start, month_end = month_calendar.window(month)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    async with db() as conn:
+        facts = await repository.load_property(conn, property_id)
+        if facts is None:
+            raise HTTPException(status_code=404, detail="Property not found")
+
+        rules = await repository.load_pricing_rules(conn, facts.id, month_start, month_end)
+        occupied = await repository.load_occupied(conn, facts.id, month_start, month_end)
+
+    return CalendarResponse(
+        property_id=facts.id,
+        slug=facts.slug,
+        month=f"{month_start:%Y-%m}",
+        base_price_cents=facts.base_price_cents,
+        min_nights=facts.min_nights,
+        days=month_calendar.days(
+            month_start,
+            month_end,
+            today=date.today(),
+            base_price_cents=facts.base_price_cents,
+            base_min_nights=facts.min_nights,
+            rules=rules,
+            occupied=occupied,
+        ),
+    )
 
 
 @app.post(f"{PREFIX}/search/semantic", response_model=SearchResponse)
@@ -81,12 +211,44 @@ async def search_semantic(
 ) -> SearchResponse:
     """Free text ("alone by a lake, snow, no signal") -> ranked properties.
 
-    TODO(Phase 8): embed the query, pgvector cosine search, then apply hard
-    filters (dates, capacity, biome) in SQL. Hard filters must never be
-    overridden by vector similarity.
+    The query is embedded and compared by cosine distance, but the filters run
+    as a WHERE clause. Similarity ranks; it never admits. A house that sleeps
+    two must not surface for a party of six however well it matches, and a
+    cosine distance has no concept of "no match" to protect against that.
     """
     require_internal_secret(x_internal_secret)
-    raise HTTPException(status_code=501, detail="Not implemented until Phase 8")
+
+    query = payload.query.strip()
+    if not query:
+        return SearchResponse(hits=[], query_understood_as=None)
+
+    try:
+        vector = await embed_one(query)
+    except EmbeddingError as exc:
+        # The catalog is still browsable without search, so this is a 503 the
+        # caller can degrade around rather than a 500 that reads as a bug.
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    async with connection() as conn:
+        hits = await semantic_search(
+            conn,
+            vector,
+            SearchFilters(
+                biome=payload.filters.biome,
+                guests=payload.filters.guests,
+                max_solitude_km=payload.filters.max_solitude_km,
+                connectivity=payload.filters.connectivity,
+            ),
+            payload.limit,
+        )
+
+    return SearchResponse(
+        hits=[
+            SearchHit(property_id=h.property_id, slug=h.slug, score=h.score)
+            for h in hits
+        ],
+        query_understood_as=query,
+    )
 
 
 @app.post(f"{PREFIX}/internal/embed")
@@ -94,6 +256,24 @@ async def embed_property(
     property_id: str,
     x_internal_secret: str | None = Header(default=None),
 ) -> dict:
-    """Regenerate one property's embedding after admin CRUD. TODO(Phase 8)."""
+    """Regenerate one property's embedding.
+
+    Called after admin CRUD, and by the backfill script. Embedding on write
+    rather than on read is the whole reason search is fast: the expensive call
+    happens once per edit, not once per visitor.
+    """
     require_internal_secret(x_internal_secret)
-    raise HTTPException(status_code=501, detail="Not implemented until Phase 8")
+
+    async with connection() as conn:
+        row = await load_property_text(conn, property_id)
+        if row is None:
+            raise HTTPException(status_code=404, detail="property not found")
+
+        try:
+            vector = await embed_one(row.to_prompt())
+        except EmbeddingError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+        await store_embedding(conn, property_id, vector)
+
+    return {"property_id": property_id, "dimensions": len(vector)}

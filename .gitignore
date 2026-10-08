@@ -47,3 +47,23 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
+
+# test artifacts
+tests/__screenshots__/
+test-results/
+playwright-report/
+blob-report/
+.playwright-mcp/
+
+# lab output — the SCRIPTS in public/lab/ are the knowledge and are committed;
+# what they generate is 100 MB of model output that would live in the history
+# for ever. Regenerate it with animate.py / snow.py / manifest.py.
+public/lab/animate/
+public/lab/snow/
+public/lab/takes/
+public/lab/alive.json
+public/lab/snowshots.json
+public/lab/cosy.json
+public/lab/fire-patch-crop.*
+public/lab/refs/
+public/lab/cosy/

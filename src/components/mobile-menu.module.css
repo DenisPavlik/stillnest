@@ -1,0 +1,117 @@
+/* The menu that only exists below 680px — the same breakpoint at which
+   `.navLinks` in site-nav.module.css disappears. Keep the two in step:
+   between them they decide whether the site has navigation at all. */
+
+/* Above the panel, not under it. The panel covers the whole viewport
+   including the nav it was opened from, so without this the button that
+   says "Close" is painted behind the thing it closes and the only way out
+   is the Escape key — which is no way out at all on a phone. */
+.trigger {
+  position: relative;
+  z-index: 100;
+  display: none;
+  padding: 0.4rem 0;
+  border: 0;
+  background: none;
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.panel {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(28px, 8vw, 56px) var(--gutter) clamp(40px, 10vw, 72px);
+  background: var(--spruce);
+
+  /* Closed: gone from the accessibility tree and out of the tab order, not
+     merely transparent. See the note in the component. */
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 260ms ease,
+    visibility 0s linear 260ms;
+}
+
+.panel[data-open] {
+  visibility: visible;
+  opacity: 1;
+  transition:
+    opacity 260ms ease,
+    visibility 0s;
+}
+
+.links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.links li + li {
+  border-top: 1px solid var(--hair-soft);
+}
+
+/* Display face at real size. The panel has the whole screen and three
+   things to say, so the links are the page rather than a list on it. */
+.link {
+  display: block;
+  padding: clamp(14px, 3.4vw, 22px) 0;
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 9vw, 2.6rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.reserve {
+  margin-top: clamp(28px, 7vw, 44px);
+  padding: 0.85rem 1.4rem;
+  border: 1px solid rgba(147, 179, 130, 0.45);
+  background: var(--moss);
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.note {
+  margin: clamp(28px, 7vw, 44px) 0 0;
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 680px) {
+  .trigger {
+    display: block;
+  }
+
+  .panel {
+    display: flex;
+  }
+}
+
+/* The panel is a place, not a transition. Someone who asked for less
+   motion gets it immediately instead of fading. */
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel[data-open] {
+    transition: none;
+  }
+}

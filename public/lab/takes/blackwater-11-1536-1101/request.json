@@ -1,0 +1,15 @@
+{
+  "video_url": "https://v3b.fal.media/files/b/0aa72308/qw1kORoxsTdcMii8e9GXP_source.mp4",
+  "mask_video_url": "https://v3b.fal.media/files/b/0aa7231c/zwOwrd7COPRNQ22Hk9g-v_mask.mp4",
+  "prompt": "A log fire burning in a round steel basin. The flames lean, rise and settle; embers pulse deep orange in the logs; a few small sparks lift off the fire and die out in the air just above it. The fire keeps the same height and the same size from the first frame to the last. Quiet, cinematic, low-light interior photography at dusk. Nothing else in the room moves.",
+  "negative_prompt": "camera movement, camera shake, zoom, pan, tilt, parallax, growing flames, flames spreading, smoke filling the frame, falling snow, particles in the foreground, floating dust, white specks, people, hands, animals, text, watermark, exposure change, colour shift, brightness pulsing, strobing, flicker, blurry details, low quality, JPEG compression artifacts",
+  "num_frames": 121,
+  "frames_per_second": 24,
+  "seed": 1101,
+  "video_strength": 1.0,
+  "guidance_scale": 1.0,
+  "num_inference_steps": 30,
+  "video_quality": "maximum",
+  "generate_audio": false,
+  "enable_prompt_expansion": false
+}

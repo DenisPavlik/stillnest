@@ -1,0 +1,683 @@
+/* ==================================================================== *
+   THE CONSOLE.
+
+   Same body as the Solitude Index panel — peat, moss-tinted hairlines,
+   an instrument rather than a form — because setting the console and
+   reading the survey are the same act performed in opposite directions.
+
+   Colour comes from globals.css. The only literals below are inside a
+   drawn instrument, where the value IS the drawing and a token cannot
+   reach: the ember thumb and its glow, and the sky-cell fills, which are
+   computed by bortleFill() and arrive as --cell.
+ * ==================================================================== */
+
+.console {
+  --thumb: 13px;
+  --track-h: 34px;
+
+  border-top: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  background: linear-gradient(180deg, var(--peat) 0%, rgba(9, 14, 10, 0.4) 100%);
+}
+
+/* The whole console recedes a hair while the catalog is being re-cut.
+   The transition lives on the resting rule, not on the pending one, so the
+   console comes BACK as gently as it went — declared only on the pending
+   state it dimmed over 200ms and then snapped back the instant the answer
+   landed, which read as a flinch. Out is a touch slower than back: leaving is
+   the console admitting it is thinking, returning is the answer arriving. */
+.foot,
+.grid {
+  transition: opacity 260ms ease;
+}
+
+.console[data-pending] .foot,
+.console[data-pending] .grid {
+  opacity: 0.62;
+  transition-duration: 200ms;
+}
+
+/* ============================== GROUND ============================== */
+
+.ground {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem clamp(16px, 2.4vw, 30px);
+  padding: clamp(16px, 2vw, 22px) clamp(18px, 2.4vw, 34px);
+}
+
+.groundLabel {
+  margin: 0;
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem clamp(12px, 1.8vw, 26px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+  color: var(--ink-2);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition:
+    color 200ms ease,
+    border-color 200ms ease;
+}
+
+.tab:hover {
+  color: var(--linen);
+  border-bottom-color: var(--hair);
+}
+
+.tabOn {
+  color: var(--linen);
+  border-bottom-color: var(--lichen);
+}
+
+.tabDead {
+  color: var(--ink-3);
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tabCount {
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.tabOn .tabCount {
+  color: var(--lichen);
+}
+
+/* =============================== GRID =============================== */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cell {
+  min-width: 0;
+  padding: clamp(18px, 2.2vw, 26px) clamp(18px, 2.4vw, 34px) clamp(20px, 2.4vw, 28px);
+  border-top: 1px solid var(--hair-soft);
+  border-left: 1px solid var(--hair-soft);
+}
+
+.cell:nth-child(3n + 1) {
+  border-left: 0;
+}
+
+.cellHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  min-height: 1.6rem;
+}
+
+/* the control is labelled by feeling; the caption underneath says what was
+   actually measured. That contrast is the product. */
+.question {
+  margin: 0;
+  color: var(--linen);
+  font-size: 0.9375rem;
+  letter-spacing: -0.004em;
+}
+
+label.question {
+  cursor: pointer;
+}
+
+.readout {
+  margin: 0;
+  color: var(--ember);
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.readoutOp,
+.readout i {
+  color: var(--haze);
+  font-size: 0.625rem;
+  font-style: normal;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.readout i {
+  margin-left: 0.4em;
+}
+
+.readoutOp {
+  margin-right: 0.35em;
+}
+
+.ends {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.75rem 0 0;
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ends span:last-child {
+  color: rgba(147, 179, 130, 0.85);
+  text-align: right;
+}
+
+.caption {
+  margin: 0.75rem 0 0;
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+/* A control that has been taken away, saying why. It sits where the chips
+   sat, at the chips' own height, so nothing under it moves when a sentence
+   is asked or cleared. */
+.suspended {
+  margin: clamp(14px, 1.6vw, 20px) 0 0;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* ============================== SLIDERS ============================== */
+
+.track {
+  position: relative;
+  height: var(--track-h);
+  margin-top: clamp(14px, 1.6vw, 20px);
+}
+
+/* --- the distance rule: a measured hairline, one tick per kilometre --- */
+
+.rule {
+  position: absolute;
+  top: calc(var(--track-h) / 2);
+  right: 0;
+  left: 0;
+  height: 9px;
+  pointer-events: none;
+}
+
+/* Each half of the rule carries its own graduations, so the mask that splits
+   it at the thumb splits the scale with it: drawn brightly across the stretch
+   you would accept, left as a ghost across the stretch you would not. One
+   tick per kilometre, a taller one every ten — the same real graduation the
+   reach line uses on the home page.
+   .
+   All three layers are backgrounds on ONE element rather than children,
+   because `mask-clip` defaults to the border box: anything nested inside a
+   masked element and painted outside its box is clipped away, and the ticks
+   hang below the line by design. */
+.ruleDim,
+.ruleLit {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position:
+    0 0,
+    0 1px,
+    0 1px;
+  background-size:
+    100% 1px,
+    100% 4px,
+    100% 8px;
+}
+
+/* everything to the LEFT of the thumb is out of range */
+.ruleDim {
+  background-image:
+    linear-gradient(rgba(147, 179, 130, 0.14), rgba(147, 179, 130, 0.14)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(147, 179, 130, 0.14) 0 1px,
+      transparent 1px var(--minor)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(147, 179, 130, 0.22) 0 1px,
+      transparent 1px var(--major)
+    );
+  mask-image: linear-gradient(90deg, #000 0 var(--pos), transparent var(--pos));
+  -webkit-mask-image: linear-gradient(90deg, #000 0 var(--pos), transparent var(--pos));
+}
+
+/* everything to the RIGHT of it is what you would accept */
+.ruleLit {
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(233, 168, 94, 0.85) 0%,
+      rgba(147, 179, 130, 0.62) 10%,
+      rgba(147, 179, 130, 0.44) 100%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(147, 179, 130, 0.4) 0 1px,
+      transparent 1px var(--minor)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(147, 179, 130, 0.68) 0 1px,
+      transparent 1px var(--major)
+    );
+  mask-image: linear-gradient(90deg, transparent 0 var(--pos), #000 var(--pos));
+  -webkit-mask-image: linear-gradient(90deg, transparent 0 var(--pos), #000 var(--pos));
+}
+
+/* --- the ambient trace: loud on the left, near-silent on the right --- */
+
+.trace {
+  position: absolute;
+  top: 3px;
+  right: 0;
+  left: 0;
+  height: 28px;
+  pointer-events: none;
+}
+
+.trace svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.trace::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: rgba(147, 179, 130, 0.16);
+}
+
+.traceDim {
+  color: rgba(126, 144, 132, 0.32);
+  mask-image: linear-gradient(90deg, #000 0 var(--pos), transparent var(--pos));
+  -webkit-mask-image: linear-gradient(90deg, #000 0 var(--pos), transparent var(--pos));
+}
+
+.traceLit {
+  color: rgba(147, 179, 130, 0.7);
+  mask-image: linear-gradient(90deg, transparent 0 var(--pos), #000 var(--pos));
+  -webkit-mask-image: linear-gradient(90deg, transparent 0 var(--pos), #000 var(--pos));
+}
+
+/* --- the input itself: invisible, except for its thumb --- */
+
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: var(--track-h);
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: ew-resize;
+  touch-action: pan-y;
+}
+
+.input::-webkit-slider-runnable-track {
+  height: var(--track-h);
+  background: transparent;
+}
+
+.input::-moz-range-track {
+  height: var(--track-h);
+  background: transparent;
+}
+
+/* Both thumbs brighten under the hand and dim again when it lets go — the
+   ONLY thing on either slider that is allowed a transition. The thumb's
+   position, the lit stretch behind it and the figure above it are all driven
+   straight from the value with nothing easing them, because a control whose
+   readout lags the hand by even 120ms stops feeling like an instrument and
+   starts feeling like a page that is struggling. What eases here is the glow,
+   which nobody is aiming with. */
+
+/* distance: a lit window sliding along the line */
+.inputDot::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--thumb);
+  height: var(--thumb);
+  margin-top: calc((var(--track-h) - var(--thumb)) / 2);
+  border: 0;
+  border-radius: 50%;
+  background: #f2c286;
+  box-shadow: 0 0 16px 5px rgba(233, 168, 94, 0.32);
+  cursor: ew-resize;
+  transition: box-shadow 220ms ease;
+}
+
+.inputDot::-moz-range-thumb {
+  width: var(--thumb);
+  height: var(--thumb);
+  border: 0;
+  border-radius: 50%;
+  background: #f2c286;
+  box-shadow: 0 0 16px 5px rgba(233, 168, 94, 0.32);
+  cursor: ew-resize;
+  transition: box-shadow 220ms ease;
+}
+
+.inputDot:hover::-webkit-slider-thumb,
+.inputDot:focus-visible::-webkit-slider-thumb,
+.inputDot:active::-webkit-slider-thumb {
+  box-shadow: 0 0 22px 7px rgba(233, 168, 94, 0.46);
+}
+
+.inputDot:hover::-moz-range-thumb,
+.inputDot:focus-visible::-moz-range-thumb,
+.inputDot:active::-moz-range-thumb {
+  box-shadow: 0 0 22px 7px rgba(233, 168, 94, 0.46);
+}
+
+/* silence: a threshold cursor standing on the trace, not a bead */
+.inputBar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 3px;
+  height: 24px;
+  margin-top: calc((var(--track-h) - 24px) / 2);
+  border: 0;
+  border-radius: 1px;
+  background: #f2c286;
+  box-shadow: 0 0 14px 4px rgba(233, 168, 94, 0.26);
+  cursor: ew-resize;
+  transition: box-shadow 220ms ease;
+}
+
+.inputBar::-moz-range-thumb {
+  width: 3px;
+  height: 24px;
+  border: 0;
+  border-radius: 1px;
+  background: #f2c286;
+  box-shadow: 0 0 14px 4px rgba(233, 168, 94, 0.26);
+  cursor: ew-resize;
+  transition: box-shadow 220ms ease;
+}
+
+.inputBar:hover::-webkit-slider-thumb,
+.inputBar:focus-visible::-webkit-slider-thumb,
+.inputBar:active::-webkit-slider-thumb {
+  box-shadow: 0 0 20px 6px rgba(233, 168, 94, 0.4);
+}
+
+.inputBar:hover::-moz-range-thumb,
+.inputBar:focus-visible::-moz-range-thumb,
+.inputBar:active::-moz-range-thumb {
+  box-shadow: 0 0 20px 6px rgba(233, 168, 94, 0.4);
+}
+
+/* ============================== DARK SKY ============================== */
+
+.sky {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 2px;
+  margin: clamp(14px, 1.6vw, 20px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skyCell {
+  position: relative;
+  display: block;
+  height: 34px;
+  overflow: hidden;
+  background: var(--cell);
+  opacity: 0.26;
+  outline-offset: 2px;
+  transition:
+    opacity 200ms ease,
+    box-shadow 200ms ease;
+}
+
+/* Classes 1–4 are all near-black, so opacity alone cannot say where the
+   accepted range ends. The moss bar under the cells does: it runs from the
+   darkest sky to the one you settled on, and stops. */
+.skyCellOn {
+  opacity: 1;
+  box-shadow: inset 0 -2px 0 rgba(147, 179, 130, 0.55);
+}
+
+.skyCell:hover {
+  opacity: 1;
+  box-shadow: inset 0 0 0 1px rgba(147, 179, 130, 0.55);
+}
+
+.skyCellPick,
+.skyCellPick:hover {
+  box-shadow:
+    inset 0 0 0 1px var(--ember),
+    inset 0 -2px 0 rgba(147, 179, 130, 0.55);
+}
+
+.skyDots {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* the class number only appears on the cell you have chosen */
+.skyNum {
+  position: absolute;
+  right: 2px;
+  bottom: 1px;
+  color: var(--ember);
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-style: normal;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.skyCellPick .skyNum {
+  opacity: 1;
+}
+
+/* =============================== CHIPS =============================== */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: clamp(14px, 1.6vw, 20px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.72rem;
+  border: 1px solid var(--hair);
+  border-radius: 2px;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease;
+}
+
+.chip:hover {
+  border-color: rgba(147, 179, 130, 0.4);
+  color: var(--linen);
+}
+
+.chipOn {
+  border-color: rgba(147, 179, 130, 0.5);
+  background: var(--moss);
+  color: #eaf1e6;
+}
+
+.chipSignal {
+  padding-left: 0.55rem;
+}
+
+.bars {
+  display: block;
+  width: 21px;
+  height: 12px;
+  color: var(--lichen);
+}
+
+.chipOn .bars {
+  color: #eaf1e6;
+}
+
+/* =============================== FOOT =============================== */
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem clamp(18px, 2.6vw, 34px);
+  padding: clamp(16px, 2vw, 22px) clamp(18px, 2.4vw, 34px);
+  border-top: 1px solid var(--hair);
+}
+
+.count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin: 0;
+  flex: none;
+}
+
+.countValue {
+  color: var(--ember);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.countTotal {
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.reading {
+  flex: 1 1 20rem;
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.reset {
+  flex: none;
+  margin-left: auto;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-bottom: 1px solid transparent;
+  transition: border-color 200ms ease;
+}
+
+.reset:hover {
+  border-bottom-color: var(--lichen);
+}
+
+/* ============================== RESPONSIVE ============================= */
+
+@media (max-width: 1040px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cell:nth-child(3n + 1) {
+    border-left: 1px solid var(--hair-soft);
+  }
+
+  .cell:nth-child(2n + 1) {
+    border-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cell:nth-child(3n + 1),
+  .cell:nth-child(2n + 1),
+  .cell {
+    border-left: 0;
+  }
+
+  .cellHead {
+    min-height: 0;
+  }
+
+  .reading {
+    flex-basis: 100%;
+  }
+
+  .reset {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .ends {
+    font-size: 9px;
+    letter-spacing: 0.06em;
+  }
+
+  .skyCell {
+    height: 30px;
+  }
+}

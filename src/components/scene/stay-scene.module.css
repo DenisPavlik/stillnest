@@ -1,0 +1,18 @@
+/* The only motion in a stay hero: one bank of fog, slower than you notice.
+   Same device as the home hero, so the two pages breathe at the same rate.
+   Reduced motion is handled globally in globals.css. */
+
+.drift {
+  transform-origin: 50% 50%;
+  animation: stayDrift 86s ease-in-out infinite;
+}
+
+@keyframes stayDrift {
+  0%,
+  100% {
+    transform: translate3d(-1.4%, 0, 0);
+  }
+  50% {
+    transform: translate3d(1.6%, -0.5%, 0);
+  }
+}

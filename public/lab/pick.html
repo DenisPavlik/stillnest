@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вибір моделі — blackwater-11</title>
+<style>
+  /* Framed exactly like the detail page's interior band: full width, cover,
+     anchored to the bottom so the stove survives. */
+  html, body { margin: 0; height: 100%; background: #0d130f; color: #e9e3d6;
+    font: 15px/1.4 system-ui, sans-serif; overflow: hidden; }
+  .stage { position: fixed; inset: 0; }
+  .stage video, .stage img { position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center bottom; display: none; }
+  .stage .on { display: block; }
+  nav { position: fixed; left: 24px; bottom: 24px; display: flex; gap: 8px;
+    background: rgb(13 19 15 / .72); backdrop-filter: blur(8px); padding: 8px;
+    border-radius: 12px; }
+  button { font: inherit; color: inherit; background: transparent; border: 1px solid #ffffff2a;
+    border-radius: 8px; padding: 8px 14px; cursor: pointer; text-align: left; }
+  button.on { background: #e9e3d6; color: #0d130f; }
+  button small { display: block; opacity: .65; font-size: 12px; }
+  .hint { position: fixed; right: 24px; bottom: 24px; opacity: .55; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage"></div>
+<nav id="nav"></nav>
+<div class="hint">клавіші 1 · 2 · 3 · 0 — перемикання</div>
+<script>
+  const base = "animate/";
+  const takes = [
+    { key: "1", label: "1 · Якість", note: "veo 3.1 · 4 с · луп сам замикається",
+      src: base + "blackwater-11-interior-veo3.1-loop-1080-4s-v2/raw.mp4" },
+    { key: "2", label: "2 · Баланс", note: "Grok 1.5 · 6 с",
+      src: base + "blackwater-11-interior-grok15-1080-6s-v2/raw.mp4" },
+    { key: "3", label: "3 · veo 4K", note: "veo 3.1 · 4 с · з майстра 5056 px",
+      src: base + "blackwater-11-interior-veo3.1-loop-4k-4s-v2-master/raw.mp4" },
+    { key: "0", label: "0 · Фото", note: "оригінал, без руху",
+      src: base + "_inputs/blackwater-11-interior-169.jpg", still: true },
+  ];
+  const stage = document.getElementById("stage"), nav = document.getElementById("nav");
+  const els = takes.map(t => {
+    const el = document.createElement(t.still ? "img" : "video");
+    el.src = t.src;
+    if (!t.still) Object.assign(el, { muted: true, loop: true, playsInline: true, autoplay: true });
+    stage.append(el);
+    const b = document.createElement("button");
+    b.innerHTML = `${t.label}<small>${t.note}</small>`;
+    b.onclick = () => show(t.key);
+    nav.append(b);
+    return { t, el, b };
+  });
+  function show(key) {
+    for (const { t, el, b } of els) {
+      const on = t.key === key;
+      el.classList.toggle("on", on); b.classList.toggle("on", on);
+      if (!t.still) on ? (el.currentTime = 0, el.play()) : el.pause();
+    }
+  }
+  addEventListener("keydown", e => takes.some(t => t.key === e.key) && show(e.key));
+  show("1");
+</script>
+</body>
+</html>

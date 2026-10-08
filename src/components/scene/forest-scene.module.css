@@ -1,0 +1,17 @@
+/* The only motion in the hero: one bank of fog, slower than you notice.
+   Reduced motion is handled globally in globals.css. */
+
+.fogDrift {
+  transform-origin: 50% 50%;
+  animation: drift 78s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(-1.6%, 0, 0);
+  }
+  50% {
+    transform: translate3d(1.8%, -0.6%, 0);
+  }
+}

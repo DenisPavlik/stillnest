@@ -1,0 +1,582 @@
+/* ==================================================================== *
+   THE BOOKING PANEL.
+
+   The same body as the Solitude Index and the catalog console — peat,
+   moss-tinted hairlines, mono for anything measured — because a price
+   for a set of nights IS a measurement, and it should not suddenly look
+   like a different website.
+
+   Ember is rationed to one thing on this panel: the TOTAL. It is the
+   only figure here that is live — computed for these dates, by the
+   engine, a moment ago. The base rate above it is standing information
+   and wears linen; the refusals are not lit and wear haze. If a second
+   ember ever appears here, one of them is decoration.
+
+   Every colour comes from globals.css. Nothing below invents a hex.
+ * ==================================================================== */
+
+.panel {
+  min-width: 0;
+  padding: clamp(20px, 2.4vw, 28px);
+  border: 1px solid var(--hair);
+  background: linear-gradient(180deg, var(--peat) 0%, rgba(9, 14, 10, 0.55) 100%);
+}
+
+.head {
+  margin: 0;
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.price {
+  margin: 0.7rem 0 0;
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: clamp(1.75rem, 2.6vw, 2.25rem);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.price i {
+  color: var(--haze);
+  font-size: 0.6875rem;
+  font-style: normal;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  vertical-align: 0.45em;
+}
+
+/* ------------------------------ the facts ------------------------------ */
+
+.facts {
+  margin: clamp(18px, 2.2vw, 24px) 0 0;
+  padding: 0;
+  border-top: 1px solid var(--hair-soft);
+}
+
+.facts > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--hair-soft);
+}
+
+.facts dt {
+  color: var(--haze);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 300;
+  text-align: right;
+}
+
+/* ------------------------------- the ask ------------------------------- */
+
+.form {
+  display: grid;
+  gap: clamp(10px, 1.4vw, 14px);
+  margin-top: clamp(16px, 2vw, 22px);
+}
+
+.dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 1.4vw, 14px);
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.label {
+  color: var(--haze);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* One control shape for both a date and a count: a hairline box with the
+   value set in mono, because both of them are figures the guest supplies to
+   the same calculation. */
+.control {
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem 0.65rem;
+  border: 1px solid var(--hair);
+  border-radius: 2px;
+  background: rgba(9, 14, 10, 0.45);
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease;
+}
+
+.control:hover {
+  border-color: rgba(147, 179, 130, 0.4);
+}
+
+.control:focus-visible {
+  border-color: rgba(147, 179, 130, 0.5);
+}
+
+/* Chrome hands the date input a native picker button. `color-scheme: dark` on
+   the document already makes it light-on-dark; this only pulls it back from
+   pure white to the panel's own moss. */
+.control::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 200ms ease;
+}
+
+.control::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* A select carries the sans face — it is a choice from a list, not a reading */
+select.control {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2rem;
+  background-image: linear-gradient(45deg, transparent 50%, var(--haze) 50%),
+    linear-gradient(135deg, var(--haze) 50%, transparent 50%);
+  background-position:
+    calc(100% - 15px) calc(50% + 1px),
+    calc(100% - 10px) calc(50% + 1px);
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+/* the native dropdown list paints itself; keep it on the panel's ground */
+select.control option {
+  background: var(--peat);
+  color: var(--linen);
+}
+
+/* ---------------------------- what came back ---------------------------- */
+
+/* The `min-height` is a stability floor, not spacing. The resting copy is
+   already taller than this, so it changes nothing on the common screen; what
+   it stops is the collapse to a single "Checking those dates…" line, which
+   used to drag the reserve control up two centimetres and then push it back
+   down a moment later. Between the floor and the height tween in the
+   component, an answer arriving moves what is below it once, smoothly. */
+.answer {
+  min-height: 3.4rem;
+  margin-top: clamp(16px, 2vw, 22px);
+  padding-top: clamp(14px, 1.8vw, 18px);
+  border-top: 1px solid var(--hair-soft);
+}
+
+.resting {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.checking {
+  margin: 0;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  animation: breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ------------------------------- the price ------------------------------ */
+
+.freeHead {
+  margin: 0 0 0.75rem;
+  color: var(--lichen);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Capped and scrollable: a month in deep winter is thirty rows, and a sticky
+   panel that grows past the viewport stops being sticky and buries its total. */
+.nights {
+  max-height: 13.5rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overscroll-behavior: contain;
+}
+
+.night {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  padding: 0.34rem 0;
+}
+
+.night + .night {
+  border-top: 1px solid var(--hair-soft);
+}
+
+.nightDay {
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* the season that priced this night, when one did */
+.nightRule {
+  overflow: hidden;
+  color: var(--haze);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nightRate {
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.totals {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--hair);
+}
+
+.totals > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.3rem 1rem;
+  padding: 0.55rem 0;
+}
+
+.totals dt {
+  color: var(--haze);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.totals dd {
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.totalRow {
+  border-top: 1px solid var(--hair-soft);
+}
+
+/* `.totals dd` above is a class AND a type, so these have to reach past it */
+.totals dd.total {
+  font-size: 1.375rem;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+/* the one lit figure on the panel — and only when the dates are actually free */
+.totals dd.totalLit {
+  color: var(--ember);
+}
+
+/* ------------------------------ the refusal ----------------------------- */
+
+.refusedHead {
+  margin: 0 0 0.7rem;
+  color: var(--haze);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Printed like the closures further down the page — a moss rule on the left,
+   one sentence per reason. Every reason gets its own line, because being told
+   "too short", fixing it, and only then hearing "already booked" is a worse
+   answer than hearing both at once. */
+.reasons {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reasons li {
+  padding-left: 0.85rem;
+  border-left: 1px solid rgba(147, 179, 130, 0.4);
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+/* the priced-but-refused stay: present, subordinate, and not lit */
+.wouldCost {
+  margin-top: clamp(14px, 1.8vw, 18px);
+  padding-top: clamp(12px, 1.6vw, 16px);
+  border-top: 1px solid var(--hair-soft);
+  opacity: 0.75;
+}
+
+.wouldCostHead {
+  margin: 0 0 0.5rem;
+  color: var(--haze);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------- offline -------------------------------- */
+
+/* Deliberately unlike every other state: dashed, unlit, and holding no
+   figures at all. Nothing here may be mistaken for an answer. */
+.offline {
+  padding: 0.85rem 0.9rem;
+  border: 1px dashed var(--hair);
+  background: rgba(9, 14, 10, 0.35);
+}
+
+.offlineHead {
+  margin: 0 0 0.45rem;
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.offlineBody {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+/* ------------------------------ the control ----------------------------- */
+
+/* A disabled control, styled as one. It deliberately does not wear the moss
+   fill the live nav button wears: nothing here should look pressable. */
+.reserve,
+.reserveLive {
+  width: 100%;
+  margin-top: clamp(18px, 2.2vw, 24px);
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(147, 179, 130, 0.34);
+  border-radius: 2px;
+  background: var(--moss);
+  color: #eaf1e6;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    background-color 240ms ease,
+    border-color 240ms ease,
+    color 240ms ease;
+}
+
+.reserve:hover:not(:disabled),
+.reserveLive:hover:not(:disabled) {
+  background: #40603f;
+  border-color: rgba(147, 179, 130, 0.6);
+}
+
+/* Until the engine says "free" there is nothing to reserve, and it looks it. */
+.reserve:disabled,
+.reserveLive:disabled {
+  border-color: var(--hair);
+  background: transparent;
+  color: var(--haze);
+  cursor: not-allowed;
+}
+
+.reserveLive {
+  width: auto;
+  margin-top: 0;
+  padding-inline: 1.2rem;
+}
+
+/* ---- the confirmation step: the stay, the total, one honest box ---- */
+
+.confirm,
+.done,
+.problem {
+  margin-top: clamp(18px, 2.2vw, 24px);
+  padding: 16px;
+  border: 1px solid var(--hair);
+  background: rgba(9, 14, 10, 0.5);
+}
+
+.confirmHead,
+.doneHead {
+  margin: 0;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.confirmLine {
+  margin: 10px 0 0;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.confirmTotal {
+  margin: 8px 0 0;
+  color: var(--ember);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+}
+
+.ack {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  margin-top: 14px;
+  color: var(--ink-2);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.ack input {
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  accent-color: var(--ember);
+}
+
+.confirmActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.back {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid rgba(230, 236, 228, 0.16);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.back:hover {
+  color: var(--linen);
+  border-color: rgba(230, 236, 228, 0.4);
+}
+
+.done {
+  border-color: rgba(233, 168, 94, 0.45);
+}
+
+.doneBody {
+  margin: 8px 0 0;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.doneBody a {
+  color: var(--lichen);
+}
+
+.problem {
+  border-color: rgba(233, 168, 94, 0.35);
+}
+
+.problem p {
+  margin: 0 0 12px;
+  color: var(--ember);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.note {
+  margin: clamp(14px, 1.8vw, 18px) 0 0;
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.fine {
+  margin: 0.9rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--hair-soft);
+  color: var(--ink-3);
+  font-size: 0.6875rem;
+  line-height: 1.6;
+}
+
+/* ============================== RESPONSIVE ============================== */
+
+/* Two date inputs side by side stop fitting before the phone does: Chrome
+   gives `input[type=date]` an intrinsic width it will not go below, and two of
+   them plus the panel's padding is what pushes a 375px page sideways. */
+@media (max-width: 420px) {
+  .dates {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,269 @@
+/* ==================================================================== *
+   HOME — the Forest Nocturne direction, chosen in Phase 0.
+
+   Palette and type tokens live in globals.css (:root); everything that
+   more than one page needs now lives beside its component in
+   src/components. What is left here is composition: the hero, the two
+   section shells and the card grid.
+
+   If you find yourself redefining a colour here, put it in globals.css.
+   If you find yourself styling the inside of a component here, put it in
+   that component's module instead.
+ * ==================================================================== */
+
+.page {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 100svh;
+  overflow-x: clip;
+  background: var(--spruce);
+  color: var(--linen);
+  font-family: var(--font-sans);
+}
+
+/* ============================== THE HERO ============================== */
+
+.hero {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+/* ---- the media slot -------------------------------------------------- *
+   Everything inside obeys one rule: fill the slot, crop from the centre.
+   Drop an <img className={s.mediaEl}> or a <video className={s.mediaEl}>
+   in place of the generated scene and the layout does not move.
+ * ---------------------------------------------------------------------- */
+
+.media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--spruce);
+}
+
+/* <picture> is an inline box by default, and the departure timeline tweens
+   the slot's first element child — which is this. It has to be a block that
+   fills the slot, or the scale and drift land on a zero-height inline and
+   nothing moves. The <img> inside does the actual cropping. */
+.mediaPicture {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.mediaEl {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* legibility scrim — lives above the media, so it survives a real photo */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(6, 10, 7, 0.72) 0%, rgba(6, 10, 7, 0) 22%),
+    linear-gradient(
+      0deg,
+      rgba(6, 10, 7, 0.86) 0%,
+      rgba(6, 10, 7, 0.52) 26%,
+      rgba(6, 10, 7, 0) 58%
+    );
+}
+
+/* ---- the dim ---------------------------------------------------------- *
+   The picture does not end, it dissolves: as the hero leaves, this fills to
+   the page's own ground colour, so the photograph and the section under it
+   are the same black at the seam.
+
+   It starts fully transparent. Nothing here hides anything — the opacity is
+   driven by the departure timeline in home-motion.tsx and by nothing else,
+   and with no JavaScript it never leaves zero.
+ * ---------------------------------------------------------------------- */
+
+.dim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--spruce);
+}
+
+.frame {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(18px, 2.4vw, 30px) var(--gutter) clamp(28px, 4vw, 52px);
+}
+
+.heroSpace {
+  flex: 1;
+  min-height: clamp(120px, 34vh, 400px);
+}
+
+/* ---- the type sits low and says almost nothing ---- */
+
+.heroFoot {
+  display: grid;
+  gap: clamp(16px, 2vw, 26px);
+  max-width: 46rem;
+}
+
+.tagline {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: clamp(3.1rem, 9.4vw, 8.4rem);
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.tagline span:last-child {
+  padding-left: 0.06em;
+}
+
+.heroLede {
+  max-width: 26rem;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: clamp(0.95rem, 1.1vw, 1.0625rem);
+  line-height: 1.55;
+}
+
+/* the reach line is a component; this is only the room it stands in */
+.reachBlock {
+  width: min(100%, 44rem);
+  margin-top: clamp(4px, 1.4vw, 18px);
+}
+
+.heroWhere {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  margin: 0.9rem 0 0;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.heroWhere span:first-child {
+  color: var(--lichen);
+}
+
+/* ========================= THE SOLITUDE INDEX ========================= */
+
+.index {
+  position: relative;
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(72px, 11vw, 168px) var(--gutter) clamp(56px, 8vw, 110px);
+}
+
+/* The seam. A measured hairline at the join, in the same gradient the reach
+   line is drawn with: warm at the end you are standing at, gone by the far
+   end. It is drawn left to right as you cross it — the last beat of the
+   hero's departure, and the first still thing on the page. */
+.threshold {
+  position: absolute;
+  top: 0;
+  right: var(--gutter);
+  left: var(--gutter);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(233, 168, 94, 0.5) 0%,
+    rgba(147, 179, 130, 0.26) 18%,
+    rgba(147, 179, 130, 0.08) 62%,
+    rgba(147, 179, 130, 0) 100%
+  );
+}
+
+.indexPanel {
+  margin-top: clamp(40px, 6vw, 86px);
+}
+
+/* ============================== THE HOUSES ============================= */
+
+.houses {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(56px, 8vw, 120px) var(--gutter) clamp(72px, 10vw, 140px);
+}
+
+/* gap:1px over a moss-tinted ground — the grid lines are the hairlines */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  background: var(--hair-soft);
+  list-style: none;
+}
+
+/* ============================== RESPONSIVE ============================= */
+
+@media (max-width: 900px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* three into two: the odd one out goes wide, and takes a wide crop with
+     it. `--card-media-ratio` is the only hook a card exposes for this. */
+  .cards > li:last-child {
+    grid-column: 1 / -1;
+    --card-media-ratio: 16 / 7;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    min-height: 92svh;
+  }
+
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cards > li:last-child {
+    --card-media-ratio: 4 / 3;
+  }
+}
+
+/* ============================ REDUCED MOTION =========================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before,
+  .page *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -20,6 +20,113 @@ export function mediaUrl(path: string): string {
 }
 
 /**
+ * Houses whose real photography exists on disk.
+ *
+ * `property_scenes` has carried poster keys for all twelve since Phase 2 —
+ * `stays/<slug>/exterior.jpg` and so on — because the seed wrote the paths the
+ * catalog *would* use. Only the houses listed here actually have files behind
+ * those keys; the rest still draw their generated scene, and reading the
+ * database instead of this set would hang eleven broken images on the catalog.
+ *
+ * A hand-kept set rather than a filesystem check on purpose: when
+ * `NEXT_PUBLIC_MEDIA_BASE_URL` points at R2 there is no local file to stat, and
+ * a check that silently stops working is worse than a list somebody has to
+ * remember to edit. **Add a slug here in the same commit as its files.**
+ *
+ * Exported so `tests/unit/photography.test.ts` can hold the list and the files
+ * on disk to each other — the list being hand-kept is the reason it needs a
+ * test, not a reason it cannot have one.
+ */
+export const PHOTOGRAPHED: ReadonlySet<string> = new Set([
+  "hollowmoss-04",
+  "blackwater-11",
+  "tidebreak-03",
+  "moss-verse-01",
+  "sparv-12",
+  "quiet-fern-06",
+  "whitehour-08",
+  "rimefall-02",
+  "meridian-05",
+  "hollow-cedar-07",
+  "kaldbak-09",
+  "driftline-10",
+]);
+
+export function hasPhotography(slug: string): boolean {
+  return PHOTOGRAPHED.has(slug);
+}
+
+/**
+ * Houses whose interior has a video loop behind it.
+ *
+ * Hand-kept for the same reason `PHOTOGRAPHED` is, and separate from it because
+ * the two do not advance together: a house has its photograph the day it is
+ * generated, and its loop only once a clip has been generated from that exact
+ * frame, made seamless, and judged worth the megabyte. A slug in here promises
+ * `stays/<slug>/interior-loop.webm` and `.mp4` both exist.
+ *
+ * Nothing breaks when a slug is missing — `<LivingStill>` simply shows the
+ * still, which is what a metered connection and a reduced-motion visitor get
+ * regardless. **Add a slug here in the same commit as its files.**
+ */
+export const ANIMATED: ReadonlySet<string> = new Set<string>([
+  "blackwater-11",
+  "driftline-10",
+  "hollow-cedar-07",
+  "hollowmoss-04",
+  "kaldbak-09",
+  "meridian-05",
+  "moss-verse-01",
+  "quiet-fern-06",
+  "rimefall-02",
+  "sparv-12",
+  "tidebreak-03",
+  "whitehour-08",
+]);
+
+export function hasLoop(slug: string): boolean {
+  return ANIMATED.has(slug);
+}
+
+/**
+ * The rungs a still is published at, widest last.
+ *
+ * 3072 exists because the hero is full-bleed and an ultrawide monitor asks for
+ * 2560 device pixels; 1536 exists so a phone does not download 667 KB to paint
+ * 375 CSS px. Keep in step with `scripts/upscale.py` and the derivative sizes
+ * recorded in `content/CREDITS.md`.
+ */
+// 768 added after Lighthouse: a phone painting a ~375 px card took the 1536
+// file (~275 KB) because nothing smaller existed, and it competed with the
+// hero for the same thin connection.
+const RUNGS = [768, 1536, 3072] as const;
+
+export interface StillSources {
+  jpeg: string;
+  webp: string;
+  fallback: string;
+}
+
+/**
+ * Build the `srcSet` pair for a still stored as `<base>.jpg`.
+ *
+ * The naming convention is the contract: `<base>.jpg` is the widest rung and
+ * `<base>-1536.jpg` the narrow one, with `.webp` beside each. Everything is
+ * generated from one source by hand, so the convention is cheap to keep and
+ * this function is the only place that knows it.
+ */
+export function stillSources(base: string): StillSources {
+  const at = (rung: number, ext: string) =>
+    mediaUrl(rung === RUNGS[RUNGS.length - 1] ? `${base}.${ext}` : `${base}-${rung}.${ext}`);
+
+  return {
+    jpeg: RUNGS.map((r) => `${at(r, "jpg")} ${r}w`).join(", "),
+    webp: RUNGS.map((r) => `${at(r, "webp")} ${r}w`).join(", "),
+    fallback: mediaUrl(`${base}.jpg`),
+  };
+}
+
+/**
  * A living scene: a poster that renders immediately, an optional video loop
  * that swaps in once it can play through, and an optional ambient bed.
  *
@@ -47,5 +154,23 @@ export function resolveScene(scene: Scene): ResolvedScene {
     poster: mediaUrl(scene.poster),
     video: scene.video ? mediaUrl(scene.video) : undefined,
     audio: scene.audio ? mediaUrl(scene.audio) : undefined,
+  };
+}
+
+/**
+ * The portrait art direction, as a `srcSet` pair: `<base>-900` for phones and
+ * `<base>` (1400 wide) for everything taller than it is wide and larger. Keep in
+ * step with SOURCES in scripts/derive.py.
+ */
+const PORTRAIT_RUNGS = [900, 1400] as const;
+
+export function portraitSources(base: string): { jpeg: string; webp: string } {
+  const at = (rung: number, ext: string) =>
+    mediaUrl(
+      rung === PORTRAIT_RUNGS[PORTRAIT_RUNGS.length - 1] ? `${base}.${ext}` : `${base}-${rung}.${ext}`,
+    );
+  return {
+    jpeg: PORTRAIT_RUNGS.map((r) => `${at(r, "jpg")} ${r}w`).join(", "),
+    webp: PORTRAIT_RUNGS.map((r) => `${at(r, "webp")} ${r}w`).join(", "),
   };
 }
