@@ -56,6 +56,10 @@ export function Reveal({
       const el = scope.current;
       if (!el) return;
       if (prefersReducedMotion()) return;
+      /* Phones get the content, not the entrance. With iOS momentum scrolling
+         the trigger fires late, and a fast flick landed on sections still at
+         opacity 0 — the owner recorded it as "blocks that take ages to draw". */
+      if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
 
       const targets: gsap.TweenTarget = select
         ? Array.from(el.querySelectorAll(select))

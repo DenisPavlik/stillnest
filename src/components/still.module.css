@@ -5,6 +5,13 @@
    positioning; this only makes it a box. */
 .picture {
   display: block;
+  /* The skeleton. Until the photograph decodes, the slot is a dim plate in
+     the site's own greens with a faint horizon in it — not the black hole a
+     fast scroll on a phone used to land in. The image paints straight over
+     it, so it costs nothing once loaded. */
+  background:
+    radial-gradient(120% 60% at 50% 100%, rgba(147, 179, 130, 0.07), transparent 70%),
+    linear-gradient(180deg, #121b15 0%, var(--peat) 55%, #0c120e 100%);
 }
 
 /* The image does the cropping, the same way every generated scene it
