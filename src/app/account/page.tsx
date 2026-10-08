@@ -54,11 +54,18 @@ export default async function AccountPage(): Promise<ReactNode> {
               <h1 className={s.title}>{first ? `Welcome back, ${first}.` : "Welcome back."}</h1>
             </div>
           </div>
-          <form action={signOutAction}>
-            <button type="submit" className={s.signOut}>
-              Sign out
-            </button>
-          </form>
+          <div className={s.actions}>
+            {session.user.role === "admin" ? (
+              <Link href="/admin" className={s.ledgerLink}>
+                Open the ledger →
+              </Link>
+            ) : null}
+            <form action={signOutAction}>
+              <button type="submit" className={s.signOut}>
+                Sign out
+              </button>
+            </form>
+          </div>
         </Reveal>
 
         <section className={s.block}>

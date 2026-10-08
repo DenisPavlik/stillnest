@@ -19,6 +19,7 @@ import { drizzle } from "drizzle-orm/neon-http";
 import {
   amenities,
   availabilityBlocks,
+  bookings,
   pricingRules,
   properties,
   propertyAmenities,
@@ -329,7 +330,10 @@ const HOUSES: Seed[] = [
 
 async function main() {
   console.log("clearing…");
-  // Order matters: children before parents.
+  // Order matters: children before parents. Bookings hold the properties with
+  // ON DELETE RESTRICT, so a reseed drops them first — run
+  // scripts/demo_bookings.py afterwards to put the demonstration season back.
+  await db.delete(bookings);
   await db.delete(propertyAmenities);
   await db.delete(propertyScenes);
   await db.delete(propertyImages);

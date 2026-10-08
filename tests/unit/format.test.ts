@@ -35,6 +35,13 @@ describe("formatPriceUsd", () => {
     expect(formatPriceUsd(1)).toBe("$0.01");
     expect(formatPriceUsd(0)).toBe("$0");
   });
+
+  it("groups thousands, so a season's takings read at a glance", () => {
+    expect(formatPriceUsd(1742500)).toBe("$17,425");
+    expect(formatPriceUsd(178350)).toBe("$1,783.50");
+    expect(formatPriceUsd(123456789)).toBe("$1,234,567.89");
+    expect(formatPriceUsd(-250000)).toBe("−$2,500");
+  });
 });
 
 describe("formatKm", () => {

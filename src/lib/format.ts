@@ -27,10 +27,13 @@ export function formatPriceUsd(cents: number): string {
   const abs = Math.abs(Math.trunc(cents));
   const whole = Math.trunc(abs / 100);
   const fraction = abs % 100;
+  // Thousands grouped by hand, not by toLocaleString: the server and the
+  // browser must print the same string or hydration disagrees with itself.
+  const grouped = String(whole).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const body =
     fraction === 0
-      ? String(whole)
-      : `${whole}.${fraction < 10 ? `0${fraction}` : String(fraction)}`;
+      ? grouped
+      : `${grouped}.${fraction < 10 ? `0${fraction}` : String(fraction)}`;
   return `${negative ? "−" : ""}$${body}`;
 }
 

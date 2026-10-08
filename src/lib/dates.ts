@@ -62,6 +62,16 @@ export function nightCount(checkIn: string, checkOut: string): number {
   return Math.round((utcMidnight(checkOut) - utcMidnight(checkIn)) / DAY_MS);
 }
 
+/** `n` calendar days after (or before, if negative) an ISO day. */
+export function addDays(iso: string, n: number): string {
+  return toIso(utcMidnight(iso) + n * DAY_MS);
+}
+
+/** Today as a calendar date, read in UTC — the same day the engine's `today` is. */
+export function todayIso(): string {
+  return toIso(Date.now());
+}
+
 /** The next calendar day. Used for the earliest check-out a check-in allows. */
 export function nextDay(iso: string): string {
   return toIso(utcMidnight(iso) + DAY_MS);
