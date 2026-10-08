@@ -1,0 +1,76 @@
+/* Sits between the links and Reserve: quieter than Reserve, the same ink
+   as the links, because signing in is never the point of a visit. */
+
+.signIn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition:
+    color 220ms ease,
+    opacity 300ms ease;
+}
+
+.signIn:hover {
+  color: var(--linen);
+}
+
+/* Until the session answers, hold the space without announcing anything. */
+.signIn[data-pending] {
+  opacity: 0;
+}
+
+.signInIcon {
+  display: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(233, 168, 94, 0.55);
+  border-radius: 999px;
+  background: var(--peat);
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  text-decoration: none;
+  transition: border-color 240ms ease;
+}
+
+.avatar img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+}
+
+.avatar:hover {
+  border-color: var(--ember);
+}
+
+@media (max-width: 680px) {
+  .signInText {
+    display: none;
+  }
+
+  .signInIcon {
+    display: block;
+  }
+
+  .signIn {
+    padding: 6px;
+  }
+}

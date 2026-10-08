@@ -10,6 +10,7 @@ import {
   properties,
   propertyAmenities,
   propertyScenes,
+  savedStays,
 } from "./schema";
 
 /**
@@ -314,3 +315,49 @@ export async function liveBiomes(): Promise<Biome[]> {
   return rows.map((r) => r.biome);
 }
 
+
+/* ------------------------------------------------------------------ *
+ *  Saved houses — a guest's shortlist.
+ *
+ *  Keyed by slug at this boundary because slugs are what the page knows;
+ *  the id lookup happens here, once, rather than in every caller. A save
+ *  is idempotent and so is an unsave: the composite primary key makes a
+ *  double click a no-op instead of an error.
+ * ------------------------------------------------------------------ */
+
+export async function savedStaysFor(userId: string): Promise<StayCard[]> {
+  return db
+    .select(cardColumns())
+    .from(savedStays)
+    .innerJoin(properties, eq(properties.id, savedStays.propertyId))
+    .where(and(eq(savedStays.userId, userId), eq(properties.status, "live")))
+    .orderBy(desc(savedStays.createdAt));
+}
+
+export async function isStaySaved(userId: string, slug: string): Promise<boolean> {
+  const [row] = await db
+    .select({ one: sql<number>`1` })
+    .from(savedStays)
+    .innerJoin(properties, eq(properties.id, savedStays.propertyId))
+    .where(and(eq(savedStays.userId, userId), eq(properties.slug, slug)));
+  return Boolean(row);
+}
+
+export async function setStaySaved(userId: string, slug: string, saved: boolean): Promise<void> {
+  const [property] = await db
+    .select({ id: properties.id })
+    .from(properties)
+    .where(and(eq(properties.slug, slug), eq(properties.status, "live")));
+  if (!property) return;
+
+  if (saved) {
+    await db
+      .insert(savedStays)
+      .values({ userId, propertyId: property.id })
+      .onConflictDoNothing();
+  } else {
+    await db
+      .delete(savedStays)
+      .where(and(eq(savedStays.userId, userId), eq(savedStays.propertyId, property.id)));
+  }
+}

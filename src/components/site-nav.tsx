@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { AccountLink } from "./account-link";
 import { MobileMenu } from "./mobile-menu";
 import s from "./site-nav.module.css";
 
@@ -71,6 +72,7 @@ export function SiteNav({
           </li>
         ))}
       </ul>
+      <AccountLink />
       <a className={s.reserve} href={reserveHref}>
         {reserveLabel}
       </a>

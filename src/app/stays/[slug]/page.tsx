@@ -6,6 +6,7 @@ import { AmenityIcon } from "@/components/amenity-icon";
 import { AmbienceProvider } from "@/components/atmosphere/ambience";
 import { LivingStill } from "@/components/atmosphere/living-still";
 import { SceneSound, VibeButton } from "@/components/atmosphere/vibe";
+import { SaveStay } from "@/components/save-stay";
 import { FilmGrain } from "@/components/film-grain";
 import { Reveal } from "@/components/motion/reveal";
 import { hashSeed } from "@/components/scene/geometry";
@@ -207,11 +208,10 @@ export default async function StayPage({ params }: PageProps<"/stays/[slug]">): 
 
               {/* Opposite the name, on the line the price sits on: the one
               invitation on the hero that is not to book. */}
-              {enterable ? (
-                <Reveal as="div" className={s.heroVibe} distance={16} delay={0.5}>
-                  <VibeButton target="inside" />
-                </Reveal>
-              ) : null}
+              <Reveal as="div" className={s.heroVibe} distance={16} delay={0.5}>
+              <SaveStay slug={stay.slug} />
+              {enterable ? <VibeButton target="inside" /> : null}
+            </Reveal>
             </div>
           </div>
 

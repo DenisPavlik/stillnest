@@ -182,6 +182,9 @@
 
 .heroVibe {
   flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   /* Clears the photograph caption pinned to the hero's bottom-right corner. */
   margin-bottom: clamp(8px, 1.2vw, 18px);
 }

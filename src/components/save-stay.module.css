@@ -1,0 +1,55 @@
+/* The quieter twin of "Feel the vibe": same glass and type, neutral ink,
+   and a ring that fills with ember once the house is kept. */
+.save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.2rem 0.85rem 1rem;
+  border: 1px solid rgba(230, 236, 228, 0.2);
+  border-radius: 999px;
+  background: rgba(9, 14, 10, 0.42);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(230, 236, 228, 0.82);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color 300ms ease,
+    color 300ms ease;
+}
+
+.save:hover {
+  border-color: rgba(230, 236, 228, 0.45);
+  color: var(--linen);
+}
+
+.save:focus-visible {
+  outline: 1px solid var(--ember);
+  outline-offset: 3px;
+}
+
+.mark {
+  width: 11px;
+  height: 11px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.save[aria-pressed="true"] {
+  border-color: rgba(233, 168, 94, 0.45);
+  color: var(--linen);
+}
+
+.save[aria-pressed="true"] .mark {
+  border-color: var(--ember);
+  background: var(--ember);
+  box-shadow: 0 0 10px rgba(233, 168, 94, 0.55);
+}

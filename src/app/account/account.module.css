@@ -1,0 +1,236 @@
+/* ==================================================================== *
+   ACCOUNT and SIGN IN — the two pages that are about the visitor
+   rather than about a house. They borrow the site's shell and say as
+   little as they can: a person came here to save somewhere quiet, not
+   to manage a profile.
+ * ==================================================================== */
+
+.page {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100svh;
+  overflow-x: clip;
+  background: var(--spruce);
+  color: var(--linen);
+  font-family: var(--font-sans);
+}
+
+.shell {
+  flex: 1;
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(48px, 7vw, 112px) var(--gutter) clamp(56px, 8vw, 128px);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.title {
+  max-width: 18ch;
+  margin: 0.35em 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5.2vw, 4.6rem);
+  font-weight: 300;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  max-width: 38rem;
+  margin: clamp(16px, 1.8vw, 24px) 0 0;
+  color: var(--ink-2);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* ---- sign in ------------------------------------------------------- */
+
+.signInShell {
+  display: grid;
+  align-content: center;
+  min-height: min(76svh, 760px);
+}
+
+.google {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: clamp(28px, 3vw, 40px);
+  padding: 0.95rem 1.5rem 0.95rem 1.2rem;
+  border: 1px solid rgba(147, 179, 130, 0.34);
+  border-radius: 2px;
+  background: var(--moss);
+  color: #eaf1e6;
+  font: inherit;
+  font-size: 0.9375rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    background-color 240ms ease,
+    border-color 240ms ease;
+}
+
+.google:hover {
+  background: #40603f;
+  border-color: rgba(147, 179, 130, 0.6);
+}
+
+.google:focus-visible {
+  outline: 1px solid var(--ember);
+  outline-offset: 3px;
+}
+
+.googleMark {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.fineprint {
+  max-width: 34rem;
+  margin: clamp(22px, 2.4vw, 32px) 0 0;
+  padding-top: clamp(16px, 1.8vw, 22px);
+  border-top: 1px solid var(--hair);
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 300;
+  line-height: 1.8;
+  letter-spacing: 0.06em;
+}
+
+.error {
+  max-width: 34rem;
+  margin: clamp(18px, 2vw, 24px) 0 0;
+  color: var(--ember);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* ---- account ------------------------------------------------------- */
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: clamp(28px, 3.4vw, 44px);
+  border-bottom: 1px solid var(--hair);
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 1.8vw, 24px);
+}
+
+.portrait {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgba(233, 168, 94, 0.55);
+  border-radius: 999px;
+  padding: 3px;
+}
+
+.portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+}
+
+.signOut {
+  padding: 0.6rem 1rem;
+  border: 1px solid rgba(230, 236, 228, 0.18);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition:
+    color 220ms ease,
+    border-color 220ms ease;
+}
+
+.signOut:hover {
+  color: var(--linen);
+  border-color: rgba(230, 236, 228, 0.4);
+}
+
+.block {
+  padding-top: clamp(40px, 5vw, 72px);
+}
+
+.blockHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.blockTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+  font-weight: 300;
+}
+
+.count {
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: clamp(22px, 3vw, 40px) 0 0;
+  padding: 0;
+  background: var(--hair-soft);
+  list-style: none;
+}
+
+.empty {
+  max-width: 36rem;
+  margin: clamp(18px, 2vw, 26px) 0 0;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+
+.empty a {
+  color: var(--lichen);
+  text-decoration-color: rgba(147, 179, 130, 0.4);
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
