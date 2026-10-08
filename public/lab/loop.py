@@ -56,18 +56,48 @@ def decode(path: Path, w: int, h: int) -> np.ndarray:
     return np.frombuffer(raw, np.uint8).reshape(-1, h, w, 3)
 
 
+# The stills are untagged sRGB. A video tagged (or assumed) BT.709 is decoded
+# by Chrome with the 709 transfer curve, which lifts the midtones: measured on
+# blackwater-11 at 1440x900, loop 84.3 against still 78.4. Tagged with the
+# sRGB curve (transfer 13) it read 79.2 -- the fade-in stops being a jump.
+# libx264 drops -color_trc on a raw pipe, so the mp4 is stamped by bitstream
+# filter; libvpx honours the flags.
+COLOUR = [
+    "-vf", "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p",
+    "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "iec61966-2-1",
+    "-color_range", "tv",
+    "-bsf:v", "h264_metadata=colour_primaries=1:transfer_characteristics=13:matrix_coefficients=1",
+]
+
+
 def encode(frames: np.ndarray, out: Path, fps: float, crf: int) -> None:
     f, h, w, _ = frames.shape
     p = subprocess.Popen(
         ["ffmpeg", "-v", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
          "-s", f"{w}x{h}", "-r", f"{fps:g}", "-i", "-",
+         *COLOUR,
          "-c:v", "libx264", "-crf", str(crf), "-preset", "veryslow", "-tune", "film",
-         "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", str(out), "-y"],
+         "-movflags", "+faststart", "-an", str(out), "-y"],
         stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
     )
     _, err = p.communicate(frames.tobytes())
     if p.returncode:
         sys.exit(f"ffmpeg failed on {out.name}: {err.decode()[:400]}")
+
+
+def encode_webm(src: Path, out: Path, crf: int) -> None:
+    """VP9 from the finished mp4, so both files are frame-identical. Chrome and
+    Firefox take the webm first; at equal quality it is the smaller file."""
+    r = subprocess.run(
+        ["ffmpeg", "-v", "error", "-i", str(src),
+         "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "iec61966-2-1",
+         "-color_range", "tv", "-c:v", "libvpx-vp9", "-crf", str(crf),
+         "-b:v", "0", "-row-mt", "1", "-deadline", "good", "-cpu-used", "1",
+         "-pix_fmt", "yuv420p", "-an", str(out), "-y"],
+        capture_output=True,
+    )
+    if r.returncode:
+        sys.exit(f"ffmpeg failed on {out.name}: {r.stderr.decode()[:400]}")
 
 
 def main() -> None:
@@ -77,6 +107,9 @@ def main() -> None:
     ap.add_argument("--crossfade", type=float, default=1.0, help="seconds of overlap")
     ap.add_argument("--crf", type=int, default=21)
     ap.add_argument("--poster", action="store_true", help="also write poster.jpg")
+    ap.add_argument("--webm-crf", type=int, default=34)
+    ap.add_argument("--publish", metavar="SLUG",
+                    help="also write public/stays/<SLUG>/interior-loop.mp4 and .webm")
     args = ap.parse_args()
 
     src = args.take / "raw.mp4"
@@ -112,6 +145,15 @@ def main() -> None:
     encode(out_f, out, fps, args.crf)
     kb = out.stat().st_size / 1024
     print(f"-> {out.name}  {w}x{h}, {kb / 1024:.2f} MB ({kb / (n / fps):.0f} KB/s)")
+
+    if args.publish:
+        import shutil
+
+        dest = Path(__file__).resolve().parent.parent / "stays" / args.publish
+        shutil.copyfile(out, dest / "interior-loop.mp4")
+        encode_webm(out, dest / "interior-loop.webm", args.webm_crf)
+        for f in ("interior-loop.mp4", "interior-loop.webm"):
+            print(f"-> stays/{args.publish}/{f}  {(dest / f).stat().st_size / 1024 / 1024:.2f} MB")
 
     if args.poster:
         from PIL import Image

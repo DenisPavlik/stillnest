@@ -305,6 +305,7 @@ function activeFilters(query: StayQuery): ActiveFilter[] {
 }
 
 const ORDER_NOTE: Record<StayQuery["sort"], string> = {
+  number: "In the order of the collection.",
   solitude: "Furthest from anyone first.",
   silence: "Quietest first.",
   "dark-sky": "Darkest sky first.",

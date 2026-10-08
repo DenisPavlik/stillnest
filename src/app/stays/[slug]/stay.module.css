@@ -169,6 +169,23 @@
   min-height: clamp(100px, 26vh, 320px);
 }
 
+/* The foot of the hero as one row: the house on the left, the way into its
+   room on the right, both sitting on the same baseline. On a phone the
+   invitation drops under the price. */
+.heroBase {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(20px, 3vw, 48px);
+}
+
+.heroVibe {
+  flex: none;
+  /* Clears the photograph caption pinned to the hero's bottom-right corner. */
+  margin-bottom: clamp(8px, 1.2vw, 18px);
+}
+
 .heroFoot {
   display: grid;
   gap: clamp(12px, 1.4vw, 20px);

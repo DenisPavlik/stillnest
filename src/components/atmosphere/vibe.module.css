@@ -1,0 +1,143 @@
+/* ---- the bars: the one icon both controls share ---------------------- */
+
+.bars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 14px;
+}
+
+.bars span {
+  display: block;
+  width: 2px;
+  height: 3px;
+  border-radius: 1px;
+  background: currentColor;
+  transform-origin: center;
+  transition: height 400ms ease;
+}
+
+/* Breathing, not bouncing: a slow, uneven swell, like a room's own sound. */
+.bars[data-live] span {
+  animation: breathe 1.6s ease-in-out infinite;
+}
+.bars[data-live] span:nth-child(1) { animation-delay: -0.9s; }
+.bars[data-live] span:nth-child(2) { animation-delay: -0.3s; }
+.bars[data-live] span:nth-child(3) { animation-delay: -1.2s; }
+.bars[data-live] span:nth-child(4) { animation-delay: -0.6s; }
+.bars[data-live] span:nth-child(5) { animation-delay: -1.5s; }
+
+@keyframes breathe {
+  0%, 100% { height: 3px; }
+  50% { height: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bars[data-live] span {
+    animation: none;
+    height: 9px;
+  }
+}
+
+/* ---- "Feel the vibe": the way into the room -------------------------- */
+
+.vibe {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.25rem 0.85rem 1.1rem;
+  border: 1px solid rgba(233, 168, 94, 0.38);
+  border-radius: 999px;
+  background: rgba(9, 14, 10, 0.42);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--linen);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease;
+}
+
+.vibe .bars {
+  color: var(--ember);
+}
+
+.vibe:hover {
+  border-color: var(--ember);
+  background: rgba(9, 14, 10, 0.6);
+}
+
+.vibe:focus-visible {
+  outline: 1px solid var(--ember);
+  outline-offset: 3px;
+}
+
+.vibeLabel {
+  white-space: nowrap;
+}
+
+.vibeArrow {
+  color: var(--ember);
+  transition: transform 300ms ease;
+}
+
+.vibe:hover .vibeArrow {
+  transform: translateY(3px);
+}
+
+/* ---- the switch over the scene --------------------------------------- */
+
+.sound {
+  position: absolute;
+  z-index: 3;
+  top: clamp(16px, 2.2vw, 32px);
+  right: var(--gutter);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 1rem 0.65rem 0.9rem;
+  border: 1px solid rgba(230, 236, 228, 0.18);
+  border-radius: 999px;
+  background: rgba(9, 14, 10, 0.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(230, 236, 228, 0.72);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color 300ms ease,
+    color 300ms ease;
+}
+
+.sound[aria-pressed="true"] {
+  border-color: rgba(233, 168, 94, 0.45);
+  color: var(--linen);
+}
+
+.sound[aria-pressed="true"] .bars {
+  color: var(--ember);
+}
+
+.sound:hover {
+  border-color: rgba(230, 236, 228, 0.4);
+  color: var(--linen);
+}
+
+.sound:focus-visible {
+  outline: 1px solid var(--ember);
+  outline-offset: 3px;
+}
+
+.soundLabel {
+  min-width: 5.6em;
+  white-space: nowrap;
+}

@@ -29,12 +29,12 @@ const ROWS: Row[] = [
   row("driftline-10"),
   row("rimefall-02"),
   row("meridian-05"),
-  row("sparv-04"),
+  row("sparv-12"),
 ];
 
 describe("orderBySlugs", () => {
   it("returns the rows in the order the slugs were given, not the order they arrived", () => {
-    const ranked = ["rimefall-02", "sparv-04", "driftline-10"];
+    const ranked = ["rimefall-02", "sparv-12", "driftline-10"];
 
     expect(orderBySlugs(ROWS, ranked).map((r) => r.slug)).toEqual(ranked);
   });
@@ -49,19 +49,19 @@ describe("orderBySlugs", () => {
   it("drops a slug the query did not return rather than leaving a hole", () => {
     // A house the console's own filters excluded, or one taken off the map
     // between the search and the read. Missing is missing.
-    const ranked = ["rimefall-02", "hollow-cedar-07", "sparv-04"];
+    const ranked = ["rimefall-02", "hollow-cedar-07", "sparv-12"];
 
     expect(orderBySlugs(ROWS, ranked).map((r) => r.slug)).toEqual([
       "rimefall-02",
-      "sparv-04",
+      "sparv-12",
     ]);
   });
 
   it("never renders the same house twice, however the ranking repeats itself", () => {
-    const ranked = ["sparv-04", "rimefall-02", "sparv-04"];
+    const ranked = ["sparv-12", "rimefall-02", "sparv-12"];
 
     expect(orderBySlugs(ROWS, ranked).map((r) => r.slug)).toEqual([
-      "sparv-04",
+      "sparv-12",
       "rimefall-02",
     ]);
   });
@@ -75,7 +75,7 @@ describe("orderBySlugs", () => {
 
   it("does not mutate what it was given", () => {
     const rows = [...ROWS];
-    orderBySlugs(rows, ["sparv-04", "rimefall-02"]);
+    orderBySlugs(rows, ["sparv-12", "rimefall-02"]);
     expect(rows).toEqual(ROWS);
   });
 });

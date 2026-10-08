@@ -30,9 +30,9 @@ ffmpeg. **Ambient beds** come from ElevenLabs SFX v2, which loops natively.
 | `stays/moss-verse-01/exterior-portrait.jpg` | GPT Image 2 (edit) | The cleared frame attached, extended vertically to 9:16 — cedar trunks continued up into canopy and mist, moss and tree ferns down into the foreground. | Mobile hero only. 1400×2488 (0.5628). House ~67% of source, the strongest of the four so far in a phone hero. |
 | `stays/moss-verse-01/interior.jpg` | GPT Image 2 (reference) | Canonical exterior attached as a reference. The long narrow room behind the curve: cedar ceiling and walls, a wall of books, a long table, and the curved glass with mossy cedar trunks, ferns and the steaming tub beyond. | 3072×2048 (3:2). |
 
-| `stays/sparv-04/exterior.jpg` | GPT Image 2 (generation, then edit) | A long low pavilion built out on a timber jetty over the tarn rather than on the shore; pale untreated pine with black window frames, a separate sauna volume steaming at the jetty's end. Camera at water level from the far shore. | **The canonical Sparv 04, and the first house shot to the "Building the frame" spec.** The generation's interior read as a meeting room — a grid of dining chairs, no bed, no stove — which also contradicted its own listing (wood stove, reading room). One edit changed **only what is behind the glass**: sofa, armchairs, a lit stove, a bookshelf wall, a shorter table. |
-| `stays/sparv-04/exterior-portrait.jpg` | GPT Image 2 (edit) | The corrected frame attached, extended vertically to 9:16 — sky upward above the treeline, granite shore and water downward. | Mobile hero only. 1400×2488 (0.5628). House ~41% of source; the reflection doubles its vertical presence, which is why it was accepted below Hollowmoss's 53%. |
-| `stays/sparv-04/interior.jpg` | GPT Image 2 (reference) | Canonical exterior attached as a reference. The room looking out over the water: pale timber, the bookshelf wall, sofa and armchairs turned to the glass, the lit stove, and the sauna volume steaming out along the jetty beyond the glazing. | 3072×2048 (3:2). |
+| `stays/sparv-12/exterior.jpg` | GPT Image 2 (generation, then edit) | A long low pavilion built out on a timber jetty over the tarn rather than on the shore; pale untreated pine with black window frames, a separate sauna volume steaming at the jetty's end. Camera at water level from the far shore. | **The canonical Sparv 12, and the first house shot to the "Building the frame" spec.** The generation's interior read as a meeting room — a grid of dining chairs, no bed, no stove — which also contradicted its own listing (wood stove, reading room). One edit changed **only what is behind the glass**: sofa, armchairs, a lit stove, a bookshelf wall, a shorter table. |
+| `stays/sparv-12/exterior-portrait.jpg` | GPT Image 2 (edit) | The corrected frame attached, extended vertically to 9:16 — sky upward above the treeline, granite shore and water downward. | Mobile hero only. 1400×2488 (0.5628). House ~41% of source; the reflection doubles its vertical presence, which is why it was accepted below Hollowmoss's 53%. |
+| `stays/sparv-12/interior.jpg` | GPT Image 2 (reference) | Canonical exterior attached as a reference. The room looking out over the water: pale timber, the bookshelf wall, sofa and armchairs turned to the glass, the lit stove, and the sauna volume steaming out along the jetty beyond the glazing. | 3072×2048 (3:2). |
 
 | `stays/quiet-fern-06/exterior.jpg` | GPT Image 2 (generation, then three edits) | Two wings on one raised plinth, joined by a glazed link, on open button-grass moorland under a Bortle 1 sky with the aurora australis. Both roofs fully glazed. | **The canonical Quiet Fern 06, and the most expensive house in the set — seven generations.** Its gorge location was cut, then its capsule scale, then two interiors. What finally worked came out of the interior research: charcoal walls with pale horizontals, and a legible plan rather than a list of props. |
 | `stays/quiet-fern-06/exterior-portrait.jpg` | GPT Image 2 (edit) | The final frame extended vertically to 9:16 — sky upward with more stars and the aurora reaching higher, moorland downward. | Mobile hero only. 1400×2488 (0.5628). |
@@ -272,7 +272,7 @@ Three rules came out of it, all now in `content/prompts/README.md` or `cosy.py`:
    water; the string must say the ground is solid the whole way down and the water
    appears exactly once.
 
-### 2026-09-22 — sparv-04
+### 2026-09-22 — sparv-12
 
 Eighth house, and the **only night house in the catalog** — weather per the table: clear
 cold night with stars, so rain and snowfall stay spent and this one gets aurora instead.
@@ -491,11 +491,50 @@ nano-banana-pro/edit $0.15 per image, doubled at 4K.
 
 **Phase total to date: $18.72.**
 
+### 2026-10-08 — the model chosen, and twelve loops shipped
+
+Three finalists on the re-shot `blackwater-11` interior, all at 1080p so the comparison was
+the model and not the resolution. Prices read off each model's page that day.
+
+| Take | Endpoint | $ | Verdict |
+|---|---|---|---|
+| veo 3.1, first = last frame, 1080p, 4 s | `fal-ai/veo3.1/first-last-frame-to-video` | 0.80 | Room still, loop closes by itself. Kept as the reference. |
+| Grok Imagine 1.5, 1080p, 6 s | `xai/grok-imagine-video/v1.5/image-to-video` | 1.50 | **Rejected by the owner: the frame slowly zooms.** Its apparent extra sharpness was the zoom itself — objects drawn larger, not more detail. The API exposes no camera field. |
+| LTX 2.5 pro, first = last, 1080p, 6 s, `camera_motion: static` | `lightricks/ltx-2.5/image-to-video/pro` | 0.96 | **Rejected**: candles grew into torches, glossy reflections appeared on the floor, the room filled with haze. |
+| veo 3.1, first = last frame, **4K**, 4 s, from the 5056 px master | `fal-ai/veo3.1/first-last-frame-to-video` | 1.60 | **Chosen.** The owner's question — why 1080p when the master is 5056 px? — was the right one: at the 2560 px the site paints, 1080p showed halos from upscaling and 4K read as the photograph. Room motion 0.2 % against 0.6–0.8 %. |
+
+Then the other eleven, each with its own motion-only prompt in `public/lab/prompts-9b/`,
+input a 16:9 bottom-anchored crop of the 5056×3392 master (the site anchors the interior
+centre-bottom). **11 × $1.60 = $17.60.** All twelve loops measure seamless after a 0.25 s
+crossfade in `public/lab/loop.py`; webm 0.6–1.5 MB, mp4 1.9–3.0 MB at 2560×1440.
+
+Two came back quieter than they could have: `sparv-12` (the aurora does not move) and
+`tidebreak-03` (the surf holds still; the rain on the glass runs). Both are clean, and were
+kept.
+
+**The colour trap.** An untagged loop is decoded by Chrome on the BT.709 transfer curve while
+the untagged stills are sRGB: the loop read 84.3 against the still's 78.4 and the fade-in was
+a visible brightening. Tagging transfer `iec61966-2-1` brought it to 79.2. The 601→709 matrix
+change alone did nothing. Fixed in `loop.py` for every future loop.
+
+**Day total $22.46** ($3.26 three-way test, $1.60 the 4K test, $17.60 the eleven).
+**Phase 9b closed at $41.18.**
+
 ## Ambient beds
 
-| Asset | Model | Prompt | Duration |
-|---|---|---|---|
-| _(none yet)_ | | | |
+ElevenLabs `eleven_text_to_sound_v2` via `scripts/beds.py`, 20 s, `loop: true`, one bed
+per interior at `public/stays/<slug>/interior-bed.mp3`. Each prompt names only what is on
+that house's photograph — the stove that is lit, the weather beyond that glass — and the
+prompts live in the script.
+
+The model's output spread **40 dB**, from surf at −22.6 LUFS to `sparv-12` at −63.2. Every
+bed is levelled to **−30 LUFS** by a two-pass linear `loudnorm` in the same script, so moving
+between houses never changes the level. `sparv-12` was generated twice: the first prompt
+asked for *"deep winter night silence"* and got exactly that — a file of nothing. **Name
+sounds, never their absence**, the audio twin of the no-negation rule above.
+
+Paid from the owner's ElevenLabs credits; the key needed **Sound Effects** access enabled
+— the Stillnest key is separate from the Reelink one and had it off.
 
 ---
 

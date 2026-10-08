@@ -219,6 +219,37 @@ MODELS = {
             "prompt_expansion_mode": "disabled",
         },
     },
+    # ---- the final three, 2026-10-08, on the re-shot still. All at 1080p so the
+    # comparison is the model and not the resolution. Prices read off each
+    # model's page that day: veo $0.20/s without audio at 1080p, Grok $0.25/s,
+    # LTX 2.5 pro ~$0.16/s. Both veo and LTX get the same frame at both ends so
+    # the loop closes itself; Grok has no end-frame field.
+    "veo3.1-loop-1080": {
+        "endpoint": "fal-ai/veo3.1/first-last-frame-to-video",
+        "rate": 0.20, "durations": ["4", "6", "8"],
+        "body": lambda url, d, o: {
+            "first_frame_url": url, "last_frame_url": url, "duration": f"{d}s",
+            "resolution": "1080p", "aspect_ratio": "16:9", "generate_audio": False,
+            "negative_prompt": o["negative"] or NEGATIVE,
+            "auto_fix": False,
+        },
+    },
+    "grok15-1080": {
+        "endpoint": "xai/grok-imagine-video/v1.5/image-to-video",
+        "rate": 0.25, "durations": ["5", "6"],
+        "body": lambda url, d, o: {
+            "image_url": url, "duration": int(d), "resolution": "1080p",
+        },
+    },
+    "ltx25-loop-1080": {
+        "endpoint": "lightricks/ltx-2.5/image-to-video/pro",
+        "rate": 0.16, "durations": ["6", "8", "10"],
+        "body": lambda url, d, o: {
+            "image_url": url, "end_image_url": url, "duration": int(d),
+            "resolution": "1080p", "aspect_ratio": "16:9", "camera_motion": "static",
+            "generate_audio": False,
+        },
+    },
     "seedance2-4k": {
         "endpoint": "bytedance/seedance-2.0/image-to-video",
         "rate": None, "durations": ["4", "5", "6", "7", "8"],

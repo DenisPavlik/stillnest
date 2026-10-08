@@ -8,6 +8,39 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
+/** The live Lenis instance, while there is one. Module scope, because a scroll
+    request ("take me to the room") comes from a component nowhere near this one. */
+let active: Lenis | null = null;
+
+/**
+ * Scroll to an element by id the way the rest of the site scrolls: through Lenis
+ * when it is running, so the move settles with the same curve as the wheel does,
+ * and natively otherwise. Reduced motion jumps, because a long animated scroll is
+ * exactly the motion that setting asks to be spared.
+ */
+export function scrollToId(id: string): void {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Layout position, not the painted one: a <Reveal> target is still sitting
+  // a few pixels low under its entrance transform when the scroll starts, and
+  // measuring that would overshoot by exactly the reveal distance.
+  let y = 0;
+  for (let n: HTMLElement | null = el; n; n = n.offsetParent as HTMLElement | null) {
+    y += n.offsetTop;
+  }
+  scrollToY(y);
+}
+
+/** Scroll to a page offset — Lenis when it runs, native otherwise. */
+export function scrollToY(y: number): void {
+  if (active) {
+    active.scrollTo(y, { duration: 1.8 });
+    return;
+  }
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: y, behavior: reduced ? "auto" : "smooth" });
+}
+
 /**
  * Smooth scrolling, and the one place ScrollTrigger is driven from.
  *
@@ -50,6 +83,7 @@ export function MotionProvider() {
       syncTouch: false,
     });
 
+    active = lenis;
     lenis.on("scroll", ScrollTrigger.update);
 
     const raf = (time: number) => lenis.raf(time * 1000);
@@ -64,6 +98,7 @@ export function MotionProvider() {
     return () => {
       gsap.ticker.remove(raf);
       lenis.destroy();
+      active = null;
       delete document.documentElement.dataset.motion;
     };
   }, []);

@@ -502,7 +502,7 @@ export function StaysConsole({
           <p className={s.caption}>
             {byMeaning
               ? "closest first — a distance in meaning, not in kilometres"
-              : "distance is the default — the view is not a metric"}
+              : "the collection in order, 01 to 12 — or rank it by what you came for"}
           </p>
         </div>
       </div>

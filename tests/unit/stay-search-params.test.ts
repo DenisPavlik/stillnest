@@ -50,7 +50,7 @@ describe("parseStayQuery — an empty or absent query", () => {
   it("filters nothing and ranks by distance", () => {
     const query = parse({});
     expect(query).toEqual({ sort: DEFAULT_SORT });
-    expect(query.sort).toBe("solitude");
+    expect(query.sort).toBe("number");
     expect(isFiltered(query)).toBe(false);
   });
 });
@@ -133,7 +133,7 @@ describe("toQuery", () => {
   });
 
   it("omits the default sort, and prints one that is not the default", () => {
-    expect(toQuery(parse({ sort: "solitude" }), BOUNDS)).toBe("");
+    expect(toQuery(parse({ sort: "number" }), BOUNDS)).toBe("");
     expect(toQuery(parse({ sort: "silence" }), BOUNDS)).toBe("sort=silence");
   });
 

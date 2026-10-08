@@ -38,8 +38,10 @@ import { setSoundPreference, useSoundPreference } from "./sound-preference";
  * before it can start — the browser will not have it any other way.
  */
 
-/** Ambient beds sit under the page, not on top of it. */
-const MASTER_GAIN = 0.34;
+/** Ambient beds sit under the page, not on top of it. The files are levelled
+    to -30 LUFS by scripts/beds.py, so this lands them near -33: present when
+    someone has walked into the room to hear it, still quieter than any video. */
+const MASTER_GAIN = 0.7;
 const CROSSFADE_SECONDS = 1.6;
 
 interface AmbienceValue {
@@ -50,6 +52,12 @@ interface AmbienceValue {
   playing: boolean;
   /** Point the mixer at a bed. Pass null for silence. */
   setBed: (key: string | null) => void;
+  /**
+   * Switch sound on from inside a click handler. Safari only lets an
+   * AudioContext start in the same task as the gesture, so the context is built
+   * and resumed right here rather than in the effect that follows the render.
+   */
+  unlock: () => void;
 }
 
 const AmbienceContext = createContext<AmbienceValue | null>(null);
@@ -75,6 +83,27 @@ export function AmbienceProvider({ children }: { children: ReactNode }) {
     setSoundPreference(!enabled);
   }, [enabled]);
 
+  const ensureContext = useCallback((): AudioContext | null => {
+    if (!ctxRef.current) {
+      const Ctor =
+        window.AudioContext ??
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
+      if (!Ctor) return null; // No Web Audio: the page is simply silent.
+      ctxRef.current = new Ctor();
+      masterRef.current = ctxRef.current.createGain();
+      masterRef.current.gain.value = MASTER_GAIN;
+      masterRef.current.connect(ctxRef.current.destination);
+    }
+    return ctxRef.current;
+  }, []);
+
+  const unlock = useCallback(() => {
+    setSoundPreference(true);
+    const ctx = ensureContext();
+    if (ctx?.state === "suspended") void ctx.resume();
+  }, [ensureContext]);
+
   /* --- the mixer -------------------------------------------------- */
 
   useEffect(() => {
@@ -98,19 +127,7 @@ export function AmbienceProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (!ctxRef.current) {
-        const Ctor =
-          window.AudioContext ??
-          (window as unknown as { webkitAudioContext?: typeof AudioContext })
-            .webkitAudioContext;
-        if (!Ctor) return; // No Web Audio: the page is simply silent.
-        ctxRef.current = new Ctor();
-        masterRef.current = ctxRef.current.createGain();
-        masterRef.current.gain.value = MASTER_GAIN;
-        masterRef.current.connect(ctxRef.current.destination);
-      }
-
-      const ctx = ctxRef.current;
+      const ctx = ensureContext();
       const master = masterRef.current;
       if (!ctx || !master) return;
 
@@ -156,7 +173,7 @@ export function AmbienceProvider({ children }: { children: ReactNode }) {
     }
 
     void run();
-  }, [enabled, bed]);
+  }, [enabled, bed, ensureContext]);
 
   useEffect(() => {
     return () => {
@@ -173,8 +190,8 @@ export function AmbienceProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AmbienceValue>(
-    () => ({ enabled, toggle, playing, setBed }),
-    [enabled, toggle, playing],
+    () => ({ enabled, toggle, playing, setBed, unlock }),
+    [enabled, toggle, playing, unlock],
   );
 
   return <AmbienceContext.Provider value={value}>{children}</AmbienceContext.Provider>;

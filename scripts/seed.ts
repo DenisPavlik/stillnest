@@ -261,8 +261,8 @@ const HOUSES: Seed[] = [
     amenities: ["wood-stove", "outdoor-bath", "boat", "well-water", "no-wifi"],
   },
   {
-    slug: "sparv-04",
-    name: "Sparv 04",
+    slug: "sparv-12",
+    name: "Sparv 12",
     tagline: "Granite, black water, and a track that stops nine kilometres short.",
     description:
       "A reserve with no through road and no reason for anyone to pass. The house sits on granite above a tarn that never thaws properly, and the last nine kilometres are walked whatever the season. A shuttered forestry hut is the nearest building; nobody has wintered in it since 2011.",

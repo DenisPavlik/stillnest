@@ -35,6 +35,8 @@ type RevealProps = {
   select?: string;
   as?: ElementType;
   className?: string;
+  /** For an in-page link or a scroll target to land on. */
+  id?: string;
 };
 
 export function Reveal({
@@ -45,6 +47,7 @@ export function Reveal({
   select,
   as: Tag = "div",
   className,
+  id,
 }: RevealProps) {
   const scope = useRef<HTMLElement>(null);
 
@@ -82,7 +85,7 @@ export function Reveal({
   );
 
   return (
-    <Tag ref={scope} className={className}>
+    <Tag ref={scope} className={className} id={id}>
       {children}
     </Tag>
   );

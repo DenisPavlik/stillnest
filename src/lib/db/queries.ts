@@ -39,7 +39,7 @@ export const BIOMES = [
 export const CONNECTIVITY = ["none", "weak", "full"] as const;
 
 /** Ranked by distance, never by view. */
-export type StaySort = "solitude" | "silence" | "dark-sky" | "price";
+export type StaySort = "number" | "solitude" | "silence" | "dark-sky" | "price";
 
 export interface StayFilters {
   biome?: Biome;
@@ -72,6 +72,9 @@ export interface StayCard {
 }
 
 const ORDER = {
+  // The collection's own sequence, 01-12, read off the slug's trailing digits
+  // so the number is said once, in the name, and never stored twice.
+  number: asc(sql`CAST(substring(${properties.slug} from '[0-9]+$') AS integer)`),
   solitude: desc(properties.solitudeKm),
   silence: asc(properties.noiseDb),
   "dark-sky": asc(properties.bortle),
@@ -144,7 +147,7 @@ export async function listStays(filters: StayFilters = {}): Promise<StayCard[]> 
     .select(cardColumns())
     .from(properties)
     .where(whereFor(filters))
-    .orderBy(ORDER[filters.sort ?? "solitude"]);
+    .orderBy(ORDER[filters.sort ?? "number"]);
 }
 
 /**

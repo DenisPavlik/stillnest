@@ -66,23 +66,25 @@ export function LivingStill({
       />
 
       {play && loop ? (
-        <video
-          className={s.loop}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          /* The still underneath IS the poster. Handing the same frame to the
+        <div className={s.frame}>
+          <video
+            className={s.loop}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            /* The still underneath IS the poster. Handing the same frame to the
              video element as well would fetch a third copy of it. */
-          aria-hidden="true"
-          tabIndex={-1}
-          data-ready={ready ? "" : undefined}
-          onCanPlayThrough={() => setReady(true)}
-        >
-          <source src={mediaUrl(`${loop}.webm`)} type="video/webm" />
-          <source src={mediaUrl(`${loop}.mp4`)} type="video/mp4" />
-        </video>
+            aria-hidden="true"
+            tabIndex={-1}
+            data-ready={ready ? "" : undefined}
+            onCanPlayThrough={() => setReady(true)}
+          >
+            <source src={mediaUrl(`${loop}.webm`)} type="video/webm" />
+            <source src={mediaUrl(`${loop}.mp4`)} type="video/mp4" />
+          </video>
+        </div>
       ) : null}
     </div>
   );

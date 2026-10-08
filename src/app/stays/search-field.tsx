@@ -42,7 +42,7 @@ import s from "./search-field.module.css";
  *  throws away the readings someone already set.
  * ==================================================================== */
 
-/** Checked against the live catalog: rimefall-02, sparv-04, driftline-10. */
+/** Checked against the live catalog: rimefall-02, sparv-12, driftline-10. */
 const PLACEHOLDER = "alone by a lake, snow, no signal";
 
 /** Also checked. Kept short enough to read at a glance on a phone. */

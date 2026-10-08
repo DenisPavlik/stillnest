@@ -28,7 +28,7 @@ export const PARAM = {
   sort: "sort",
 } as const;
 
-export const DEFAULT_SORT: StaySort = "solitude";
+export const DEFAULT_SORT: StaySort = "number";
 
 /** Labels, and — because the map is exhaustive — the option lists too. */
 export const SIGNAL_LABEL: Record<Connectivity, string> = {
@@ -38,6 +38,7 @@ export const SIGNAL_LABEL: Record<Connectivity, string> = {
 };
 
 export const SORT_LABEL: Record<StaySort, string> = {
+  number: "Number",
   solitude: "Distance",
   silence: "Silence",
   "dark-sky": "Darkness",

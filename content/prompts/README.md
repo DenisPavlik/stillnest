@@ -161,7 +161,7 @@ Assigned, one per house, and to be checked against this table before writing a p
 | `blackwater-11` ✅ | falling snow, late dusk | **falling snow**, fire, sauna steam |
 | `tidebreak-03` ✅ | storm and driving rain, dusk | surf, spray, rain on glass |
 | `hollowmoss-04` | morning mist, low sun through spruce | mist drifting, chimney smoke |
-| `sparv-04` | clear cold night, stars | fire, smoke, aurora |
+| `sparv-12` | clear cold night, stars | fire, smoke, aurora |
 | `quiet-fern-06` | clear dawn, fast cloud | **the sky itself**, through the glass roof |
 | `whitehour-08` | cold clear morning, frost | **geothermal steam off the ground** |
 | `rimefall-02` | clear blue hour after snowfall, still air | steam, smoke, loose snow |
@@ -384,7 +384,7 @@ houses that were all a dark box with a lit window.
 | `blackwater-11` ✅ | snowy pine on a snow shield | two stacked volumes, upper one cantilevered | charred black timber | double-height glass living room |
 | `tidebreak-03` ✅ | basalt cliff, breaking sea below, headland behind | three terraces stepping down the cliff | dark oiled timber + glass | outdoor bath on the middle deck |
 | `moss-verse-01` | ancient moss rainforest, boulders, ferns, canopy above | raised on posts, plan curved around the boulders | cedar + glass | cedar soaking tub on the deck, steaming into mist |
-| `sparv-04` | dark tarn, granite shore, pines behind | a low pavilion out **on the water**, on a timber jetty | black steel + glass | sauna at the jetty's end, ladder into the tarn |
+| `sparv-12` | dark tarn, granite shore, pines behind | a low pavilion out **on the water**, on a timber jetty | black steel + glass | sauna at the jetty's end, ladder into the tarn |
 | `quiet-fern-06` | open button-grass moorland, nothing breaking the horizon, the whole sky | **low and long on a raised pale plinth, its whole roof glazed** — the only house whose picture is about the sky rather than the building. Not sunk into the ground: that is how Whitehour became a bunker | pale concrete plinth, dark timber walls, a continuous glass roof | the bed lying under the glass roof beneath the Milky Way, telescope beside it |
 | `whitehour-08` | Kerlingarfjöll: ochre and rust rhyolite, steam from the ground, snow in the shadows | a low arc hugging the slope | dark timber + glass on a stone base | geothermal pool below the house, steaming |
 | `rimefall-02` | open snow, no trees, flat to the horizon | **a ring around an inner courtyard**, with **one bay of the ring cut fully open toward the camera** so the courtyard reads | pale concrete + timber | the hot tub seen through that opening, its steam plume rising clear above the roofline — resolved because it is large and moving, not a prop |
@@ -422,7 +422,7 @@ One surface and one idea per house, so no two rooms repeat:
 | `blackwater-11` ✅ | timber, double height | the mezzanine and the hung fireplace |
 | `tidebreak-03` ✅ | stone and timber | the hearth built into the rock wall |
 | `moss-verse-01` ✅ | cedar | the curve, and the wall of books |
-| `sparv-04` ✅ | pale pine | the free-standing stove, water on three sides |
+| `sparv-12` ✅ | pale pine | the free-standing stove, water on three sides |
 | `quiet-fern-06` | charcoal lime plaster, dark concrete floor | a dark room built for looking up — bed under glass, red reading light |
 | `whitehour-08` | board-formed concrete, wool | steam coming off the pool, seen from inside |
 | `rimefall-02` | lime-washed white, pale ash | the courtyard, walled on all sides |

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Mono, Instrument_Sans } from "next/font/google";
 
+import { BackToTop } from "@/components/back-to-top";
 import { MotionProvider } from "@/components/motion/motion-provider";
 
 import "./globals.css";
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <MotionProvider />
+        <BackToTop />
         {children}
       </body>
     </html>

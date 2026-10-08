@@ -42,7 +42,7 @@ export const PHOTOGRAPHED: ReadonlySet<string> = new Set([
   "blackwater-11",
   "tidebreak-03",
   "moss-verse-01",
-  "sparv-04",
+  "sparv-12",
   "quiet-fern-06",
   "whitehour-08",
   "rimefall-02",
@@ -69,7 +69,20 @@ export function hasPhotography(slug: string): boolean {
  * still, which is what a metered connection and a reduced-motion visitor get
  * regardless. **Add a slug here in the same commit as its files.**
  */
-export const ANIMATED: ReadonlySet<string> = new Set<string>([]);
+export const ANIMATED: ReadonlySet<string> = new Set<string>([
+  "blackwater-11",
+  "driftline-10",
+  "hollow-cedar-07",
+  "hollowmoss-04",
+  "kaldbak-09",
+  "meridian-05",
+  "moss-verse-01",
+  "quiet-fern-06",
+  "rimefall-02",
+  "sparv-12",
+  "tidebreak-03",
+  "whitehour-08",
+]);
 
 export function hasLoop(slug: string): boolean {
   return ANIMATED.has(slug);
