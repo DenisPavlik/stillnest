@@ -410,18 +410,148 @@ select.control option {
 
 /* A disabled control, styled as one. It deliberately does not wear the moss
    fill the live nav button wears: nothing here should look pressable. */
-.reserve {
+.reserve,
+.reserveLive {
   width: 100%;
   margin-top: clamp(18px, 2.2vw, 24px);
   padding: 0.85rem 1rem;
-  border: 1px solid var(--hair);
+  border: 1px solid rgba(147, 179, 130, 0.34);
   border-radius: 2px;
-  background: transparent;
-  color: var(--haze);
+  background: var(--moss);
+  color: #eaf1e6;
   font-family: var(--font-sans);
   font-size: 0.8125rem;
   letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    background-color 240ms ease,
+    border-color 240ms ease,
+    color 240ms ease;
+}
+
+.reserve:hover:not(:disabled),
+.reserveLive:hover:not(:disabled) {
+  background: #40603f;
+  border-color: rgba(147, 179, 130, 0.6);
+}
+
+/* Until the engine says "free" there is nothing to reserve, and it looks it. */
+.reserve:disabled,
+.reserveLive:disabled {
+  border-color: var(--hair);
+  background: transparent;
+  color: var(--haze);
   cursor: not-allowed;
+}
+
+.reserveLive {
+  width: auto;
+  margin-top: 0;
+  padding-inline: 1.2rem;
+}
+
+/* ---- the confirmation step: the stay, the total, one honest box ---- */
+
+.confirm,
+.done,
+.problem {
+  margin-top: clamp(18px, 2.2vw, 24px);
+  padding: 16px;
+  border: 1px solid var(--hair);
+  background: rgba(9, 14, 10, 0.5);
+}
+
+.confirmHead,
+.doneHead {
+  margin: 0;
+  color: var(--lichen);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.confirmLine {
+  margin: 10px 0 0;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.confirmTotal {
+  margin: 8px 0 0;
+  color: var(--ember);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+}
+
+.ack {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  margin-top: 14px;
+  color: var(--ink-2);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.ack input {
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  accent-color: var(--ember);
+}
+
+.confirmActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.back {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid rgba(230, 236, 228, 0.16);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.back:hover {
+  color: var(--linen);
+  border-color: rgba(230, 236, 228, 0.4);
+}
+
+.done {
+  border-color: rgba(233, 168, 94, 0.45);
+}
+
+.doneBody {
+  margin: 8px 0 0;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.doneBody a {
+  color: var(--lichen);
+}
+
+.problem {
+  border-color: rgba(233, 168, 94, 0.35);
+}
+
+.problem p {
+  margin: 0 0 12px;
+  color: var(--ember);
+  font-size: 0.8125rem;
+  line-height: 1.6;
 }
 
 .note {

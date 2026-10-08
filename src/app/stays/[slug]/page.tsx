@@ -327,6 +327,8 @@ export default async function StayPage({ params }: PageProps<"/stays/[slug]">): 
             <BookingPanel
               className={s.booking}
               propertyId={stay.id}
+              slug={stay.slug}
+              houseName={stay.name}
               basePriceCents={stay.basePriceCents}
               minNights={stay.minNights}
               capacity={stay.capacity}

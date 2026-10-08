@@ -242,6 +242,73 @@
   text-underline-offset: 3px;
 }
 
+.stays {
+  margin: clamp(18px, 2vw, 26px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stay {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--hair-soft);
+}
+
+.stay[data-cancelled] {
+  opacity: 0.5;
+}
+
+.stayHouse {
+  color: var(--linen);
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  text-decoration: none;
+}
+
+.stayHouse:hover {
+  color: var(--ember);
+}
+
+.stayWhere {
+  margin: 4px 0 0;
+  color: var(--haze);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stayDates,
+.stayTotal {
+  margin: 0;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.stayDates span,
+.stayTotal span {
+  display: block;
+  margin-top: 4px;
+  color: var(--haze);
+  font-size: 0.6875rem;
+}
+
+.stayTotal {
+  color: var(--ember);
+  text-align: right;
+}
+
+@media (max-width: 720px) {
+  .stay {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 16px;
+  }
+}
+
 @media (max-width: 900px) {
   .cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -1,11 +1,13 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
   useEffect,
   useId,
   useRef,
   useState,
   useSyncExternalStore,
+  useTransition,
   type ReactNode,
 } from "react";
 import gsap from "gsap";
@@ -28,6 +30,7 @@ import {
   numberWord,
 } from "@/lib/format";
 
+import { reserve, type ReserveResult } from "./actions";
 import s from "./booking-panel.module.css";
 
 /* ==================================================================== *
@@ -47,10 +50,11 @@ import s from "./booking-panel.module.css";
  *    refused   the specific reason, one sentence per reason
  *    offline   the engine did not answer, and this panel will not guess
  *
- *  The reserve control is disabled in all four. Checkout is the next
- *  phase; until it exists nothing here may imply a date can be held —
- *  least of all on the screen where a visitor most wants to believe
- *  otherwise.
+ *  Reserve opens only on "free", and only through a confirmation step:
+ *  the stay, the total, and one box saying in plain words that this is a
+ *  concept and no money moves. There is no checkout. The server prices
+ *  the stay again before writing it, and the database — not this file —
+ *  decides whether the nights are still free.
  * ==================================================================== */
 
 /** ~a quarter second: long enough that typing a date is one request, not four. */
@@ -76,6 +80,9 @@ export interface Closure {
 export interface BookingPanelProps {
   /** The database id — the engine keys on it, not on the slug. */
   propertyId: string;
+  /** For the way back from sign-in, and for refreshing the page once booked. */
+  slug: string;
+  houseName: string;
   basePriceCents: number;
   /** The house's own minimum. A season can raise it; only the engine knows that. */
   minNights: number;
@@ -92,8 +99,19 @@ interface Result {
   answer: AvailabilityAnswer;
 }
 
+/** Where the reserve flow is, tagged with the question it belongs to — so
+    changing a date mid-confirmation drops the step instead of booking the
+    old dates. Same trick as `Result`. */
+type Phase = "confirm" | ReserveResult;
+interface Step {
+  key: string;
+  phase: Phase;
+}
+
 export function BookingPanel({
   propertyId,
+  slug,
+  houseName,
   basePriceCents,
   minNights,
   capacity,
@@ -106,6 +124,10 @@ export function BookingPanel({
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
   const [result, setResult] = useState<Result | null>(null);
+  const [step, setStep] = useState<Step | null>(null);
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [sending, startSending] = useTransition();
+  const router = useRouter();
 
   const today = useSyncExternalStore(neverChanges, browserToday, noServerToday);
 
@@ -162,6 +184,26 @@ export function BookingPanel({
   }, [asked, key, propertyId, checkIn, checkOut, guests]);
 
   const nightsAsked = asked ? nightCount(checkIn, checkOut) : 0;
+  const phase = step?.key === key ? step.phase : null;
+  const bookable = answer?.state === "ok" && answer.quote.available && !checking;
+
+  function confirmStay() {
+    startSending(async () => {
+      const outcome = await reserve({
+        propertyId,
+        slug,
+        checkIn,
+        checkOut,
+        guests,
+        acknowledged,
+      });
+      if (outcome.state === "signin") {
+        router.push(`/signin?callbackUrl=${encodeURIComponent(`/stays/${slug}#reserve`)}`);
+        return;
+      }
+      setStep({ key, phase: outcome });
+    });
+  }
 
   /* ---------------------------- the motion ----------------------------
      Two jobs, and the first one is not decoration.
@@ -404,18 +446,69 @@ export function BookingPanel({
         ) : null}
       </div>
 
-      <button className={s.reserve} type="button" disabled aria-describedby={`${id}-note`}>
-        Reserve — not open
-      </button>
+      {phase === null ? (
+        <button
+          className={s.reserve}
+          type="button"
+          disabled={!bookable}
+          aria-describedby={`${id}-note`}
+          onClick={() => {
+            setAcknowledged(false);
+            setStep({ key, phase: "confirm" });
+          }}
+        >
+          {bookable ? "Reserve these nights" : "Reserve"}
+        </button>
+      ) : null}
+
+      {phase === "confirm" && answer?.state === "ok" ? (
+        <div className={s.confirm}>
+          <p className={s.confirmHead}>Confirm the stay</p>
+          <p className={s.confirmLine}>
+            {houseName} · {formatShortDay(checkIn)} – {formatShortDay(checkOut)} ·{" "}
+            {nightsWord(answer.quote.nights.length)} · {numberWord(guests)}{" "}
+            {guests === 1 ? "person" : "people"}
+          </p>
+          <p className={s.confirmTotal}>{formatPriceUsd(answer.quote.total_cents)}</p>
+          <label className={s.ack}>
+            <input
+              type="checkbox"
+              checked={acknowledged}
+              onChange={(e) => setAcknowledged(e.target.checked)}
+            />
+            <span>
+              I understand Stillnest is a concept: this house is fictional, and no payment is
+              taken. The stay is written to my account and to the calendar, and that is all.
+            </span>
+          </label>
+          <div className={s.confirmActions}>
+            <button
+              type="button"
+              className={s.reserveLive}
+              disabled={!acknowledged || sending}
+              onClick={confirmStay}
+            >
+              {sending ? "Reserving…" : "Confirm reservation"}
+            </button>
+            <button type="button" className={s.back} onClick={() => setStep(null)}>
+              Back
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {phase !== null && phase !== "confirm" ? (
+        <ReserveOutcome outcome={phase} onAgain={() => setStep(null)} />
+      ) : null}
 
       <p className={s.note} id={`${id}-note`}>
-        Reserve is wired to nothing. Checkout comes next; until it does, no button on
-        this page can take a night off the calendar.
+        No payment is taken. Reserving writes the stay to your account and to this house&rsquo;s
+        calendar — and if someone else took these nights a moment ago, the database says so.
       </p>
 
       <p className={s.fine}>
-        And plainly: Stillnest is a concept project — this house is fictional, nothing
-        here can be booked, and no money moves anywhere.
+        And plainly: Stillnest is a concept project — this house is fictional, a
+        reservation is a row in a database, and no money moves anywhere.
       </p>
     </aside>
   );
@@ -448,6 +541,42 @@ function noServerToday(): null {
 }
 
 /* ----------------------------- the good answer ----------------------------- */
+
+function ReserveOutcome({
+  outcome,
+  onAgain,
+}: {
+  outcome: ReserveResult;
+  onAgain: () => void;
+}): ReactNode {
+  if (outcome.state === "confirmed") {
+    return (
+      <div className={s.done} role="status">
+        <p className={s.doneHead}>Reserved · {nightsWord(outcome.nights)}</p>
+        <p className={s.doneBody}>
+          {formatPriceUsd(outcome.totalCents)}, not charged — this is a concept. The stay is in{" "}
+          <a href="/account">your account</a>, and the nights are now closed to everyone else.
+        </p>
+      </div>
+    );
+  }
+  const message =
+    outcome.state === "taken"
+      ? "Someone reserved these nights a moment ago — the calendar refused the second booking. Pick other dates."
+      : outcome.state === "offline"
+        ? OFFLINE_MESSAGE
+        : outcome.state === "refused"
+          ? outcome.message
+          : "Sign in to reserve.";
+  return (
+    <div className={s.problem} role="alert">
+      <p>{message}</p>
+      <button type="button" className={s.back} onClick={onAgain}>
+        Try again
+      </button>
+    </div>
+  );
+}
 
 function Free({ quote }: { quote: AvailabilityResponse }): ReactNode {
   return (

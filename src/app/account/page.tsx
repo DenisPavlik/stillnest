@@ -9,11 +9,14 @@ import { Reveal } from "@/components/motion/reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
 import { StayCard } from "@/components/stay-card";
-import { savedStaysFor } from "@/lib/db/queries";
-import { numberWord } from "@/lib/format";
+import { savedStaysFor, staysFor } from "@/lib/db/queries";
+import { todayIso } from "@/lib/dates";
+import { formatPriceUsd, formatShortDay, nightsWord, numberWord } from "@/lib/format";
 
-import { signOutAction } from "./actions";
+import { cancelStay, signOutAction } from "./actions";
 import s from "./account.module.css";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Your account — Stillnest",
@@ -23,16 +26,19 @@ export const metadata: Metadata = {
 /* ==================================================================== *
  *  ACCOUNT — who you are, what you kept, where you are going.
  *
- *  "Your stays" is honest about being empty: checkout is the phase that
- *  fills it, and until then a placeholder list would be the site
- *  inventing bookings for the one person who would know they are fake.
+ *  "Your stays" lists what the Reserve button wrote — real rows, no
+ *  payment behind them, and the guest can cancel anything still ahead.
  * ==================================================================== */
 
 export default async function AccountPage(): Promise<ReactNode> {
   const session = await auth();
   if (!session?.user) redirect("/signin?callbackUrl=/account");
 
-  const saved = await savedStaysFor(session.user.id);
+  const [saved, stays] = await Promise.all([
+    savedStaysFor(session.user.id),
+    staysFor(session.user.id),
+  ]);
+  const today = todayIso();
   const first = session.user.name?.split(" ")[0];
 
   return (
@@ -96,10 +102,51 @@ export default async function AccountPage(): Promise<ReactNode> {
           <div className={s.blockHead}>
             <h2 className={s.blockTitle}>Your stays</h2>
           </div>
-          <p className={s.empty}>
-            None yet. Reservations open with checkout — and even then, this is a concept: no
-            house here can really be booked, and no money moves.
-          </p>
+          {stays.length > 0 ? (
+            <ul className={s.stays}>
+              {stays.map((st) => {
+                const ahead = st.checkIn > today && st.status === "confirmed";
+                return (
+                  <li key={st.id} className={s.stay} data-cancelled={st.status === "cancelled" ? "" : undefined}>
+                    <div>
+                      <Link className={s.stayHouse} href={`/stays/${st.slug}`}>
+                        {st.house}
+                      </Link>
+                      <p className={s.stayWhere}>
+                        {st.region}, {st.country}
+                      </p>
+                    </div>
+                    <p className={s.stayDates}>
+                      {formatShortDay(st.checkIn)} – {formatShortDay(st.checkOut)}
+                      <span>
+                        {nightsWord(st.nights)} · {numberWord(st.guests)}{" "}
+                        {st.guests === 1 ? "person" : "people"}
+                      </span>
+                    </p>
+                    <p className={s.stayTotal}>
+                      {formatPriceUsd(st.totalCents)}
+                      <span>{st.status === "cancelled" ? "cancelled" : "not charged"}</span>
+                    </p>
+                    {ahead ? (
+                      <form action={cancelStay}>
+                        <input type="hidden" name="id" value={st.id} />
+                        <button type="submit" className={s.signOut}>
+                          Cancel
+                        </button>
+                      </form>
+                    ) : (
+                      <span />
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className={s.empty}>
+              None yet. Pick dates on any house and press Reserve — no payment is taken, this is
+              a concept, but the stay is written to the calendar for real.
+            </p>
+          )}
         </section>
       </div>
 

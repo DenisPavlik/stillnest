@@ -10,6 +10,7 @@ import {
   properties,
   propertyAmenities,
   propertyScenes,
+  bookings,
   savedStays,
 } from "./schema";
 
@@ -360,4 +361,69 @@ export async function setStaySaved(userId: string, slug: string, saved: boolean)
       .delete(savedStays)
       .where(and(eq(savedStays.userId, userId), eq(savedStays.propertyId, property.id)));
   }
+}
+
+/* ------------------------------------------------------------------ *
+ *  Bookings — written without payment (a concept has no checkout).
+ *
+ *  Confirmed on insert: there is no pending hold to expire, because there
+ *  is no payment to wait for. Whether the nights are free is NOT checked
+ *  here — the EXCLUDE constraint on `bookings` answers that, atomically,
+ *  and the caller turns its refusal into a sentence.
+ * ------------------------------------------------------------------ */
+
+export async function createBooking(values: {
+  propertyId: string;
+  userId: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  subtotalCents: number;
+  feesCents: number;
+}): Promise<void> {
+  await db.insert(bookings).values({ ...values, status: "confirmed" });
+}
+
+export interface MyStay {
+  id: string;
+  slug: string;
+  house: string;
+  region: string;
+  country: string;
+  checkIn: string;
+  checkOut: string;
+  nights: number;
+  guests: number;
+  totalCents: number;
+  status: "pending" | "confirmed" | "cancelled" | "expired";
+}
+
+export async function staysFor(userId: string): Promise<MyStay[]> {
+  return db
+    .select({
+      id: bookings.id,
+      slug: properties.slug,
+      house: properties.name,
+      region: properties.region,
+      country: properties.country,
+      checkIn: bookings.checkIn,
+      checkOut: bookings.checkOut,
+      nights: sql<number>`${bookings.nights}`,
+      guests: bookings.guests,
+      totalCents: sql<number>`${bookings.totalCents}`,
+      status: bookings.status,
+    })
+    .from(bookings)
+    .innerJoin(properties, eq(properties.id, bookings.propertyId))
+    .where(eq(bookings.userId, userId))
+    .orderBy(asc(bookings.checkIn));
+}
+
+/** Cancel one of the guest's own stays. The user id is in the WHERE, so a
+    guessed booking id belonging to someone else updates nothing. */
+export async function cancelBooking(userId: string, bookingId: string): Promise<void> {
+  await db
+    .update(bookings)
+    .set({ status: "cancelled" })
+    .where(and(eq(bookings.id, bookingId), eq(bookings.userId, userId)));
 }
