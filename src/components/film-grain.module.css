@@ -2,9 +2,19 @@
   position: fixed;
   inset: 0;
   z-index: 40;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
+  background-image: url("/grain.png");
+  background-size: 192px 192px;
   opacity: 0.26;
   mix-blend-mode: overlay;
+}
+
+/* Touch screens: no blend. A blended fixed layer is recomposited against the
+   whole page on every scroll frame, which is exactly the cost the bitmap was
+   brought in to remove. Plain, fainter grain reads the same on a phone. */
+@media (hover: none) and (pointer: coarse) {
+  .grain {
+    mix-blend-mode: normal;
+    opacity: 0.05;
+  }
 }

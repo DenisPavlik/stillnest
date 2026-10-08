@@ -13,14 +13,16 @@ import s from "./film-grain.module.css";
  *  that has to stop when the noise does.
  * -------------------------------------------------------------------- */
 
-export function FilmGrain({ uid = "fn-grain" }: { uid?: string }): ReactNode {
-  return (
-    <svg className={s.grain} aria-hidden="true" data-grain>
-      <filter id={uid}>
-        <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="4" stitchTiles="stitch" />
-        <feColorMatrix type="saturate" values="0" />
-      </filter>
-      <rect width="100%" height="100%" filter={`url(#${uid})`} />
-    </svg>
-  );
+/**
+ * The film grain over every page — a 192 px noise tile, painted once.
+ *
+ * It used to be a live SVG `feTurbulence` filter on a fixed, full-viewport layer
+ * with `mix-blend-mode: overlay`. On an iPhone that is a filter re-rasterised and
+ * a blend re-composited against the whole page on every frame of a scroll: the
+ * owner's screen recording showed the page dropping to blank frames whenever he
+ * flicked. A bitmap tile costs one decode, and on touch screens it is laid on
+ * with plain opacity rather than a blend (see the stylesheet).
+ */
+export function FilmGrain(_: { uid?: string } = {}): ReactNode {
+  return <div className={s.grain} aria-hidden="true" data-grain />;
 }

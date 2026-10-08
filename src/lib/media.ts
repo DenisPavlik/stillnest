@@ -63,7 +63,7 @@ export function hasPhotography(slug: string): boolean {
  * the two do not advance together: a house has its photograph the day it is
  * generated, and its loop only once a clip has been generated from that exact
  * frame, made seamless, and judged worth the megabyte. A slug in here promises
- * `stays/<slug>/interior-loop.webm` and `.mp4` both exist.
+ * `stays/<slug>/interior-loop.webm`, `.mp4` and the phone rung `-1280.mp4` all exist.
  *
  * Nothing breaks when a slug is missing — `<LivingStill>` simply shows the
  * still, which is what a metered connection and a reduced-motion visitor get

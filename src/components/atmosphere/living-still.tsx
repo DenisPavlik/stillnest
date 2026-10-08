@@ -39,6 +39,13 @@ export interface LivingStillProps {
   priority?: boolean;
 }
 
+/** Safari and every iOS browser (all WebKit underneath), but not Chromium. Read
+    only on the client — the video is never rendered on the server. */
+function appleWebKit(): boolean {
+  const ua = navigator.userAgent;
+  return /AppleWebKit/.test(ua) && !/Chrome|Chromium|Edg|OPR|Android/.test(ua);
+}
+
 export function LivingStill({
   base,
   loop,
@@ -103,7 +110,21 @@ export function LivingStill({
             data-ready={ready ? "" : undefined}
             onCanPlayThrough={() => setReady(true)}
           >
-            <source src={mediaUrl(`${loop}.webm`)} type="video/webm" />
+            {/* Order is the decision. Phones and tablets take the 1280 H.264
+                rung — hardware-decoded everywhere, and a third of the bytes.
+                Safari then gets the full-size H.264 before it can reach the
+                webm: it does play VP9, but on an iPhone that 2560 px VP9
+                stream was software-decoded, and the owner watched it run for
+                three seconds and then stutter while the whole page lagged.
+                Chrome and Firefox on a desktop take the lighter webm. */}
+            <source
+              src={mediaUrl(`${loop}-1280.mp4`)}
+              type="video/mp4"
+              media="(max-width: 1024px)"
+            />
+            {appleWebKit() ? null : (
+              <source src={mediaUrl(`${loop}.webm`)} type="video/webm" />
+            )}
             <source src={mediaUrl(`${loop}.mp4`)} type="video/mp4" />
           </video>
         </div>

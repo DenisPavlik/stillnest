@@ -152,7 +152,13 @@ def main() -> None:
         dest = Path(__file__).resolve().parent.parent / "stays" / args.publish
         shutil.copyfile(out, dest / "interior-loop.mp4")
         encode_webm(out, dest / "interior-loop.webm", args.webm_crf)
-        for f in ("interior-loop.mp4", "interior-loop.webm"):
+        # The phone rung: 1280 H.264, hardware-decoded on every iPhone.
+        small = decode(src, 1280, round(1280 * sh / sw) // 2 * 2).astype(np.float32)
+        small_loop = small[:n].copy()
+        small_loop[:k] = small[:k] * ramp + small[n:n + k] * (1.0 - ramp)
+        encode(np.clip(small_loop + 0.5, 0, 255).astype(np.uint8),
+               dest / "interior-loop-1280.mp4", fps, args.crf + 2)
+        for f in ("interior-loop.mp4", "interior-loop.webm", "interior-loop-1280.mp4"):
             print(f"-> stays/{args.publish}/{f}  {(dest / f).stat().st_size / 1024 / 1024:.2f} MB")
 
     if args.poster:
