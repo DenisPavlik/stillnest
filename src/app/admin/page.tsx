@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { FilmGrain } from "@/components/film-grain";
 import { Reveal } from "@/components/motion/reveal";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
 import { LIVE, blocks, houses, ledger, type LedgerRow } from "@/lib/db/admin";
 import { addDays, nightCount, rangesOverlap, todayIso } from "@/lib/dates";
@@ -288,6 +289,8 @@ export default async function AdminPage(): Promise<ReactNode> {
           </div>
         </section>
       </div>
+
+      <SiteFooter />
     </main>
   );
 }
