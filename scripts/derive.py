@@ -23,9 +23,8 @@ WHAT IT WRITES, PER HOUSE
     interior-1536.jpg                                              derived
     interior-1536.webp                                             derived
 
-    The portrait has no rung on purpose. <Still> asks for exactly
-    `<portraitBase>.jpg` and `.webp` on `max-aspect-ratio: 1/1`, and at 1400 wide
-    it is already below the narrow rung — a 1536 portrait would be an upscale.
+    The portrait gets one narrow rung, 900, for phones; its widest is the 1400
+    file itself — a 1536 portrait would be an upscale.
 
 NO NEW DEPENDENCIES
     stdlib + Pillow, same as scripts/upscale.py, for the same reason:
@@ -54,19 +53,27 @@ STAYS = REPO / "public" / "stays"
 # Keep in step with RUNGS in src/lib/media.ts. The widest rung is stored under
 # the bare name — `stillSources` builds `<base>.jpg` for it and `<base>-1536.jpg`
 # for the rest — so the two lists have to agree or the srcSet points at nothing.
-RUNGS = (1536, 3072)
+RUNGS = (768, 1536, 3072)
 WIDEST = RUNGS[-1]
 
 JPEG_QUALITY = 88
 WEBP_QUALITY = 82
 
-# The stills a house is expected to have, and whether the narrow rung applies.
-# `exterior-portrait` is mobile art direction, not a resolution rung.
+# The stills a house is expected to have, and the NARROW rungs each gets — the
+# widest is always the bare name. The portrait is mobile art direction at 1400
+# wide; Lighthouse caught a phone downloading all 590 KB of it to paint ~400 CSS
+# px, so it gets a 900 rung of its own — 720 was one pixel short of Lighthouse's
+# 412 x 1.75 phone and was never chosen (keep in step with PORTRAIT_RUNGS in
+# src/lib/media.ts).
 SOURCES = (
-    ("exterior", True),
-    ("interior", True),
-    ("exterior-portrait", False),
+    ("exterior", (768, 1536)),
+    ("interior", (768, 1536)),
+    ("exterior-portrait", (900,)),
 )
+
+# The portrait is a dark, grainy frame painted on a small screen, where q72 is
+# indistinguishable from q82 and a third lighter (hollowmoss: 593 -> 434 KB).
+PORTRAIT_WEBP_QUALITY = 72
 
 
 def save_jpeg(image: Image.Image, path: Path) -> None:
@@ -76,25 +83,24 @@ def save_jpeg(image: Image.Image, path: Path) -> None:
 def save_webp(image: Image.Image, path: Path) -> None:
     # method=6 is the slowest and smallest setting. These files are written once
     # on a laptop and served forever; there is no reason to trade size for speed.
-    image.save(path, "WEBP", quality=WEBP_QUALITY, method=6)
+    quality = PORTRAIT_WEBP_QUALITY if path.name.startswith("exterior-portrait") else WEBP_QUALITY
+    image.save(path, "WEBP", quality=quality, method=6)
 
 
-def expected_files(name: str, runged: bool) -> list[str]:
+def expected_files(name: str, narrow: tuple[int, ...]) -> list[str]:
     """Every filename the app can ask for, for one still."""
     files = [f"{name}.jpg", f"{name}.webp"]
-    if runged:
-        for rung in RUNGS:
-            if rung != WIDEST:
-                files += [f"{name}-{rung}.jpg", f"{name}-{rung}.webp"]
+    for rung in narrow:
+        files += [f"{name}-{rung}.jpg", f"{name}-{rung}.webp"]
     return files
 
 
-def derive_one(source: Path, name: str, runged: bool, force: bool) -> list[str]:
+def derive_one(source: Path, name: str, narrow: tuple[int, ...], force: bool) -> list[str]:
     """Write the derivatives for one canonical still. Returns what it wrote."""
     written: list[str] = []
     original = Image.open(source).convert("RGB")
 
-    if runged and original.width != WIDEST:
+    if name != "exterior-portrait" and original.width != WIDEST:
         print(
             f"    ! {source.name} is {original.width}px, expected {WIDEST} — "
             f"run scripts/upscale.py on it first"
@@ -103,18 +109,17 @@ def derive_one(source: Path, name: str, runged: bool, force: bool) -> list[str]:
     targets: list[tuple[Path, Image.Image, str]] = [
         (source.with_suffix(".webp"), original, "webp"),
     ]
-    if runged:
-        for rung in RUNGS:
-            if rung == WIDEST or rung >= original.width:
-                continue
-            small = original.resize(
-                (rung, round(original.height * rung / original.width)), Image.LANCZOS
-            )
-            base = source.with_name(f"{name}-{rung}")
-            targets += [
-                (base.with_suffix(".jpg"), small, "jpg"),
-                (base.with_suffix(".webp"), small, "webp"),
-            ]
+    for rung in narrow:
+        if rung >= original.width:
+            continue
+        small = original.resize(
+            (rung, round(original.height * rung / original.width)), Image.LANCZOS
+        )
+        base = source.with_name(f"{name}-{rung}")
+        targets += [
+            (base.with_suffix(".jpg"), small, "jpg"),
+            (base.with_suffix(".webp"), small, "webp"),
+        ]
 
     for path, image, kind in targets:
         if path.exists() and not force:
@@ -134,11 +139,11 @@ def derive_one(source: Path, name: str, runged: bool, force: bool) -> list[str]:
 def check_house(folder: Path) -> list[str]:
     """Names of files the app will ask for and not find."""
     missing = []
-    for name, runged in SOURCES:
+    for name, narrow in SOURCES:
         if not (folder / f"{name}.jpg").exists():
             missing.append(f"{name}.jpg (canonical — generate it)")
             continue
-        missing += [f for f in expected_files(name, runged) if not (folder / f).exists()]
+        missing += [f for f in expected_files(name, narrow) if not (folder / f).exists()]
     return missing
 
 
@@ -172,11 +177,11 @@ def main() -> None:
         print(folder.relative_to(REPO))
 
         if not args.check:
-            for name, runged in SOURCES:
+            for name, narrow in SOURCES:
                 source = folder / f"{name}.jpg"
                 if not source.exists():
                     continue
-                derive_one(source, name, runged, args.force)
+                derive_one(source, name, narrow, args.force)
 
         missing = check_house(folder)
         if missing:

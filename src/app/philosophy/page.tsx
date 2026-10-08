@@ -120,9 +120,7 @@ export default async function PhilosophyPage(): Promise<ReactNode> {
       {/* ============================== THE CASE ========================== */}
       <section className={s.section}>
         <Reveal className={s.sectionHead} stagger={0.08} distance={14}>
-          <p className={s.ordinal} aria-hidden="true">
-            01
-          </p>
+          <p className={s.ordinal} data-n="01" aria-hidden="true" />
           <h2 className={s.sectionTitle}>Quiet is sold everywhere and measured nowhere.</h2>
         </Reveal>
 
@@ -154,9 +152,7 @@ export default async function PhilosophyPage(): Promise<ReactNode> {
       {/* ============================= THE METHOD ========================= */}
       <section className={s.section}>
         <Reveal className={s.sectionHead} stagger={0.08} distance={14}>
-          <p className={s.ordinal} aria-hidden="true">
-            02
-          </p>
+          <p className={s.ordinal} data-n="02" aria-hidden="true" />
           <h2 className={s.sectionTitle}>Surveyed on foot, after dark.</h2>
           <p className={s.sectionLede}>
             None of this is inferred from a map. Somebody stood in each of these places at
@@ -193,9 +189,7 @@ export default async function PhilosophyPage(): Promise<ReactNode> {
       {/* ============================ THE REFUSALS ======================== */}
       <section className={s.section}>
         <Reveal className={s.sectionHead} stagger={0.08} distance={14}>
-          <p className={s.ordinal} aria-hidden="true">
-            03
-          </p>
+          <p className={s.ordinal} data-n="03" aria-hidden="true" />
           <h2 className={s.sectionTitle}>The absences are the product.</h2>
           <p className={s.sectionLede}>
             Four decisions that cost us something, listed here because a site is defined at

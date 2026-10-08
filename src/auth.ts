@@ -36,6 +36,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   }),
   providers: [Google],
   session: { strategy: "database" },
+  // The host header is trusted: in production it is set by Vercel's edge, and
+  // anywhere else (`next start` on a laptop) Auth.js would otherwise refuse
+  // every request with UntrustedHost — a 500 on /api/auth/session that
+  // Lighthouse rightly counted as an error in the console.
+  trustHost: true,
   pages: { signIn: "/signin" },
   events: {
     // The adapter owns `users`; everything that is ours about a person goes on

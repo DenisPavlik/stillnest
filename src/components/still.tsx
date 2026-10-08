@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { mediaUrl, stillSources } from "@/lib/media";
+import { portraitSources, stillSources } from "@/lib/media";
 
 import s from "./still.module.css";
 
@@ -52,20 +52,22 @@ export function Still({
   sizes = "100vw",
 }: StillProps): ReactNode {
   const landscape = stillSources(base);
+  const portrait = portraitBase ? portraitSources(portraitBase) : null;
 
   return (
     <picture className={className ? `${s.picture} ${className}` : s.picture}>
       {/* Portrait first: a <source> wins on its first media match, so an
           art-directed file offered after the landscape set would never be
           reached. */}
-      {portraitBase ? (
+      {portrait ? (
         <>
           <source
             media="(max-aspect-ratio: 1/1)"
             type="image/webp"
-            srcSet={mediaUrl(`${portraitBase}.webp`)}
+            sizes={sizes}
+            srcSet={portrait.webp}
           />
-          <source media="(max-aspect-ratio: 1/1)" srcSet={mediaUrl(`${portraitBase}.jpg`)} />
+          <source media="(max-aspect-ratio: 1/1)" sizes={sizes} srcSet={portrait.jpeg} />
         </>
       ) : null}
 

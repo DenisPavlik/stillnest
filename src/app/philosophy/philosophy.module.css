@@ -97,6 +97,13 @@
    site uses — same job, done by size instead of by a line, and it gives
    each section a landmark you can find while scrolling past. Outlined
    rather than filled so it never competes with the heading beside it. */
+/* Drawn from a data attribute rather than written as text: it is decoration,
+   hidden from screen readers already, and as text it was audited for contrast
+   it was never meant to have — a faint outline is the whole point of it. */
+.ordinal::before {
+  content: attr(data-n);
+}
+
 .ordinal {
   margin: 0 0 clamp(-6px, -0.4vw, 0px);
   color: transparent;

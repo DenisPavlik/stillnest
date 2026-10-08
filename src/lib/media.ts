@@ -96,7 +96,10 @@ export function hasLoop(slug: string): boolean {
  * 375 CSS px. Keep in step with `scripts/upscale.py` and the derivative sizes
  * recorded in `content/CREDITS.md`.
  */
-const RUNGS = [1536, 3072] as const;
+// 768 added after Lighthouse: a phone painting a ~375 px card took the 1536
+// file (~275 KB) because nothing smaller existed, and it competed with the
+// hero for the same thin connection.
+const RUNGS = [768, 1536, 3072] as const;
 
 export interface StillSources {
   jpeg: string;
@@ -151,5 +154,23 @@ export function resolveScene(scene: Scene): ResolvedScene {
     poster: mediaUrl(scene.poster),
     video: scene.video ? mediaUrl(scene.video) : undefined,
     audio: scene.audio ? mediaUrl(scene.audio) : undefined,
+  };
+}
+
+/**
+ * The portrait art direction, as a `srcSet` pair: `<base>-900` for phones and
+ * `<base>` (1400 wide) for everything taller than it is wide and larger. Keep in
+ * step with SOURCES in scripts/derive.py.
+ */
+const PORTRAIT_RUNGS = [900, 1400] as const;
+
+export function portraitSources(base: string): { jpeg: string; webp: string } {
+  const at = (rung: number, ext: string) =>
+    mediaUrl(
+      rung === PORTRAIT_RUNGS[PORTRAIT_RUNGS.length - 1] ? `${base}.${ext}` : `${base}-${rung}.${ext}`,
+    );
+  return {
+    jpeg: PORTRAIT_RUNGS.map((r) => `${at(r, "jpg")} ${r}w`).join(", "),
+    webp: PORTRAIT_RUNGS.map((r) => `${at(r, "webp")} ${r}w`).join(", "),
   };
 }

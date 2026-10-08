@@ -51,7 +51,9 @@
 
 .note {
   margin-left: auto;
-  color: var(--ink-3);
+  /* --ink-3 read 3.35:1 against spruce at 12px; haze clears 4.5. This is the
+     line that says the site is a concept — it of all lines must be legible. */
+  color: var(--haze);
   font-size: 0.75rem;
 }
 

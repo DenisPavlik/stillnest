@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Still } from "@/components/still";
 import { mediaUrl } from "@/lib/media";
@@ -48,15 +48,37 @@ export function LivingStill({
   priority,
 }: LivingStillProps) {
   const [ready, setReady] = useState(false);
+  const [near, setNear] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
   const mayLoadVideo = useMayLoadVideo();
+
+  /* Attach the loop only once the scene is within a screen of the viewport.
+     It sits below the survey on every house page, and a visitor who reads the
+     numbers and leaves should not have paid a megabyte for a room they never
+     scrolled to — Lighthouse counted it against the page's first load. */
+  useEffect(() => {
+    const el = root.current;
+    if (!el || !loop) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "100% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [loop]);
 
   // Never true on the server, so the loop cannot delay first paint or cause a
   // hydration mismatch: the first client render matches the server exactly and
   // the video is attached on the render after it.
-  const play = Boolean(loop) && mayLoadVideo;
+  const play = Boolean(loop) && mayLoadVideo && near;
 
   return (
-    <div className={className ? `${s.root} ${className}` : s.root} data-scene>
+    <div ref={root} className={className ? `${s.root} ${className}` : s.root} data-scene>
       <Still
         base={base}
         alt={alt}

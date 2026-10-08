@@ -61,7 +61,12 @@ export function AccountLink() {
   }
 
   return (
-    <a className={s.signIn} href="/signin" data-pending={who === undefined ? "" : undefined}>
+    <a
+      className={s.signIn}
+      href="/signin"
+      aria-label="Sign in"
+      data-pending={who === undefined ? "" : undefined}
+    >
       <span className={s.signInText}>Sign in</span>
       <svg className={s.signInIcon} viewBox="0 0 20 20" aria-hidden="true">
         <circle cx="10" cy="7" r="3.2" />
