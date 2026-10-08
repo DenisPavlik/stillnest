@@ -100,8 +100,28 @@ export function AmbienceProvider({ children }: { children: ReactNode }) {
 
   const unlock = useCallback(() => {
     setSoundPreference(true);
+
+    /* iPhone. Web Audio is played in the "ambient" category by default, which
+       the ring/silent switch mutes — so on a phone in silent mode the site
+       was simply quiet, while every video on the same phone still had sound.
+       "playback" is what a media player asks for, and it is asked for here,
+       inside the tap, because that is the one moment the visitor has said
+       they want to hear something. Safari 16.4+; elsewhere a no-op. */
+    const nav = navigator as Navigator & { audioSession?: { type: string } };
+    if (nav.audioSession) nav.audioSession.type = "playback";
+
     const ctx = ensureContext();
-    if (ctx?.state === "suspended") void ctx.resume();
+    if (!ctx) return;
+    // iOS also reports "interrupted" (a call, another app's audio), not only
+    // "suspended"; anything short of running is resumed while the gesture lasts.
+    if (ctx.state !== "running") void ctx.resume();
+
+    /* Older iOS will not consider a context unlocked until something has
+       actually been started inside a gesture. One silent sample does it. */
+    const tick = ctx.createBufferSource();
+    tick.buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+    tick.connect(ctx.destination);
+    tick.start(0);
   }, [ensureContext]);
 
   /* --- the mixer -------------------------------------------------- */
@@ -131,7 +151,7 @@ export function AmbienceProvider({ children }: { children: ReactNode }) {
       const master = masterRef.current;
       if (!ctx || !master) return;
 
-      if (ctx.state === "suspended") await ctx.resume();
+      if (ctx.state !== "running") await ctx.resume();
 
       let buffer = buffers.current.get(bed);
       if (!buffer) {

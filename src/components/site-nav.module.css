@@ -106,7 +106,10 @@
   /* The menu trigger sits after the wordmark in the DOM but Reserve is the
      primary action and belongs on the outside edge, so it is ordered last
      rather than reordered in the markup. */
+  /* Reserve lives inside the menu below this width. The row keeps the
+     wordmark and two glyphs — account and menu — because a word and a
+     button at the right edge ran under the iPhone's Dynamic Island. */
   .reserve {
-    order: 1;
+    display: none;
   }
 }

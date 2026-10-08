@@ -14,10 +14,11 @@ import s from "./mobile-menu.module.css";
  *  only linked from the nav — the philosophy page, the index anchor —
  *  simply did not exist on the device most people arrive on.
  *
- *  The trigger is the word `Menu`, not a hamburger. Every other control
- *  on this site is labelled in mono caps — "SEARCH", "EITHER WAY",
- *  "RANKED BY" — and a three-line glyph would be the one piece of
- *  borrowed interface language in the whole design.
+ *  The trigger was the word `Menu` until the owner saw it on an iPhone:
+ *  the Dynamic Island sits over the middle of the nav and ate it. It is
+ *  now two hairlines that cross into an X, beside the account icon, and
+ *  Reserve moved inside the panel — two small glyphs at the right edge
+ *  clear the island where a word and a button did not.
  * -------------------------------------------------------------------- */
 
 export interface MobileMenuProps {
@@ -79,9 +80,13 @@ export function MobileMenu({ links, reserveHref, reserveLabel }: MobileMenuProps
         className={s.trigger}
         aria-expanded={open}
         aria-controls={panelId}
+        aria-label={open ? "Close menu" : "Open menu"}
         onClick={() => setOpen((v) => !v)}
       >
-        {open ? "Close" : "Menu"}
+        <span className={s.bars} data-open={open ? "" : undefined} aria-hidden="true">
+          <span />
+          <span />
+        </span>
       </button>
 
       <div
