@@ -18,6 +18,7 @@ import {
   staysBySlugs,
 } from "@/lib/db/queries";
 import { capitalise, formatKm, numberWord } from "@/lib/format";
+import { pageMetadata } from "@/lib/site";
 
 import { CardGrid } from "./card-grid";
 import { StaysConsole } from "./console";
@@ -61,11 +62,12 @@ import s from "./stays.module.css";
  *  the truth is a statement about us.
  * ==================================================================== */
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Houses — Stillnest",
   description:
     "Twelve off-grid houses, searched by how far they are from everyone else rather than by bedrooms and price.",
-};
+  path: "/stays",
+});
 
 /**
  * How many ranked candidates to ask the search service for.

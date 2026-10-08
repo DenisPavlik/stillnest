@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { FilmGrain } from "@/components/film-grain";
@@ -9,6 +10,7 @@ import { SiteNav } from "@/components/site-nav";
 import { ReachLine, SolitudeIndex } from "@/components/solitude";
 import { StayCard } from "@/components/stay-card";
 import { Still } from "@/components/still";
+import { pageMetadata } from "@/lib/site";
 import { countStays, featuredStays, getStayBySlug } from "@/lib/db/queries";
 import { capitalise, formatCoords, numberWord } from "@/lib/format";
 
@@ -44,6 +46,13 @@ const HERO = {
   moment: "63°41′N 13°06′E · 21:40 · 3°C · fog",
 } as const;
 
+
+export const metadata: Metadata = pageMetadata({
+  title: "Stillnest — Nowhere. On purpose.",
+  description:
+    "Twelve off-grid houses, measured by how far they are from everyone else — distance, silence, signal and dark sky instead of bedrooms. A concept project.",
+  path: "/",
+});
 
 export default async function HomePage(): Promise<ReactNode> {
   const [featured, total] = await Promise.all([featuredStays(3), countStays()]);

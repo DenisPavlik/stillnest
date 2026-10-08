@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
 import { countStays } from "@/lib/db/queries";
 import { numberWord } from "@/lib/format";
+import { pageMetadata } from "@/lib/site";
 
 import s from "./philosophy.module.css";
 
@@ -26,11 +27,12 @@ import s from "./philosophy.module.css";
  *  has to earn a place in that sequence or it belongs on another page.
  * ==================================================================== */
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Philosophy — Stillnest",
   description:
     "Why Stillnest measures distance, silence and darkness instead of bedrooms — how each reading is taken, and what the site refuses to do.",
-};
+  path: "/philosophy",
+});
 
 /**
  * How each reading is taken. The wording is deliberately the same claim the

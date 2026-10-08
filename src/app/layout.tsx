@@ -3,6 +3,7 @@ import { Cormorant_Garamond, DM_Mono, Instrument_Sans } from "next/font/google";
 
 import { BackToTop } from "@/components/back-to-top";
 import { MotionProvider } from "@/components/motion/motion-provider";
+import { SITE_URL, pageMetadata } from "@/lib/site";
 
 import "./globals.css";
 
@@ -31,9 +32,13 @@ const mono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stillnest — Nowhere. On purpose.",
-  description:
-    "Off-grid stays measured by how far they are from everyone else. A concept project.",
+  metadataBase: new URL(SITE_URL),
+  ...pageMetadata({
+    title: "Stillnest — Nowhere. On purpose.",
+    description:
+      "Off-grid stays measured by how far they are from everyone else. A concept project.",
+    path: "/",
+  }),
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -24,6 +24,7 @@ import {
 import { StayCard } from "@/components/stay-card";
 import { allStaySlugs, featuredStays, getStayBySlug } from "@/lib/db/queries";
 import { hasLoop, hasPhotography } from "@/lib/media";
+import { pageMetadata } from "@/lib/site";
 import {
   bedroomsWord,
   capitalise,
@@ -66,14 +67,15 @@ export async function generateMetadata({ params }: PageProps<"/stays/[slug]">): 
   const { slug } = await params;
   const stay = await getStayBySlug(slug);
 
-  if (!stay) return { title: "House not found — Stillnest" };
+  if (!stay) return { title: "House not found — Stillnest", robots: { index: false } };
 
   const readings = `${formatKm(stay.solitudeKm)} km to the nearest dwelling · ${stay.noiseDb} dB measured · Bortle ${stay.bortle} · ${stay.connectivity} signal.`;
 
-  return {
+  return pageMetadata({
     title: `${stay.name} — ${stay.region}, ${stay.country} · Stillnest`,
     description: `${stay.tagline ? `${stay.tagline} ` : ""}${readings} A concept project: this house is fictional and cannot be rented.`,
-  };
+    path: `/stays/${stay.slug}`,
+  });
 }
 
 /** Plain language for a blackout. The database stores three reasons; a guest

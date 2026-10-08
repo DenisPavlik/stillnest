@@ -563,3 +563,13 @@ Paid from the owner's ElevenLabs credits; the key needed **Sound Effects** acces
   resolves it, which is what makes the eventual move to Cloudflare R2 a one-line change.
 - If a non-generated asset is ever used, its licence and source URL go in this file
   **before** it is committed.
+
+## Fonts outside next/font
+
+`assets/fonts/` holds static TTFs of two of the site's own faces, for the link previews
+only — Satori, which draws them, cannot read the woff2 that `next/font` serves the page.
+
+| File | Family | Source | Licence |
+|---|---|---|---|
+| `CormorantGaramond-Light.ttf`, `CormorantGaramond-LightItalic.ttf` | Cormorant Garamond 300 | fonts.googleapis.com (Christian Thalmann) | SIL Open Font License 1.1 |
+| `DMMono-Regular.ttf` | DM Mono 400 | fonts.googleapis.com (Colophon Foundry) | SIL Open Font License 1.1 |
